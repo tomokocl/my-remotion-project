@@ -6,24 +6,22 @@
  *   node scripts/note-to-pdf.mjs <URL> [オプション]
  *
  * オプション:
- *   --email <value>    note.comのメールアドレス（会員限定記事に必要）
- *   --password <value> note.comのパスワード（会員限定記事に必要）
+ *   --login            ブラウザを表示してログイン（会員限定記事に必要）
  *   --output <path>    出力PDFのファイルパス（デフォルト: ./output.pdf）
  *   --wait <ms>        ページ読み込み後の待機時間ミリ秒（デフォルト: 3000）
  *
  * 例:
- *   node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy --output article.pdf
- *   node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy \
- *     --email you@example.com --password yourpassword --output article.pdf
+ *   # 無料記事
+ *   node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy
  *
- * 環境変数でも指定できます:
- *   NOTE_EMAIL=you@example.com NOTE_PASSWORD=yourpassword \
- *     node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy
+ *   # 会員限定記事（ブラウザが開くのでログインしてEnterを押す）
+ *   node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy --login
  */
 
 import { chromium } from 'playwright-core';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
+import { createInterface } from 'readline';
 
 const CHROME_PATHS = [
   '/root/.cache/ms-playwright/chromium-1194/chrome-linux/chrome',
@@ -41,20 +39,12 @@ function findChrome() {
 }
 
 function parseArgs(argv) {
-  const args = {
-    url: null,
-    email: process.env.NOTE_EMAIL || null,
-    password: process.env.NOTE_PASSWORD || null,
-    output: './output.pdf',
-    wait: 3000,
-  };
+  const args = { url: null, login: false, output: './output.pdf', wait: 3000 };
   const rest = argv.slice(2);
 
   for (let i = 0; i < rest.length; i++) {
-    if (rest[i] === '--email' && rest[i + 1]) {
-      args.email = rest[++i];
-    } else if (rest[i] === '--password' && rest[i + 1]) {
-      args.password = rest[++i];
+    if (rest[i] === '--login') {
+      args.login = true;
     } else if (rest[i] === '--output' && rest[i + 1]) {
       args.output = rest[++i];
     } else if (rest[i] === '--wait' && rest[i + 1]) {
@@ -67,31 +57,20 @@ function parseArgs(argv) {
   return args;
 }
 
-async function login(page, email, password) {
-  console.log('note.comにログイン中...');
-  await page.goto('https://note.com/login', { waitUntil: 'networkidle', timeout: 30000 });
-
-  // メールアドレスとパスワードを入力
-  await page.fill('input[name="email"]', email);
-  await page.fill('input[name="password"]', password);
-  await page.click('button[type="submit"]');
-
-  // ログイン完了を待機
-  await page.waitForNavigation({ timeout: 15000 }).catch(() => {});
-
-  const currentUrl = page.url();
-  if (currentUrl.includes('/login')) {
-    throw new Error('ログインに失敗しました。メールアドレスとパスワードを確認してください。');
-  }
-
-  console.log('ログイン成功');
+function waitForEnter(message) {
+  return new Promise((resolve) => {
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    rl.question(message, () => {
+      rl.close();
+      resolve();
+    });
+  });
 }
 
-async function noteArticleToPdf({ url, email, password, output, wait }) {
+async function noteArticleToPdf({ url, login, output, wait }) {
   const chromePath = findChrome();
   if (!chromePath) {
     console.error('エラー: Chromiumが見つかりません。');
-    console.error('インストール: npx playwright install chromium');
     process.exit(1);
   }
 
@@ -100,6 +79,7 @@ async function noteArticleToPdf({ url, email, password, output, wait }) {
 
   const browser = await chromium.launch({
     executablePath: chromePath,
+    headless: !login,  // --login のときだけブラウザを表示
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
 
@@ -112,27 +92,26 @@ async function noteArticleToPdf({ url, email, password, output, wait }) {
 
     const page = await context.newPage();
 
-    // ログイン（認証情報が指定された場合）
-    if (email && password) {
-      await login(page, email, password);
-    } else if (email || password) {
-      console.warn('警告: --email と --password の両方を指定してください。');
+    if (login) {
+      // ログインページを開いてユーザーに手動ログインしてもらう
+      console.log('ブラウザを開きました。note.comにログインしてください。');
+      await page.goto('https://note.com/login', { waitUntil: 'networkidle', timeout: 30000 });
+
+      await waitForEnter('ログインが完了したらEnterを押してください...');
+      console.log('ログイン確認済み。記事を取得します。');
     }
 
     console.log('ページを読み込み中...');
     await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
 
-    // ページ読み込み後の待機（画像などの非同期読み込み対応）
     if (wait > 0) {
       console.log(`${wait}ms 待機中...`);
       await page.waitForTimeout(wait);
     }
 
-    // ページタイトルを取得
     const title = await page.title();
     console.log(`ページタイトル: ${title}`);
 
-    // 印刷用CSSを適用してPDF生成
     await page.addStyleTag({
       content: `
         @media print {
@@ -168,16 +147,14 @@ async function noteArticleToPdf({ url, email, password, output, wait }) {
 const args = parseArgs(process.argv);
 
 if (!args.url) {
-  console.error('使い方: node scripts/note-to-pdf.mjs <URL> [--email <email>] [--password <pass>] [--output <path>]');
+  console.error('使い方: node scripts/note-to-pdf.mjs <URL> [--login] [--output <path>] [--wait <ms>]');
   console.error('');
   console.error('例:');
+  console.error('  # 無料記事');
   console.error('  node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy');
-  console.error('  node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy \\');
-  console.error('    --email you@example.com --password yourpassword --output article.pdf');
   console.error('');
-  console.error('環境変数でも指定できます:');
-  console.error('  NOTE_EMAIL=you@example.com NOTE_PASSWORD=yourpassword \\');
-  console.error('    node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy');
+  console.error('  # 会員限定記事（ブラウザが開くのでログインしてEnterを押す）');
+  console.error('  node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy --login --output article.pdf');
   process.exit(1);
 }
 
