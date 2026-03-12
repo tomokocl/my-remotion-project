@@ -3,22 +3,28 @@
  * note-to-pdf: note.comの記事をPDFに変換するスクリプト
  *
  * 使い方:
- *   node scripts/note-to-pdf.mjs <URL> [オプション]
+ *   node scripts/note-to-pdf.mjs <URL> --cookies <cookieファイル> [オプション]
  *
  * オプション:
+ *   --cookies <path>   Cookie Editorで書き出したJSONファイルのパス（会員限定記事に必要）
  *   --output <path>    出力PDFのファイルパス（デフォルト: ./output.pdf）
  *   --wait <ms>        ページ読み込み後の待機時間ミリ秒（デフォルト: 3000）
  *
- * 例:
- *   node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy --output article.pdf
+ * Cookieファイルの作り方:
+ *   1. ChromeにCookie Editor拡張機能をインストール
+ *      https://chromewebstore.google.com/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm
+ *   2. ブラウザでnote.comを開いてログインする
+ *   3. Cookie Editorを開いて「Export」→「Export as JSON」
+ *   4. メモ帳に貼り付けて note-cookies.json として保存
  *
- * ※ 普段使いのChromeのログイン状態を自動で引き継ぎます
+ * 例:
+ *   node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy \
+ *     --cookies note-cookies.json --output article.pdf
  */
 
 import { chromium } from 'playwright-core';
-import { existsSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
-import os from 'os';
 
 const CHROME_PATHS = [
   // Windows
@@ -36,18 +42,6 @@ const CHROME_PATHS = [
   '/usr/bin/google-chrome-stable',
 ];
 
-// OSごとのChromeユーザーデータディレクトリ
-function getChromeUserDataDir() {
-  const platform = process.platform;
-  if (platform === 'win32') {
-    return process.env.LOCALAPPDATA + '\\Google\\Chrome\\User Data';
-  } else if (platform === 'darwin') {
-    return os.homedir() + '/Library/Application Support/Google/Chrome';
-  } else {
-    return os.homedir() + '/.config/google-chrome';
-  }
-}
-
 function findChrome() {
   for (const p of CHROME_PATHS) {
     if (existsSync(p)) return p;
@@ -56,11 +50,13 @@ function findChrome() {
 }
 
 function parseArgs(argv) {
-  const args = { url: null, output: './output.pdf', wait: 3000 };
+  const args = { url: null, cookies: null, output: './output.pdf', wait: 3000 };
   const rest = argv.slice(2);
 
   for (let i = 0; i < rest.length; i++) {
-    if (rest[i] === '--output' && rest[i + 1]) {
+    if (rest[i] === '--cookies' && rest[i + 1]) {
+      args.cookies = rest[++i];
+    } else if (rest[i] === '--output' && rest[i + 1]) {
       args.output = rest[++i];
     } else if (rest[i] === '--wait' && rest[i + 1]) {
       args.wait = parseInt(rest[++i], 10);
@@ -72,27 +68,58 @@ function parseArgs(argv) {
   return args;
 }
 
-async function noteArticleToPdf({ url, output, wait }) {
+function loadCookies(cookiesPath) {
+  const raw = JSON.parse(readFileSync(cookiesPath, 'utf-8'));
+
+  // Cookie EditorのJSON形式をPlaywright形式に変換
+  return raw.map((c) => ({
+    name: c.name,
+    value: c.value,
+    domain: c.domain,
+    path: c.path || '/',
+    httpOnly: c.httpOnly || false,
+    secure: c.secure || false,
+    sameSite: c.sameSite === 'no_restriction' ? 'None'
+            : c.sameSite === 'lax' ? 'Lax'
+            : c.sameSite === 'strict' ? 'Strict'
+            : 'Lax',
+  })).filter(c => c.name && c.value);
+}
+
+async function noteArticleToPdf({ url, cookies: cookiesPath, output, wait }) {
   const chromePath = findChrome();
   if (!chromePath) {
     console.error('エラー: Chromeが見つかりません。Google Chromeをインストールしてください。');
     process.exit(1);
   }
 
-  const userDataDir = getChromeUserDataDir();
   console.log(`変換対象URL: ${url}`);
   console.log(`出力先: ${resolve(output)}`);
-  console.log(`Chromeプロファイル: ${userDataDir}`);
 
-  // 既存のChromeプロファイルを使う（ログイン状態を引き継ぐ）
-  const context = await chromium.launchPersistentContext(userDataDir, {
+  const browser = await chromium.launch({
     executablePath: chromePath,
-    headless: false,
+    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    viewport: { width: 1200, height: 900 },
   });
 
   try {
+    const context = await browser.newContext({
+      viewport: { width: 1200, height: 900 },
+      userAgent:
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    });
+
+    // Cookieファイルが指定されていればセット
+    if (cookiesPath) {
+      if (!existsSync(cookiesPath)) {
+        console.error(`エラー: Cookieファイルが見つかりません: ${cookiesPath}`);
+        process.exit(1);
+      }
+      const cookies = loadCookies(cookiesPath);
+      await context.addCookies(cookies);
+      console.log(`Cookieを読み込みました（${cookies.length}件）`);
+    }
+
     const page = await context.newPage();
 
     console.log('ページを読み込み中...');
@@ -133,7 +160,7 @@ async function noteArticleToPdf({ url, output, wait }) {
 
     console.log(`完了: ${resolve(output)} に保存しました`);
   } finally {
-    await context.close();
+    await browser.close();
   }
 }
 
@@ -141,10 +168,11 @@ async function noteArticleToPdf({ url, output, wait }) {
 const args = parseArgs(process.argv);
 
 if (!args.url) {
-  console.error('使い方: node scripts/note-to-pdf.mjs <URL> [--output <path>] [--wait <ms>]');
+  console.error('使い方: node scripts/note-to-pdf.mjs <URL> [--cookies <path>] [--output <path>]');
   console.error('');
   console.error('例:');
-  console.error('  node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy --output article.pdf');
+  console.error('  node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy \\');
+  console.error('    --cookies note-cookies.json --output article.pdf');
   process.exit(1);
 }
 
