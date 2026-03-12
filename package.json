@@ -1,14 +1,35 @@
 {
-  "name": "template-helloworld",
+  "name": "note-to-pdf",
   "version": "1.0.0",
-  "description": "My Remotion video",
+  "description": "note.com記事をPDFに変換するアプリ",
+  "main": "electron-main.cjs",
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
     "note-to-pdf": "node scripts/note-to-pdf.mjs",
-    "web": "node server.mjs"
+    "web": "node server.mjs",
+    "electron": "electron .",
+    "dist": "electron-builder --win --x64"
+  },
+  "build": {
+    "appId": "com.note-to-pdf",
+    "productName": "note-to-PDF",
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "files": [
+      "electron-main.cjs",
+      "node_modules/**/*",
+      "scripts/**/*"
+    ],
+    "nsis": {
+      "oneClick": true,
+      "installerLanguages": ["ja-JP"],
+      "language": "1041"
+    }
   },
   "repository": {},
   "license": "UNLICENSED",
@@ -28,6 +49,8 @@
     "@remotion/eslint-config-flat": "^4.0.0",
     "@types/react": "19.0.0",
     "@types/web": "0.0.166",
+    "electron": "^34.0.0",
+    "electron-builder": "^25.0.0",
     "eslint": "9.19.0",
     "prettier": "3.6.0",
     "typescript": "5.8.2"
