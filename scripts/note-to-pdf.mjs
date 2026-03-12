@@ -24,6 +24,14 @@ import { resolve } from 'path';
 import { createInterface } from 'readline';
 
 const CHROME_PATHS = [
+  // Windows
+  'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+  'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+  process.env.LOCALAPPDATA + '\\Google\\Chrome\\Application\\chrome.exe',
+  // Mac
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+  '/Applications/Chromium.app/Contents/MacOS/Chromium',
+  // Linux
   '/root/.cache/ms-playwright/chromium-1194/chrome-linux/chrome',
   '/usr/bin/chromium-browser',
   '/usr/bin/chromium',
