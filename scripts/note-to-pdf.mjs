@@ -6,25 +6,24 @@
  *   node scripts/note-to-pdf.mjs <URL> [オプション]
  *
  * オプション:
- *   --cookie <value>   note.comのセッションCookie文字列（会員限定記事に必要）
+ *   --email <value>    note.comのメールアドレス（会員限定記事に必要）
+ *   --password <value> note.comのパスワード（会員限定記事に必要）
  *   --output <path>    出力PDFのファイルパス（デフォルト: ./output.pdf）
  *   --wait <ms>        ページ読み込み後の待機時間ミリ秒（デフォルト: 3000）
  *
  * 例:
  *   node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy --output article.pdf
- *   node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy --cookie "note_gk_session=abc123" --output article.pdf
+ *   node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy \
+ *     --email you@example.com --password yourpassword --output article.pdf
  *
- * Cookieの取得方法:
- *   1. ブラウザでnote.comにログイン
- *   2. DevTools > Application > Cookies > https://note.com
- *   3. "note_gk_session" の値をコピー
- *   4. --cookie "note_gk_session=<値>" として渡す
+ * 環境変数でも指定できます:
+ *   NOTE_EMAIL=you@example.com NOTE_PASSWORD=yourpassword \
+ *     node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy
  */
 
 import { chromium } from 'playwright-core';
 import { existsSync } from 'fs';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 
 const CHROME_PATHS = [
   '/root/.cache/ms-playwright/chromium-1194/chrome-linux/chrome',
@@ -42,12 +41,20 @@ function findChrome() {
 }
 
 function parseArgs(argv) {
-  const args = { url: null, cookie: null, output: './output.pdf', wait: 3000 };
+  const args = {
+    url: null,
+    email: process.env.NOTE_EMAIL || null,
+    password: process.env.NOTE_PASSWORD || null,
+    output: './output.pdf',
+    wait: 3000,
+  };
   const rest = argv.slice(2);
 
   for (let i = 0; i < rest.length; i++) {
-    if (rest[i] === '--cookie' && rest[i + 1]) {
-      args.cookie = rest[++i];
+    if (rest[i] === '--email' && rest[i + 1]) {
+      args.email = rest[++i];
+    } else if (rest[i] === '--password' && rest[i + 1]) {
+      args.password = rest[++i];
     } else if (rest[i] === '--output' && rest[i + 1]) {
       args.output = rest[++i];
     } else if (rest[i] === '--wait' && rest[i + 1]) {
@@ -60,21 +67,27 @@ function parseArgs(argv) {
   return args;
 }
 
-function parseCookies(cookieStr, domain) {
-  if (!cookieStr) return [];
+async function login(page, email, password) {
+  console.log('note.comにログイン中...');
+  await page.goto('https://note.com/login', { waitUntil: 'networkidle', timeout: 30000 });
 
-  return cookieStr.split(';').map((part) => {
-    const [name, ...valueParts] = part.trim().split('=');
-    return {
-      name: name.trim(),
-      value: valueParts.join('=').trim(),
-      domain: domain,
-      path: '/',
-    };
-  });
+  // メールアドレスとパスワードを入力
+  await page.fill('input[name="email"]', email);
+  await page.fill('input[name="password"]', password);
+  await page.click('button[type="submit"]');
+
+  // ログイン完了を待機
+  await page.waitForNavigation({ timeout: 15000 }).catch(() => {});
+
+  const currentUrl = page.url();
+  if (currentUrl.includes('/login')) {
+    throw new Error('ログインに失敗しました。メールアドレスとパスワードを確認してください。');
+  }
+
+  console.log('ログイン成功');
 }
 
-async function noteArticleToPdf({ url, cookie, output, wait }) {
+async function noteArticleToPdf({ url, email, password, output, wait }) {
   const chromePath = findChrome();
   if (!chromePath) {
     console.error('エラー: Chromiumが見つかりません。');
@@ -82,7 +95,6 @@ async function noteArticleToPdf({ url, cookie, output, wait }) {
     process.exit(1);
   }
 
-  console.log(`Chromium: ${chromePath}`);
   console.log(`変換対象URL: ${url}`);
   console.log(`出力先: ${resolve(output)}`);
 
@@ -98,15 +110,14 @@ async function noteArticleToPdf({ url, cookie, output, wait }) {
         'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     });
 
-    // Cookieを設定（会員限定記事のセッション認証用）
-    if (cookie) {
-      const urlObj = new URL(url);
-      const cookies = parseCookies(cookie, urlObj.hostname);
-      await context.addCookies(cookies);
-      console.log(`Cookieを設定しました: ${cookies.map((c) => c.name).join(', ')}`);
-    }
-
     const page = await context.newPage();
+
+    // ログイン（認証情報が指定された場合）
+    if (email && password) {
+      await login(page, email, password);
+    } else if (email || password) {
+      console.warn('警告: --email と --password の両方を指定してください。');
+    }
 
     console.log('ページを読み込み中...');
     await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
@@ -121,23 +132,9 @@ async function noteArticleToPdf({ url, cookie, output, wait }) {
     const title = await page.title();
     console.log(`ページタイトル: ${title}`);
 
-    // 会員限定コンテンツのロック確認
-    const isLocked = await page.evaluate(() => {
-      return !!(
-        document.querySelector('[class*="paywall"]') ||
-        document.querySelector('[class*="membership"]') ||
-        document.querySelector('[data-type="locked"]')
-      );
-    });
-
-    if (isLocked) {
-      console.warn('警告: ページがロックされている可能性があります。Cookieを確認してください。');
-    }
-
     // 印刷用CSSを適用してPDF生成
     await page.addStyleTag({
       content: `
-        /* 印刷最適化スタイル */
         @media print {
           header, nav, footer,
           [class*="header"], [class*="nav"], [class*="footer"],
@@ -146,16 +143,9 @@ async function noteArticleToPdf({ url, cookie, output, wait }) {
           [class*="banner"], [class*="ad"] {
             display: none !important;
           }
-          body {
-            font-size: 14px !important;
-          }
-          img {
-            max-width: 100% !important;
-          }
-          a {
-            text-decoration: none !important;
-            color: inherit !important;
-          }
+          body { font-size: 14px !important; }
+          img { max-width: 100% !important; }
+          a { text-decoration: none !important; color: inherit !important; }
         }
       `,
     });
@@ -165,12 +155,7 @@ async function noteArticleToPdf({ url, cookie, output, wait }) {
       path: resolve(output),
       format: 'A4',
       printBackground: true,
-      margin: {
-        top: '20mm',
-        bottom: '20mm',
-        left: '15mm',
-        right: '15mm',
-      },
+      margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' },
     });
 
     console.log(`完了: ${resolve(output)} に保存しました`);
@@ -183,11 +168,16 @@ async function noteArticleToPdf({ url, cookie, output, wait }) {
 const args = parseArgs(process.argv);
 
 if (!args.url) {
-  console.error('使い方: node scripts/note-to-pdf.mjs <URL> [--cookie <cookie>] [--output <path>] [--wait <ms>]');
+  console.error('使い方: node scripts/note-to-pdf.mjs <URL> [--email <email>] [--password <pass>] [--output <path>]');
   console.error('');
   console.error('例:');
   console.error('  node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy');
-  console.error('  node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy --cookie "note_gk_session=abc123" --output article.pdf');
+  console.error('  node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy \\');
+  console.error('    --email you@example.com --password yourpassword --output article.pdf');
+  console.error('');
+  console.error('環境変数でも指定できます:');
+  console.error('  NOTE_EMAIL=you@example.com NOTE_PASSWORD=yourpassword \\');
+  console.error('    node scripts/note-to-pdf.mjs https://note.com/xxx/n/yyy');
   process.exit(1);
 }
 
