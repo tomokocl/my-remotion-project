@@ -11,7 +11,7 @@
     "note-to-pdf": "node scripts/note-to-pdf.mjs",
     "web": "node server.mjs",
     "electron": "electron .",
-    "dist": "electron-builder --win --x64"
+    "dist": "set CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder --win --x64"
   },
   "build": {
     "appId": "com.note-to-pdf",
