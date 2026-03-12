@@ -17,18 +17,13 @@
     "appId": "com.note-to-pdf",
     "productName": "note-to-PDF",
     "win": {
-      "target": "nsis"
+      "target": "portable"
     },
     "files": [
       "electron-main.cjs",
       "node_modules/**/*",
       "scripts/**/*"
-    ],
-    "nsis": {
-      "oneClick": true,
-      "installerLanguages": ["ja-JP"],
-      "language": "1041"
-    }
+    ]
   },
   "repository": {},
   "license": "UNLICENSED",
