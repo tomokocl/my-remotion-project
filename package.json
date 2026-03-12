@@ -17,8 +17,7 @@
     "appId": "com.note-to-pdf",
     "productName": "note-to-PDF",
     "win": {
-      "target": "nsis",
-      "icon": "build/icon.ico"
+      "target": "nsis"
     },
     "files": [
       "electron-main.cjs",
