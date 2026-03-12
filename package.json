@@ -7,13 +7,16 @@
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc",
-    "note-to-pdf": "node scripts/note-to-pdf.mjs"
+    "note-to-pdf": "node scripts/note-to-pdf.mjs",
+    "web": "node server.mjs"
   },
   "repository": {},
   "license": "UNLICENSED",
   "dependencies": {
     "@remotion/cli": "^4.0.0",
     "@remotion/zod-types": "^4.0.0",
+    "express": "^5.2.1",
+    "multer": "^2.1.1",
     "playwright-core": "^1.58.2",
     "puppeteer-core": "^24.39.0",
     "react": "19.0.0",
