@@ -187,18 +187,89 @@ function openModal(tool, genre, cellPosts) {
       const card = document.createElement("div");
       card.className = "post-card";
       card.innerHTML = `
+        <span class="post-card-arrow">›</span>
         <p class="post-card-title">${escHtml(post.title)}</p>
         <p class="post-card-detail">${escHtml(post.detail)}</p>
         ${post.saving ? `<span class="post-card-saving">💰 ${escHtml(post.saving)}</span>` : ""}
         ${post.author ? `<p class="post-card-detail" style="margin-top:6px;font-size:0.75rem;">— ${escHtml(post.author)}</p>` : ""}
       `;
+      card.addEventListener("click", () => openDetail(tool, genre, post));
       cardsEl.appendChild(card);
     });
   } else {
     emptyEl.style.display = "block";
   }
 
+  showView("list");
   document.getElementById("modal-overlay").classList.add("open");
+}
+
+function openDetail(tool, genre, post) {
+  // バッジ
+  const badgesEl = document.getElementById("detail-badges");
+  badgesEl.innerHTML = `
+    <span class="modal-tool-badge">${escHtml(tool.icon)} ${escHtml(tool.label)}</span>
+    <span class="modal-genre-badge">${escHtml(genre.icon)} ${escHtml(genre.label)}</span>
+  `;
+
+  // タイトル・本文
+  document.getElementById("detail-title").textContent = post.title || "";
+  document.getElementById("detail-body").textContent  = post.detail || "";
+
+  // 節約額
+  const savingEl = document.getElementById("detail-saving-row");
+  savingEl.innerHTML = post.saving
+    ? `<span class="detail-saving-badge">💰 ${escHtml(post.saving)}</span>`
+    : "";
+
+  // 投稿者
+  document.getElementById("detail-author").textContent =
+    post.author ? `— ${post.author}` : "";
+
+  // メディア（画像 / 動画 / Googleドライブ）
+  const mediaEl = document.getElementById("detail-media-wrap");
+  mediaEl.innerHTML = renderMedia(post.media || "");
+
+  // 投稿ボタン（このセルで投稿）
+  document.getElementById("btn-post-detail").onclick = handlePostButton;
+
+  showView("detail");
+  document.getElementById("modal").scrollTop = 0;
+}
+
+function renderMedia(url) {
+  if (!url) return "";
+
+  // Googleドライブ: /file/d/ID/view → /file/d/ID/preview（動画）
+  const driveFileMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (driveFileMatch) {
+    const id = driveFileMatch[1];
+    return `<iframe src="https://drive.google.com/file/d/${id}/preview" allowfullscreen></iframe>`;
+  }
+
+  // Googleドライブ: open?id=ID（画像等）
+  const driveOpenMatch = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+  if (driveOpenMatch) {
+    const id = driveOpenMatch[1];
+    return `<img src="https://drive.google.com/uc?export=view&id=${id}" alt="投稿画像" loading="lazy">`;
+  }
+
+  // 画像ファイル拡張子
+  if (/\.(jpe?g|png|gif|webp)(\?|$)/i.test(url)) {
+    return `<img src="${escHtml(url)}" alt="投稿画像" loading="lazy">`;
+  }
+
+  // 動画ファイル拡張子
+  if (/\.(mp4|mov|webm)(\?|$)/i.test(url)) {
+    return `<video src="${escHtml(url)}" controls playsinline></video>`;
+  }
+
+  return "";
+}
+
+function showView(name) {
+  document.getElementById("modal-view-list").style.display   = name === "list"   ? "block" : "none";
+  document.getElementById("modal-view-detail").style.display = name === "detail" ? "block" : "none";
 }
 
 function closeModal() {
@@ -240,6 +311,10 @@ document.getElementById("modal-overlay").addEventListener("click", e => {
   if (e.target === e.currentTarget) closeModal();
 });
 document.getElementById("btn-post-modal").addEventListener("click", handlePostButton);
+document.getElementById("detail-back").addEventListener("click", () => {
+  document.getElementById("modal").scrollTop = 0;
+  showView("list");
+});
 document.getElementById("btn-post-top").addEventListener("click", () => {
   // ツール・ジャンル未選択状態でフォームを開く（本番時はフォームURLをそのまま開く）
   if (!CONFIG.FORM_BASE_URL) {

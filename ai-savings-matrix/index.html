@@ -72,17 +72,33 @@
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal" id="modal">
       <button class="modal-close" id="modal-close">✕</button>
-      <div class="modal-header">
-        <span class="modal-tool-badge" id="modal-tool-badge"></span>
-        <span class="modal-genre-badge" id="modal-genre-badge"></span>
+
+      <!-- ===== VIEW 1: カード一覧 ===== -->
+      <div class="modal-view" id="modal-view-list">
+        <div class="modal-header">
+          <span class="modal-tool-badge" id="modal-tool-badge"></span>
+          <span class="modal-genre-badge" id="modal-genre-badge"></span>
+        </div>
+        <h2 class="modal-title" id="modal-title"></h2>
+        <div class="modal-cards" id="modal-cards"></div>
+        <div class="modal-empty" id="modal-empty" style="display:none">
+          <p class="empty-icon">🌱</p>
+          <p class="empty-msg">まだ実例がありません。<br>あなたが最初の投稿者に！</p>
+        </div>
+        <button class="btn-post-modal" id="btn-post-modal">＋ この組み合わせで投稿する</button>
       </div>
-      <h2 class="modal-title" id="modal-title"></h2>
-      <div class="modal-cards" id="modal-cards"></div>
-      <div class="modal-empty" id="modal-empty" style="display:none">
-        <p class="empty-icon">🌱</p>
-        <p class="empty-msg">まだ実例がありません。<br>あなたが最初の投稿者に！</p>
+
+      <!-- ===== VIEW 2: 個別詳細 ===== -->
+      <div class="modal-view" id="modal-view-detail" style="display:none">
+        <button class="detail-back" id="detail-back">← 一覧に戻る</button>
+        <div class="detail-media-wrap" id="detail-media-wrap"></div>
+        <div class="detail-badges" id="detail-badges"></div>
+        <h3 class="detail-title" id="detail-title"></h3>
+        <p class="detail-body" id="detail-body"></p>
+        <div class="detail-saving-row" id="detail-saving-row"></div>
+        <p class="detail-author" id="detail-author"></p>
+        <button class="btn-post-modal" id="btn-post-detail">＋ この組み合わせで投稿する</button>
       </div>
-      <button class="btn-post-modal" id="btn-post-modal">＋ この組み合わせで投稿する</button>
     </div>
   </div>
 
