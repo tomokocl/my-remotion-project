@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI節約術 実例マトリックス</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-logo">
+        <span class="logo-icon">💡</span>
+        <div>
+          <p class="logo-sub">みんなの実例集</p>
+          <h1 class="logo-title">AI節約術マトリックス</h1>
+        </div>
+      </div>
+      <div class="header-stats">
+        <div class="stat-pill">
+          <span class="stat-num" id="total-count">0</span>
+          <span class="stat-label">件の実例</span>
+        </div>
+        <button class="btn-post-top" id="btn-post-top">＋ 実例を投稿する</button>
+      </div>
+    </div>
+    <div class="header-wave"></div>
+  </header>
+
+  <!-- HERO MESSAGE -->
+  <section class="hero">
+    <p class="hero-text">どのAIツールで、どんな節約ができた？<br>会員みんなの<strong>リアルな実例</strong>を集めています</p>
+    <p class="hero-sub">気になるマスをクリックして事例を見る・投稿する</p>
+  </section>
+
+  <!-- MATRIX -->
+  <main class="matrix-wrap">
+    <div class="matrix-scroll">
+      <table class="matrix" id="matrix">
+        <thead>
+          <tr id="matrix-header">
+            <th class="corner-cell">
+              <span class="corner-tool">AIツール</span>
+              <span class="corner-slash">/</span>
+              <span class="corner-genre">節約ジャンル</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody id="matrix-body"></tbody>
+      </table>
+    </div>
+    <p class="matrix-hint">↔ 横にスクロールできます</p>
+  </main>
+
+  <!-- LEGEND -->
+  <section class="legend">
+    <div class="legend-item">
+      <span class="legend-cell filled-demo"></span>
+      <span>実例あり（クリックで確認）</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-cell empty-demo"></span>
+      <span>まだ実例なし（クリックで投稿）</span>
+    </div>
+  </section>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal" id="modal">
+      <button class="modal-close" id="modal-close">✕</button>
+      <div class="modal-header">
+        <span class="modal-tool-badge" id="modal-tool-badge"></span>
+        <span class="modal-genre-badge" id="modal-genre-badge"></span>
+      </div>
+      <h2 class="modal-title" id="modal-title"></h2>
+      <div class="modal-cards" id="modal-cards"></div>
+      <div class="modal-empty" id="modal-empty" style="display:none">
+        <p class="empty-icon">🌱</p>
+        <p class="empty-msg">まだ実例がありません。<br>あなたが最初の投稿者に！</p>
+      </div>
+      <button class="btn-post-modal" id="btn-post-modal">＋ この組み合わせで投稿する</button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>AI節約術コース 会員限定コンテンツ</p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
