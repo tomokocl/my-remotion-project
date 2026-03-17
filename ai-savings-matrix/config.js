@@ -2,11 +2,11 @@
 // Googleフォーム連携時はここのURLとフィールドIDを書き換えるだけでOK
 
 const CONFIG = {
-  // スプレッドシート公開CSV URL（本番時に差し替え）
-  CSV_URL: null, // "https://docs.google.com/spreadsheets/d/XXXXXX/export?format=csv&gid=0"
+  // スプレッドシート公開CSV URL
+  CSV_URL: "https://docs.google.com/spreadsheets/d/1JMbIStrvY4UpgRGK-MyhZ7oWvWM1rKSO6vtQiFbEW4E/export?format=csv&gid=0",
 
-  // GoogleフォームのベースURL（本番時に差し替え）
-  FORM_BASE_URL: null, // "https://docs.google.com/forms/d/e/XXXXXX/viewform"
+  // GoogleフォームのベースURL
+  FORM_BASE_URL: "https://docs.google.com/forms/d/19Zi3okQfsfAj_wNDtqgC5Rzh42eQBBXaVhYB_-XDkIQ/viewform",
 
   // フォームのフィールドID（本番時に差し替え）
   FORM_FIELDS: {
