@@ -5,13 +5,13 @@ const CONFIG = {
   // スプレッドシート公開CSV URL（本番時に差し替え）
   CSV_URL: null, // "https://docs.google.com/spreadsheets/d/XXXXXX/export?format=csv&gid=0"
 
-  // GoogleフォームのベースURL（本番時に差し替え）
-  FORM_BASE_URL: null, // "https://docs.google.com/forms/d/e/XXXXXX/viewform"
+  // GoogleフォームのベースURL
+  FORM_BASE_URL: "https://docs.google.com/forms/d/e/1FAIpQLSdGwLYspsO4hZfO5kjZUt0VfnS1xrokFFuEas01p6U88q5jpg/viewform",
 
-  // フォームのフィールドID（本番時に差し替え）
+  // フォームのフィールドID
   FORM_FIELDS: {
-    tool:  "entry.000000001",
-    genre: "entry.000000002",
+    tool:  "entry.1501532013",
+    genre: "entry.114612757",
   },
 
   // AIツール一覧
