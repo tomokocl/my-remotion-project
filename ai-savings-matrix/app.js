@@ -83,7 +83,10 @@ async function loadData() {
       const url = CONFIG.CSV_URL + "&t=" + Date.now(); // キャッシュバスター
       const res = await fetch(url);
       const csv = await res.text();
+      console.log("=== CSV取得成功 ===");
+      console.log("先頭200文字:", csv.slice(0, 200));
       posts = parseCSV(csv);
+      console.log("パース結果:", posts);
     } catch (e) {
       console.warn("CSV読み込み失敗。ダミーデータを使用します。", e);
       posts = DUMMY_POSTS;
