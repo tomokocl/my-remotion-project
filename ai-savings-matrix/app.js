@@ -240,31 +240,40 @@ function openDetail(tool, genre, post) {
 function renderMedia(url) {
   if (!url) return "";
 
-  // Googleドライブ: /file/d/ID/view → /file/d/ID/preview（動画）
-  const driveFileMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
-  if (driveFileMatch) {
-    const id = driveFileMatch[1];
-    return `<iframe src="https://drive.google.com/file/d/${id}/preview" allowfullscreen></iframe>`;
+  // GoogleドライブのファイルIDを抽出（複数形式に対応）
+  const driveId = extractDriveId(url);
+  if (driveId) {
+    // preview iframeで統一（画像・動画どちらも表示できる）
+    return `<iframe src="https://drive.google.com/file/d/${driveId}/preview" allowfullscreen></iframe>`;
   }
 
-  // Googleドライブ: open?id=ID（画像等）
-  const driveOpenMatch = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
-  if (driveOpenMatch) {
-    const id = driveOpenMatch[1];
-    return `<img src="https://drive.google.com/uc?export=view&id=${id}" alt="投稿画像" loading="lazy">`;
-  }
-
-  // 画像ファイル拡張子
+  // 画像ファイル拡張子（直接URL）
   if (/\.(jpe?g|png|gif|webp)(\?|$)/i.test(url)) {
     return `<img src="${escHtml(url)}" alt="投稿画像" loading="lazy">`;
   }
 
-  // 動画ファイル拡張子
+  // 動画ファイル拡張子（直接URL）
   if (/\.(mp4|mov|webm)(\?|$)/i.test(url)) {
     return `<video src="${escHtml(url)}" controls playsinline></video>`;
   }
 
   return "";
+}
+
+function extractDriveId(url) {
+  // 形式1: /file/d/ID/view または /file/d/ID/preview
+  const m1 = url.match(/drive\.google\.com\/file\/d\/([^/?]+)/);
+  if (m1) return m1[1];
+
+  // 形式2: open?id=ID
+  const m2 = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+  if (m2) return m2[1];
+
+  // 形式3: uc?id=ID または uc?export=view&id=ID
+  const m3 = url.match(/drive\.google\.com\/uc\?.*id=([^&]+)/);
+  if (m3) return m3[1];
+
+  return null;
 }
 
 function showView(name) {

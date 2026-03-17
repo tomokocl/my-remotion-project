@@ -14,6 +14,17 @@ const CONFIG = {
     genre: "entry.000000002",
   },
 
+  // スプレッドシートの列名（CSVヘッダーと一致させる）
+  CSV_COLUMNS: {
+    tool:   "tool",    // AIツール列
+    genre:  "genre",   // ジャンル列
+    title:  "title",   // タイトル列
+    detail: "detail",  // 説明列
+    saving: "saving",  // 節約額列
+    author: "author",  // 投稿者列
+    media:  "media",   // ファイルURL列（Googleドライブ）
+  },
+
   // AIツール一覧
   TOOLS: [
     { id: "chatgpt",    label: "ChatGPT",    icon: "🟢", color: "#10a37f" },
