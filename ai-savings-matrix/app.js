@@ -95,14 +95,47 @@ async function loadData() {
 
 function parseCSV(csv) {
   const lines = csv.trim().split("\n");
-  const headers = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, ""));
+  const rawHeaders = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, ""));
+
+  // CSVヘッダーとconfig.CSV_COLUMNSを部分一致で対応付け
+  const colIndex = {}; // internalKey → 列インデックス
+  rawHeaders.forEach((h, i) => {
+    for (const [key, prefix] of Object.entries(CONFIG.CSV_COLUMNS)) {
+      if (h.includes(prefix)) colIndex[key] = i;
+    }
+  });
+
+  const getVal = (values, key) =>
+    colIndex[key] !== undefined
+      ? (values[colIndex[key]] || "").replace(/^"|"$/g, "").trim()
+      : "";
+
   return lines.slice(1).map(line => {
-    const cols = line.match(/(".*?"|[^,]+)/g) || [];
-    const obj = {};
-    headers.forEach((h, i) => {
-      obj[h] = (cols[i] || "").replace(/^"|"$/g, "").trim();
-    });
-    return obj;
+    const values = line.match(/(".*?"|[^,\r\n]+)/g) || [];
+
+    const rawTool  = getVal(values, "tool");
+    const rawGenre = getVal(values, "genre");
+
+    // ツール名（ラベルorID）→ id に正規化
+    const toolObj = CONFIG.TOOLS.find(t =>
+      t.label.toLowerCase() === rawTool.toLowerCase() ||
+      t.id    .toLowerCase() === rawTool.toLowerCase()
+    );
+
+    // ジャンル名（ラベルorID）→ id に正規化
+    const genreObj = CONFIG.GENRES.find(g =>
+      g.label === rawGenre || g.id === rawGenre
+    );
+
+    return {
+      tool:   toolObj  ? toolObj.id   : rawTool.toLowerCase(),
+      genre:  genreObj ? genreObj.id  : rawGenre,
+      title:  getVal(values, "title"),
+      detail: getVal(values, "detail"),
+      saving: getVal(values, "saving"),
+      author: getVal(values, "author"),
+      media:  getVal(values, "media"),
+    };
   }).filter(p => p.tool && p.genre);
 }
 

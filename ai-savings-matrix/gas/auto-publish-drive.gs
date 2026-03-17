@@ -13,7 +13,7 @@
  * 例: A列=1, B列=2, G列=7
  */
 
-const MEDIA_COLUMN_INDEX = 7; // ← ファイルアップロード列の番号に合わせて変更
+const MEDIA_COLUMN_INDEX = 8; // H列（実例の画像や動画）
 
 function onFormSubmit(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();

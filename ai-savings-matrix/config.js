@@ -14,15 +14,16 @@ const CONFIG = {
     genre: "entry.000000002",
   },
 
-  // スプレッドシートの列名（CSVヘッダーと一致させる）
+  // スプレッドシートのヘッダー名の先頭一致で列を特定する
+  // （フォームの質問文の最初の数文字を書けばOK）
   CSV_COLUMNS: {
-    tool:   "tool",    // AIツール列
-    genre:  "genre",   // ジャンル列
-    title:  "title",   // タイトル列
-    detail: "detail",  // 説明列
-    saving: "saving",  // 節約額列
-    author: "author",  // 投稿者列
-    media:  "media",   // ファイルURL列（Googleドライブ）
+    tool:   "使ったAIツール",
+    genre:  "節約ジャンル",
+    title:  "タイトル",
+    detail: "節約術の詳細",
+    saving: "削減額",
+    author: "投稿者名",
+    media:  "実例の画像や動画",
   },
 
   // AIツール一覧
