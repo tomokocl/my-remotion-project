@@ -393,7 +393,7 @@ function openDetail(tool, genre, post) {
 
   // シェアボタン
   const shareEl = document.getElementById("detail-share-row");
-  const shareText = `【AI節約術】${post.title}\n${post.saving ? post.saving + '削減 ' : ''}#AI節約術マトリックス`;
+  const shareText = `【AI節約術】${post.title}\n${post.saving ? post.saving + '削減 ' : ''}#SHIFTAI #AI節約術`;
   const shareUrl  = location.href;
   const tweetUrl  = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
   shareEl.innerHTML = `
