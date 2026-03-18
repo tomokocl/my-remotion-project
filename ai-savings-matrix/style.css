@@ -63,21 +63,14 @@ body {
 /* ===== HERO IMAGE ===== */
 .hero-section {
   position: relative;
-  overflow: hidden;
-}
-
-.hero-img {
-  width: 100%;
-  display: block;
-  animation: hero-pop 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-@keyframes hero-pop {
-  0%   { opacity: 0; transform: scale(0.93) translateY(24px); }
-  55%  { opacity: 1; transform: scale(1.025) translateY(-7px); }
-  75%  { transform: scale(0.994) translateY(3px); }
-  90%  { transform: scale(1.004) translateY(-1px); }
-  100% { transform: scale(1) translateY(0); }
+  min-height: 75vw;   /* 4:3 ratio */
+  max-height: 92vh;
+  background-image: url('header.png');
+  background-size: cover;
+  background-position: center top;
+  background-attachment: fixed;
+  display: flex;
+  align-items: flex-end;
 }
 
 .hero-overlay {
@@ -85,20 +78,24 @@ body {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    transparent 35%,
-    rgba(15,15,26,0.48) 68%,
-    rgba(15,15,26,0.86) 100%
+    transparent 30%,
+    rgba(15,15,26,0.45) 65%,
+    rgba(15,15,26,0.88) 100%
   );
   pointer-events: none;
 }
 
 .hero-content {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  position: relative;
   z-index: 1;
   padding: 40px 40px 64px;
   max-width: 640px;
+  animation: content-rise 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+
+@keyframes content-rise {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .hero-wave {
@@ -230,6 +227,11 @@ body {
 }
 
 @media (max-width: 600px) {
+  .hero-section  {
+    /* iOS Safari doesn't support background-attachment: fixed well */
+    background-attachment: scroll;
+    min-height: 75vw;
+  }
   .hero-content  { padding: 20px 20px 48px; }
   .hero-text     { font-size: 1.15rem; }
 }
@@ -237,6 +239,9 @@ body {
 /* ===== HOW TO USE ===== */
 .howto {
   padding: 0 24px 48px;
+  position: relative;
+  background: var(--bg);
+  z-index: 1;
 }
 
 .howto-inner {
@@ -324,6 +329,9 @@ body {
   max-width: 1100px;
   margin: 0 auto;
   padding: 8px 24px 24px;
+  position: relative;
+  background: var(--bg);
+  z-index: 1;
 }
 
 .matrix-scroll {
@@ -545,6 +553,9 @@ body {
   gap: 24px;
   padding: 0 24px 32px;
   flex-wrap: wrap;
+  position: relative;
+  background: var(--bg);
+  z-index: 1;
 }
 
 .legend-item {
