@@ -53,22 +53,23 @@ body {
   overflow: hidden;
 }
 
-/* ヘッダー背景画像（画像を用意したら --header-img に指定） */
+/* ヘッダー背景画像（明るい写真用） */
 .site-header.has-bg-img {
-  background-image: var(--header-img);
+  background-image: url('assets/header.jpg');
   background-size: cover;
-  background-position: center top;
+  background-position: center 30%;
 }
-/* 画像の上に暗いオーバーレイを重ねてテキストを読みやすく */
+/* 左→右 白フェードで左側のテキストを読みやすく、右側は写真を見せる */
 .site-header.has-bg-img::before {
   content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    135deg,
-    rgba(15,15,26,0.82) 0%,
-    rgba(26,13,58,0.72) 55%,
-    rgba(45,20,100,0.65) 100%
+    to right,
+    rgba(255,255,255,0.97) 0%,
+    rgba(255,255,255,0.88) 30%,
+    rgba(255,255,255,0.55) 55%,
+    transparent 75%
   );
   z-index: 0;
 }
@@ -77,6 +78,24 @@ body {
   position: relative;
   z-index: 1;
 }
+
+/* 明るい背景用にテキスト色を反転 */
+.site-header.has-bg-img .logo-sub        { color: var(--text-soft); }
+.site-header.has-bg-img .logo-title      { color: var(--text); }
+.site-header.has-bg-img .logo-icon       { filter: none; }
+.site-header.has-bg-img .stat-pill       {
+  background: rgba(255,255,255,0.85);
+  border-color: var(--border);
+  color: var(--text);
+}
+.site-header.has-bg-img .character-widget {
+  background: rgba(255,255,255,0.85);
+  border-color: var(--border);
+}
+.site-header.has-bg-img .char-name       { color: var(--text); }
+.site-header.has-bg-img .char-lv         { color: var(--text-soft); }
+.site-header.has-bg-img .char-bar-wrap   { background: var(--border); }
+.site-header.has-bg-img .header-wave     { background: var(--bg); }
 
 /* pink → purple accent line at top */
 .site-header::after {
