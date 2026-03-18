@@ -275,7 +275,7 @@ function parseCSV(csv) {
       saving:    getVal(values, "saving"),
       author:    getVal(values, "author"),
       media:     getVal(values, "media"),
-      x_account: getVal(values, "x_account"),
+      x_account: normalizeXAccount(getVal(values, "x_account")),
     };
   }).filter(p => p.tool && p.genre);
 }
@@ -618,6 +618,17 @@ function handlePostButton() {
   if (!currentCell) return;
   const url = buildFormUrl(currentCell.tool, currentCell.genre);
   if (url) window.open(url, "_blank");
+}
+
+// X アカウント入力を正規化（URL・@付き・ユーザー名のどれでも受け付ける）
+function normalizeXAccount(raw) {
+  if (!raw) return "";
+  // URL形式: https://x.com/foo または https://twitter.com/foo
+  const m = raw.match(/(?:x\.com|twitter\.com)\/([A-Za-z0-9_]+)/);
+  if (m) return m[1];
+  // @付き
+  if (raw.startsWith("@")) return raw.slice(1);
+  return raw;
 }
 
 // ===== ユーティリティ =====
