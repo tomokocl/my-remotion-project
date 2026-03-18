@@ -14,7 +14,7 @@
   <header class="site-header">
     <div class="header-inner">
       <div class="header-logo">
-        <span class="logo-icon">💡</span>
+        <span class="logo-icon"></span>
         <div>
           <p class="logo-sub">みんなの実例集</p>
           <h1 class="logo-title">AI節約術マトリックス</h1>
@@ -32,6 +32,7 @@
 
   <!-- HERO IMAGE -->
   <section class="hero-section">
+    <img src="header.png" class="hero-img" alt="" />
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <p class="hero-text">どのAIツールで、どんな節約ができた？<br>会員みんなの<strong>リアルな実例</strong>を集めています</p>
@@ -53,21 +54,18 @@
       <div class="howto-steps">
         <div class="howto-step">
           <span class="howto-step-num">01</span>
-          <div class="howto-step-icon">🗺️</div>
           <p class="howto-step-title">マスを選ぶ</p>
           <p class="howto-step-desc">気になるAIツール×節約ジャンルのマスをクリック</p>
         </div>
         <div class="howto-arrow">›</div>
         <div class="howto-step">
           <span class="howto-step-num">02</span>
-          <div class="howto-step-icon">💬</div>
           <p class="howto-step-title">実例を見る・投稿する</p>
           <p class="howto-step-desc">会員の体験を読んで参考にしたり、自分の実例をシェア</p>
         </div>
         <div class="howto-arrow">›</div>
         <div class="howto-step">
           <span class="howto-step-num">03</span>
-          <div class="howto-step-icon">🎮</div>
           <p class="howto-step-title">キャラが育つ</p>
           <p class="howto-step-desc">投稿・いいねでポイントが貯まり、キャラクターが進化</p>
         </div>
@@ -120,7 +118,6 @@
         <h2 class="modal-title" id="modal-title"></h2>
         <div class="modal-cards" id="modal-cards"></div>
         <div class="modal-empty" id="modal-empty" style="display:none">
-          <p class="empty-icon">🌱</p>
           <p class="empty-msg">まだ実例がありません。<br>あなたが最初の投稿者に！</p>
         </div>
         <button class="btn-post-modal" id="btn-post-modal">＋ この組み合わせで投稿する</button>
@@ -147,7 +144,7 @@
     <div class="char-card">
       <button class="char-card-close" id="char-card-close">✕</button>
       <div class="char-card-holo">
-        <div class="cc-emoji-wrap" id="cc-emoji">🥚</div>
+        <div class="cc-emoji-wrap" id="cc-emoji"></div>
         <div class="cc-name-wrap">
           <span class="cc-name" id="cc-name">たまご</span>
           <span class="cc-level-badge" id="cc-level">Lv.1</span>
@@ -161,8 +158,8 @@
         <div class="cc-bar-track"><div class="cc-bar" id="cc-bar"></div></div>
         <div class="cc-stats">
           <div class="cc-stat"><span class="cc-stat-num" id="cc-posts">0</span><span class="cc-stat-label">投稿</span></div>
-          <div class="cc-stat"><span class="cc-stat-num" id="cc-likes">0</span><span class="cc-stat-label">❤️ いいね</span></div>
-          <div class="cc-stat"><span class="cc-stat-num" id="cc-shares">0</span><span class="cc-stat-label">📤 シェア</span></div>
+          <div class="cc-stat"><span class="cc-stat-num" id="cc-likes">0</span><span class="cc-stat-label">いいね</span></div>
+          <div class="cc-stat"><span class="cc-stat-num" id="cc-shares">0</span><span class="cc-stat-label">シェア</span></div>
         </div>
       </div>
     </div>
@@ -171,11 +168,11 @@
   <!-- 進化ポップアップ -->
   <div class="levelup-overlay" id="levelup-overlay">
     <div class="levelup-box">
-      <p class="lu-title">🎉 進化！</p>
+      <p class="lu-title">進化！</p>
       <div class="lu-evo">
-        <span class="lu-emoji" id="lu-old-emoji">🥚</span>
+        <span class="lu-emoji" id="lu-old-emoji"></span>
         <span class="lu-arrow">→</span>
-        <span class="lu-emoji lu-new" id="lu-new-emoji">🐣</span>
+        <span class="lu-emoji lu-new" id="lu-new-emoji"></span>
       </div>
       <p class="lu-name" id="lu-new-name">ひよこ</p>
       <p class="lu-level" id="lu-new-level">Lv.2</p>

@@ -63,13 +63,21 @@ body {
 /* ===== HERO IMAGE ===== */
 .hero-section {
   position: relative;
-  min-height: 480px;
-  background-image: url('header.png');
-  background-size: cover;
-  background-position: center 20%;
-  display: flex;
-  align-items: flex-end;
   overflow: hidden;
+}
+
+.hero-img {
+  width: 100%;
+  display: block;
+  animation: hero-pop 0.85s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes hero-pop {
+  0%   { opacity: 0; transform: scale(0.93) translateY(24px); }
+  55%  { opacity: 1; transform: scale(1.025) translateY(-7px); }
+  75%  { transform: scale(0.994) translateY(3px); }
+  90%  { transform: scale(1.004) translateY(-1px); }
+  100% { transform: scale(1) translateY(0); }
 }
 
 .hero-overlay {
@@ -77,17 +85,19 @@ body {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(15,15,26,0.15) 0%,
-    rgba(15,15,26,0.05) 35%,
-    rgba(15,15,26,0.55) 75%,
-    rgba(15,15,26,0.82) 100%
+    transparent 35%,
+    rgba(15,15,26,0.48) 68%,
+    rgba(15,15,26,0.86) 100%
   );
+  pointer-events: none;
 }
 
 .hero-content {
-  position: relative;
+  position: absolute;
+  bottom: 0;
+  left: 0;
   z-index: 1;
-  padding: 40px 40px 60px;
+  padding: 40px 40px 64px;
   max-width: 640px;
 }
 
@@ -96,7 +106,7 @@ body {
   bottom: -1px;
   left: 0;
   width: 100%;
-  height: 48px;
+  height: 52px;
   background: var(--bg);
   clip-path: ellipse(55% 100% at 50% 100%);
   z-index: 2;
@@ -120,8 +130,12 @@ body {
 }
 
 .logo-icon {
-  font-size: 2.2rem;
-  filter: drop-shadow(0 2px 10px rgba(255,45,123,0.55));
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--pink), var(--purple));
+  flex-shrink: 0;
+  box-shadow: 0 2px 12px rgba(255,45,123,0.45);
 }
 
 .logo-sub {
@@ -216,8 +230,7 @@ body {
 }
 
 @media (max-width: 600px) {
-  .hero-section  { min-height: 360px; }
-  .hero-content  { padding: 24px 24px 48px; }
+  .hero-content  { padding: 20px 20px 48px; }
   .hero-text     { font-size: 1.15rem; }
 }
 
@@ -273,11 +286,6 @@ body {
   letter-spacing: 0.05em;
 }
 
-.howto-step-icon {
-  font-size: 1.8rem;
-  margin-bottom: 10px;
-  line-height: 1;
-}
 
 .howto-step-title {
   font-size: 0.88rem;
@@ -561,7 +569,7 @@ body {
   border: 1px solid #6ee7b7;
 }
 
-.filled-demo::after { content: '✅'; font-size: 0.9rem; }
+.filled-demo::after { content: '✓'; font-size: 1rem; color: var(--green-dark); font-weight: 900; }
 
 .empty-demo {
   background: #fafafa;
@@ -965,7 +973,13 @@ body {
 }
 
 .character-widget:hover { background: rgba(255,255,255,0.18); }
-.char-emoji  { font-size: 1.4rem; line-height: 1; }
+.char-emoji  {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink), var(--purple));
+  flex-shrink: 0;
+  font-size: 0;
+}
 .char-info   { display: flex; flex-direction: column; gap: 3px; }
 .char-name   { font-size: 0.72rem; color: #fff; font-weight: 700; line-height: 1; }
 .char-bar-wrap { width: 56px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; }
@@ -1024,7 +1038,14 @@ body {
   100% { transform: translateX(220%); }
 }
 
-.cc-emoji-wrap { font-size: 4.2rem; line-height: 1; margin-bottom: 10px; }
+.cc-emoji-wrap {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink), var(--purple-mid), var(--purple));
+  margin: 0 auto 10px;
+  font-size: 0;
+  box-shadow: 0 0 24px rgba(255,45,123,0.4), 0 0 48px rgba(124,58,237,0.2);
+}
 .cc-name-wrap  { display: flex; align-items: center; justify-content: center; gap: 8px; }
 .cc-name       { font-size: 1.25rem; font-weight: 900; color: #fff; }
 .cc-level-badge {
@@ -1091,7 +1112,14 @@ body {
 
 .lu-title { font-size: 1.7rem; font-weight: 900; color: var(--pink); margin-bottom: 20px; }
 .lu-evo   { display: flex; align-items: center; gap: 14px; justify-content: center; margin-bottom: 14px; }
-.lu-emoji { font-size: 3.2rem; }
+.lu-emoji {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink), var(--purple));
+  font-size: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
 .lu-new   { animation: lu-pulse 0.55s 0.35s both; }
 
 @keyframes lu-pulse {
