@@ -16,8 +16,9 @@
 const LIKES_SHEET = "Likes";
 
 function doGet(e) {
-  const action = (e.parameter.action || "counts");
-  const key    = (e.parameter.key    || "");
+  const params = (e && e.parameter) ? e.parameter : {};
+  const action = (params.action || "counts");
+  const key    = (params.key    || "");
 
   const sheet = getOrCreateLikesSheet();
   let result;
