@@ -738,6 +738,48 @@ body {
   margin-left: 2px;
 }
 
+/* ===== SHARE ===== */
+.detail-share-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.btn-share-copy,
+.btn-share-x {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 0;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.15s;
+  font-family: inherit;
+}
+
+.btn-share-copy {
+  border: 2px solid var(--border);
+  background: #fff;
+  color: var(--text-main);
+}
+
+.btn-share-x {
+  border: none;
+  background: #000;
+  color: #fff;
+}
+
+.btn-share-copy:hover,
+.btn-share-x:hover {
+  opacity: 0.8;
+}
+
 /* ===== FOOTER ===== */
 .site-footer {
   text-align: center;

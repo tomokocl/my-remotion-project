@@ -391,8 +391,21 @@ function openDetail(tool, genre, post) {
     await sendLikeToGAS(postKey, action);
   });
 
-  // 投稿ボタン（このセルで投稿）
-  document.getElementById("btn-post-detail").onclick = handlePostButton;
+  // シェアボタン
+  const shareEl = document.getElementById("detail-share-row");
+  const shareText = `【AI節約術】${post.title}\n${post.saving ? post.saving + '削減 ' : ''}#AI節約術マトリックス`;
+  const shareUrl  = location.href;
+  const tweetUrl  = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+  shareEl.innerHTML = `
+    <button class="btn-share-copy" id="btn-share-copy">🔗 URLをコピー</button>
+    <a class="btn-share-x" href="${escHtml(tweetUrl)}" target="_blank" rel="noopener">𝕏 でシェア</a>
+  `;
+  document.getElementById("btn-share-copy").addEventListener("click", function () {
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      this.textContent = "✅ コピーしました！";
+      setTimeout(() => { this.textContent = "🔗 URLをコピー"; }, 2000);
+    });
+  });
 
   showView("detail");
   document.getElementById("modal").scrollTop = 0;
