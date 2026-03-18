@@ -284,9 +284,10 @@ function openModal(tool, genre, cellPosts) {
   document.getElementById("modal-overlay").classList.add("open");
 }
 
-// ===== いいね =====
+// ===== いいね / シェア =====
 // countCache: { [postKey]: number } ページ読み込み時にGASから取得してキャッシュ
 let likeCountCache = {};
+let shareCountCache = {};
 
 function getPostKey(post) {
   return `${post.tool}__${post.genre}__${post.title}`.slice(0, 120);
@@ -307,14 +308,33 @@ function setLikedLocal(key, val) {
 }
 
 // GAS から全カウントを取得（ページロード時に1回呼ぶ）
+// share__ プレフィックスのキーはシェア数、それ以外はいいね数
 async function loadLikeCounts() {
   if (!CONFIG.GAS_LIKES_URL) return;
   try {
     const res = await fetch(CONFIG.GAS_LIKES_URL + "?action=counts");
-    likeCountCache = await res.json();
+    const all = await res.json();
+    likeCountCache = {};
+    shareCountCache = {};
+    for (const [k, v] of Object.entries(all)) {
+      if (k.startsWith("share__")) shareCountCache[k] = v;
+      else likeCountCache[k] = v;
+    }
   } catch (e) {
     console.warn("いいね数の取得失敗:", e);
   }
+}
+
+function getShareKey(post) {
+  return "share__" + getPostKey(post);
+}
+
+async function incrementShareCount(shareKey) {
+  if (!CONFIG.GAS_LIKES_URL) return;
+  shareCountCache[shareKey] = (shareCountCache[shareKey] || 0) + 1;
+  const countEl = document.getElementById("share-count-num");
+  if (countEl) countEl.textContent = shareCountCache[shareKey];
+  await sendLikeToGAS(shareKey, "like");
 }
 
 // GAS にいいね/取り消しを送信し、返ってきたカウントでキャッシュ更新
@@ -393,18 +413,25 @@ function openDetail(tool, genre, post) {
 
   // シェアボタン
   const shareEl = document.getElementById("detail-share-row");
+  const shareKey = getShareKey(post);
+  const shareCount = shareCountCache[shareKey] || 0;
   const shareText = `【AI節約術】${post.title}\n${post.saving ? post.saving + '削減 ' : ''}#SHIFTAI #AI節約術`;
   const shareUrl  = location.href;
   const tweetUrl  = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
   shareEl.innerHTML = `
     <button class="btn-share-copy" id="btn-share-copy">🔗 URLをコピー</button>
     <a class="btn-share-x" href="${escHtml(tweetUrl)}" target="_blank" rel="noopener">𝕏 でシェア</a>
+    ${CONFIG.GAS_LIKES_URL ? `<span class="share-count-badge">📤 <span id="share-count-num">${shareCount}</span>回シェア</span>` : ""}
   `;
-  document.getElementById("btn-share-copy").addEventListener("click", function () {
+  document.getElementById("btn-share-copy").addEventListener("click", async function () {
     navigator.clipboard.writeText(shareUrl).then(() => {
       this.textContent = "✅ コピーしました！";
       setTimeout(() => { this.textContent = "🔗 URLをコピー"; }, 2000);
     });
+    await incrementShareCount(shareKey);
+  });
+  shareEl.querySelector(".btn-share-x").addEventListener("click", async function () {
+    await incrementShareCount(shareKey);
   });
 
   showView("detail");
