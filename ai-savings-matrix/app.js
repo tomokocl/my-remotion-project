@@ -285,29 +285,61 @@ function openModal(tool, genre, cellPosts) {
 }
 
 // ===== いいね =====
+// countCache: { [postKey]: number } ページ読み込み時にGASから取得してキャッシュ
+let likeCountCache = {};
+
 function getPostKey(post) {
   return `${post.tool}__${post.genre}__${post.title}`.slice(0, 120);
 }
 
+// localStorage でこのブラウザがいいね済みか管理
 function isLiked(key) {
   try {
-    return JSON.parse(localStorage.getItem("ai-savings-likes") || "{}")[key] === true;
+    return JSON.parse(localStorage.getItem("ai-savings-liked-posts") || "{}")[key] === true;
   } catch { return false; }
 }
-
-function toggleLike(key) {
+function setLikedLocal(key, val) {
   try {
-    const store = JSON.parse(localStorage.getItem("ai-savings-likes") || "{}");
-    store[key] = !store[key];
-    localStorage.setItem("ai-savings-likes", JSON.stringify(store));
-    return store[key];
-  } catch { return false; }
+    const store = JSON.parse(localStorage.getItem("ai-savings-liked-posts") || "{}");
+    store[key] = val;
+    localStorage.setItem("ai-savings-liked-posts", JSON.stringify(store));
+  } catch {}
+}
+
+// GAS から全カウントを取得（ページロード時に1回呼ぶ）
+async function loadLikeCounts() {
+  if (!CONFIG.GAS_LIKES_URL) return;
+  try {
+    const res = await fetch(CONFIG.GAS_LIKES_URL + "?action=counts");
+    likeCountCache = await res.json();
+  } catch (e) {
+    console.warn("いいね数の取得失敗:", e);
+  }
+}
+
+// GAS にいいね/取り消しを送信し、返ってきたカウントでキャッシュ更新
+async function sendLikeToGAS(key, action) {
+  if (!CONFIG.GAS_LIKES_URL) return null;
+  try {
+    const url = `${CONFIG.GAS_LIKES_URL}?action=${action}&key=${encodeURIComponent(key)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (typeof data.count === "number") likeCountCache[key] = data.count;
+    return data.count;
+  } catch (e) {
+    console.warn("いいね送信失敗:", e);
+    return null;
+  }
 }
 
 function renderLikeButton(key) {
   const liked = isLiked(key);
-  return `<button class="btn-like${liked ? " liked" : ""}" data-like-key="${escHtml(key)}">
-    <span class="like-heart">${liked ? "❤️" : "🤍"}</span> 参考になった！
+  const count = likeCountCache[key] || 0;
+  const countHtml = CONFIG.GAS_LIKES_URL
+    ? `<span class="like-count">${count}</span>`
+    : "";
+  return `<button class="btn-like${liked ? " liked" : ""}">
+    <span class="like-heart">${liked ? "❤️" : "🤍"}</span> 参考になった！${countHtml}
   </button>`;
 }
 
@@ -341,10 +373,22 @@ function openDetail(tool, genre, post) {
   const postKey = getPostKey(post);
   const reactionEl = document.getElementById("detail-reaction-row");
   reactionEl.innerHTML = renderLikeButton(postKey);
-  reactionEl.querySelector(".btn-like").addEventListener("click", function () {
-    const nowLiked = toggleLike(postKey);
+  reactionEl.querySelector(".btn-like").addEventListener("click", async function () {
+    const nowLiked = !isLiked(postKey);
+    // 楽観的UI更新（即時反映）
+    setLikedLocal(postKey, nowLiked);
+    const action = nowLiked ? "like" : "unlike";
+    if (nowLiked) {
+      likeCountCache[postKey] = (likeCountCache[postKey] || 0) + 1;
+    } else {
+      likeCountCache[postKey] = Math.max(0, (likeCountCache[postKey] || 1) - 1);
+    }
     this.className = `btn-like${nowLiked ? " liked" : ""}`;
-    this.innerHTML = `<span class="like-heart">${nowLiked ? "❤️" : "🤍"}</span> 参考になった！`;
+    const countHtml = CONFIG.GAS_LIKES_URL
+      ? `<span class="like-count">${likeCountCache[postKey]}</span>` : "";
+    this.innerHTML = `<span class="like-heart">${nowLiked ? "❤️" : "🤍"}</span> 参考になった！${countHtml}`;
+    // GASに非同期送信（失敗してもUIはそのまま）
+    await sendLikeToGAS(postKey, action);
   });
 
   // 投稿ボタン（このセルで投稿）
@@ -454,4 +498,5 @@ document.getElementById("btn-post-top").addEventListener("click", () => {
 (async () => {
   await loadData();
   renderMatrix();
+  loadLikeCounts(); // いいね数をバックグラウンド取得（待たない）
 })();

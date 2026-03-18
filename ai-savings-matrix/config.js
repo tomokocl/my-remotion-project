@@ -5,6 +5,9 @@ const CONFIG = {
   // スプレッドシート公開CSV URL
   CSV_URL: "https://docs.google.com/spreadsheets/d/1JMbIStrvY4UpgRGK-MyhZ7oWvWM1rKSO6vtQiFbEW4E/gviz/tq?tqx=out:csv&gid=0",
 
+  // GAS いいね集計 Web App URL（gas_likes.js をデプロイ後に入力）
+  GAS_LIKES_URL: "",
+
   // GoogleフォームのベースURL
   FORM_BASE_URL: "https://docs.google.com/forms/d/e/1FAIpQLSdGwLYspsO4hZfO5kjZUt0VfnS1xrokFFuEas01p6U88q5jpg/viewform",
 

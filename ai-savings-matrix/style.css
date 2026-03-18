@@ -732,6 +732,12 @@ body {
   line-height: 1;
 }
 
+.btn-like .like-count {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-left: 2px;
+}
+
 /* ===== FOOTER ===== */
 .site-footer {
   text-align: center;
