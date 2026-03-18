@@ -25,8 +25,9 @@ const CONFIG = {
     title:  "タイトル",
     detail: "節約術の詳細",
     saving: "削減額",
-    author: "投稿者名",
-    media:  "実例の画像や動画",
+    author:    "投稿者名",
+    media:     "実例の画像や動画",
+    x_account: "Xアカウント",
   },
 
   // AIツール一覧

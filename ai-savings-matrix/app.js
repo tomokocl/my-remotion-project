@@ -268,13 +268,14 @@ function parseCSV(csv) {
     );
 
     return {
-      tool:   toolObj  ? toolObj.id   : rawTool.toLowerCase(),
-      genre:  genreObj ? genreObj.id  : rawGenre,
-      title:  getVal(values, "title"),
-      detail: getVal(values, "detail"),
-      saving: getVal(values, "saving"),
-      author: getVal(values, "author"),
-      media:  getVal(values, "media"),
+      tool:      toolObj  ? toolObj.id   : rawTool.toLowerCase(),
+      genre:     genreObj ? genreObj.id  : rawGenre,
+      title:     getVal(values, "title"),
+      detail:    getVal(values, "detail"),
+      saving:    getVal(values, "saving"),
+      author:    getVal(values, "author"),
+      media:     getVal(values, "media"),
+      x_account: getVal(values, "x_account"),
     };
   }).filter(p => p.tool && p.genre);
 }
@@ -365,6 +366,7 @@ function openModal(tool, genre, cellPosts) {
         <p class="post-card-detail">${escHtml(post.detail)}</p>
         ${post.saving ? `<span class="post-card-saving">💰 ${escHtml(post.saving)}</span>` : ""}
         ${post.author ? `<p class="post-card-detail" style="margin-top:6px;font-size:0.75rem;">— ${escHtml(post.author)}</p>` : ""}
+        ${post.x_account ? `<p class="post-card-detail" style="margin-top:2px;font-size:0.75rem;"><a href="https://x.com/${escHtml(post.x_account)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">𝕏 @${escHtml(post.x_account)}</a></p>` : ""}
       `;
       card.addEventListener("click", () => openDetail(tool, genre, post));
       cardsEl.appendChild(card);
@@ -484,6 +486,17 @@ function openDetail(tool, genre, post) {
   // 投稿者
   document.getElementById("detail-author").textContent =
     post.author ? `— ${post.author}` : "";
+
+  // X アカウント
+  const xEl = document.getElementById("detail-x-account");
+  if (xEl) {
+    if (post.x_account) {
+      xEl.innerHTML = `<a href="https://x.com/${escHtml(post.x_account)}" target="_blank" rel="noopener">𝕏 @${escHtml(post.x_account)}</a>`;
+      xEl.style.display = "";
+    } else {
+      xEl.style.display = "none";
+    }
+  }
 
   // メディア（画像 / 動画 / Googleドライブ）
   const mediaEl = document.getElementById("detail-media-wrap");

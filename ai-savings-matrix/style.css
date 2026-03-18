@@ -692,7 +692,19 @@ body {
 .detail-author {
   font-size: 0.78rem;
   color: var(--text-soft);
+  margin-bottom: 4px;
+}
+.detail-x-account {
+  font-size: 0.78rem;
   margin-bottom: 16px;
+}
+.detail-x-account a {
+  color: var(--text-soft);
+  text-decoration: none;
+}
+.detail-x-account a:hover {
+  color: var(--text);
+  text-decoration: underline;
 }
 
 /* ===== REACTION ===== */
