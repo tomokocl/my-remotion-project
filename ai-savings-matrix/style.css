@@ -50,15 +50,42 @@ body {
   background: linear-gradient(135deg, #0f0f1a 0%, #1a0d3a 55%, #2d1464 100%);
   position: relative;
   padding-bottom: 36px;
+  overflow: hidden;
+}
+
+/* ヘッダー背景画像（画像を用意したら --header-img に指定） */
+.site-header.has-bg-img {
+  background-image: var(--header-img);
+  background-size: cover;
+  background-position: center top;
+}
+/* 画像の上に暗いオーバーレイを重ねてテキストを読みやすく */
+.site-header.has-bg-img::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(15,15,26,0.82) 0%,
+    rgba(26,13,58,0.72) 55%,
+    rgba(45,20,100,0.65) 100%
+  );
+  z-index: 0;
+}
+.site-header.has-bg-img .header-inner,
+.site-header.has-bg-img .header-wave {
+  position: relative;
+  z-index: 1;
 }
 
 /* pink → purple accent line at top */
-.site-header::before {
+.site-header::after {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 3px;
   background: linear-gradient(90deg, var(--pink), var(--purple-mid), var(--purple));
+  z-index: 2;
 }
 
 .header-inner {
@@ -174,6 +201,96 @@ body {
   margin-top: 12px;
   font-size: 0.88rem;
   color: var(--text-soft);
+}
+
+/* ===== HOW TO USE ===== */
+.howto {
+  padding: 0 24px 48px;
+}
+
+.howto-inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.howto-purpose {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.howto-purpose-text {
+  font-size: 0.95rem;
+  color: var(--text-soft);
+  line-height: 1.8;
+}
+
+.howto-purpose-text strong {
+  color: var(--purple);
+  font-weight: 900;
+}
+
+.howto-steps {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.howto-step {
+  flex: 1;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 18px 20px;
+  text-align: center;
+  position: relative;
+}
+
+.howto-step-num {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: var(--pink);
+  letter-spacing: 0.05em;
+}
+
+.howto-step-icon {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+
+.howto-step-title {
+  font-size: 0.88rem;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.howto-step-desc {
+  font-size: 0.76rem;
+  color: var(--text-soft);
+  line-height: 1.6;
+}
+
+.howto-arrow {
+  font-size: 1.4rem;
+  color: var(--border);
+  flex-shrink: 0;
+  padding: 0 2px;
+  margin-top: -10px;
+}
+
+@media (max-width: 600px) {
+  .howto-steps {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .howto-arrow {
+    transform: rotate(90deg);
+    margin-top: 0;
+  }
 }
 
 /* ===== MATRIX WRAP ===== */
