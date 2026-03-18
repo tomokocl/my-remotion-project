@@ -383,7 +383,9 @@ let likeCountCache = {};
 let shareCountCache = {};
 
 function getPostKey(post) {
-  return `${post.tool}__${post.genre}__${post.title}`.slice(0, 120);
+  // タイトルだけだと同名投稿がキー衝突するため detail の先頭20字も混ぜる
+  const detailSnippet = (post.detail || "").slice(0, 20).replace(/\s+/g, "");
+  return `${post.tool}__${post.genre}__${post.title}__${detailSnippet}`.slice(0, 150);
 }
 
 // localStorage でこのブラウザがいいね済みか管理
