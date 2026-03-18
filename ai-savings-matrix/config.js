@@ -6,12 +6,12 @@ const CONFIG = {
   CSV_URL: "https://docs.google.com/spreadsheets/d/1JMbIStrvY4UpgRGK-MyhZ7oWvWM1rKSO6vtQiFbEW4E/gviz/tq?tqx=out:csv&gid=0",
 
   // GoogleフォームのベースURL
-  FORM_BASE_URL: "https://docs.google.com/forms/d/19Zi3okQfsfAj_wNDtqgC5Rzh42eQBBXaVhYB_-XDkIQ/viewform",
+  FORM_BASE_URL: "https://docs.google.com/forms/d/e/1FAIpQLSdGwLYspsO4hZfO5kjZUt0VfnS1xrokFFuEas01p6U88q5jpg/viewform",
 
   // フォームのフィールドID（本番時に差し替え）
   FORM_FIELDS: {
-    tool:  "entry.000000001",
-    genre: "entry.000000002",
+    tool:  "entry.1501532013",
+    genre: "entry.114612757",
   },
 
   // スプレッドシートのヘッダー名の先頭一致で列を特定する
