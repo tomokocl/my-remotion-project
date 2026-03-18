@@ -284,6 +284,33 @@ function openModal(tool, genre, cellPosts) {
   document.getElementById("modal-overlay").classList.add("open");
 }
 
+// ===== いいね =====
+function getPostKey(post) {
+  return `${post.tool}__${post.genre}__${post.title}`.slice(0, 120);
+}
+
+function isLiked(key) {
+  try {
+    return JSON.parse(localStorage.getItem("ai-savings-likes") || "{}")[key] === true;
+  } catch { return false; }
+}
+
+function toggleLike(key) {
+  try {
+    const store = JSON.parse(localStorage.getItem("ai-savings-likes") || "{}");
+    store[key] = !store[key];
+    localStorage.setItem("ai-savings-likes", JSON.stringify(store));
+    return store[key];
+  } catch { return false; }
+}
+
+function renderLikeButton(key) {
+  const liked = isLiked(key);
+  return `<button class="btn-like${liked ? " liked" : ""}" data-like-key="${escHtml(key)}">
+    <span class="like-heart">${liked ? "❤️" : "🤍"}</span> 参考になった！
+  </button>`;
+}
+
 function openDetail(tool, genre, post) {
   // バッジ
   const badgesEl = document.getElementById("detail-badges");
@@ -309,6 +336,16 @@ function openDetail(tool, genre, post) {
   // メディア（画像 / 動画 / Googleドライブ）
   const mediaEl = document.getElementById("detail-media-wrap");
   mediaEl.innerHTML = renderMedia(post.media || "");
+
+  // いいねボタン
+  const postKey = getPostKey(post);
+  const reactionEl = document.getElementById("detail-reaction-row");
+  reactionEl.innerHTML = renderLikeButton(postKey);
+  reactionEl.querySelector(".btn-like").addEventListener("click", function () {
+    const nowLiked = toggleLike(postKey);
+    this.className = `btn-like${nowLiked ? " liked" : ""}`;
+    this.innerHTML = `<span class="like-heart">${nowLiked ? "❤️" : "🤍"}</span> 参考になった！`;
+  });
 
   // 投稿ボタン（このセルで投稿）
   document.getElementById("btn-post-detail").onclick = handlePostButton;
