@@ -3,7 +3,7 @@
 
 const CONFIG = {
   // スプレッドシート公開CSV URL
-  CSV_URL: "https://docs.google.com/spreadsheets/d/1JMbIStrvY4UpgRGK-MyhZ7oWvWM1rKSO6vtQiFbEW4E/export?format=csv&gid=0",
+  CSV_URL: "https://docs.google.com/spreadsheets/d/1JMbIStrvY4UpgRGK-MyhZ7oWvWM1rKSO6vtQiFbEW4E/gviz/tq?tqx=out:csv&gid=0",
 
   // GoogleフォームのベースURL
   FORM_BASE_URL: "https://docs.google.com/forms/d/19Zi3okQfsfAj_wNDtqgC5Rzh42eQBBXaVhYB_-XDkIQ/viewform",

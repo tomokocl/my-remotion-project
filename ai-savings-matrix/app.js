@@ -96,9 +96,53 @@ async function loadData() {
   }
 }
 
+// RFC 4180準拠のCSVパーサー（ダブルクォート・改行対応）
+function splitCSVRows(csv) {
+  const rows = [];
+  let cur = "";
+  let inQuote = false;
+  for (let i = 0; i < csv.length; i++) {
+    const ch = csv[i];
+    if (inQuote) {
+      if (ch === '"' && csv[i + 1] === '"') { cur += '"'; i++; }
+      else if (ch === '"') { inQuote = false; }
+      else { cur += ch; }
+    } else {
+      if (ch === '"') { inQuote = true; }
+      else if (ch === '\n' || (ch === '\r' && csv[i + 1] === '\n')) {
+        rows.push(cur);
+        cur = "";
+        if (ch === '\r') i++;
+      } else { cur += ch; }
+    }
+  }
+  if (cur) rows.push(cur);
+  return rows;
+}
+
+function splitCSVFields(line) {
+  const fields = [];
+  let cur = "";
+  let inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuote) {
+      if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+      else if (ch === '"') { inQuote = false; }
+      else { cur += ch; }
+    } else {
+      if (ch === '"') { inQuote = true; }
+      else if (ch === ',') { fields.push(cur.trim()); cur = ""; }
+      else { cur += ch; }
+    }
+  }
+  fields.push(cur.trim());
+  return fields;
+}
+
 function parseCSV(csv) {
-  const lines = csv.trim().split("\n");
-  const rawHeaders = lines[0].split(",").map(h => h.trim().replace(/^"|"$/g, ""));
+  const lines = splitCSVRows(csv.trim());
+  const rawHeaders = splitCSVFields(lines[0]);
 
   // CSVヘッダーとconfig.CSV_COLUMNSを部分一致で対応付け
   const colIndex = {}; // internalKey → 列インデックス
@@ -110,11 +154,11 @@ function parseCSV(csv) {
 
   const getVal = (values, key) =>
     colIndex[key] !== undefined
-      ? (values[colIndex[key]] || "").replace(/^"|"$/g, "").trim()
+      ? (values[colIndex[key]] || "").trim()
       : "";
 
   return lines.slice(1).map(line => {
-    const values = line.match(/(".*?"|[^,\r\n]+)/g) || [];
+    const values = splitCSVFields(line);
 
     const rawTool  = getVal(values, "tool");
     const rawGenre = getVal(values, "genre");
