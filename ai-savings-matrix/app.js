@@ -72,6 +72,99 @@ const DUMMY_POSTS = [
   },
 ];
 
+// ===== キャラクター育成 =====
+const LEVELS = [
+  { level: 1, name: "たまご",      emoji: "🥚", minScore: 0    },
+  { level: 2, name: "ひよこ",      emoji: "🐣", minScore: 30   },
+  { level: 3, name: "こども",      emoji: "🐥", minScore: 100  },
+  { level: 4, name: "わかば",      emoji: "🌱", minScore: 300  },
+  { level: 5, name: "せいちょう",  emoji: "🌿", minScore: 700  },
+  { level: 6, name: "まんかい",    emoji: "🌳", minScore: 1500 },
+];
+
+function calcCharacterScore() {
+  const postScore  = posts.length * 10;
+  const likeScore  = Object.values(likeCountCache).reduce((a, b) => a + b, 0) * 5;
+  const shareScore = Object.values(shareCountCache).reduce((a, b) => a + b, 0) * 3;
+  return postScore + likeScore + shareScore;
+}
+
+function getCharacterData(score) {
+  let current = LEVELS[0], next = LEVELS[1];
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (score >= LEVELS[i].minScore) {
+      current = LEVELS[i];
+      next = LEVELS[i + 1] || null;
+      break;
+    }
+  }
+  const progress = next
+    ? Math.min(100, Math.round((score - current.minScore) / (next.minScore - current.minScore) * 100))
+    : 100;
+  return { current, next, score, progress };
+}
+
+function renderCharacterWidget() {
+  const el = document.getElementById("character-widget");
+  if (!el) return;
+  const score = calcCharacterScore();
+  const { current, progress } = getCharacterData(score);
+  el.innerHTML = `
+    <span class="char-emoji">${current.emoji}</span>
+    <div class="char-info">
+      <span class="char-name">${current.name}</span>
+      <div class="char-bar-wrap"><div class="char-bar" style="width:${progress}%"></div></div>
+    </div>
+    <span class="char-lv">Lv.${current.level}</span>
+  `;
+  el.onclick = openCharacterCard;
+  checkLevelUp(current.level);
+}
+
+function openCharacterCard() {
+  const score = calcCharacterScore();
+  const { current, next, progress } = getCharacterData(score);
+  const totalLikes  = Object.values(likeCountCache).reduce((a, b) => a + b, 0);
+  const totalShares = Object.values(shareCountCache).reduce((a, b) => a + b, 0);
+
+  document.getElementById("cc-emoji").textContent  = current.emoji;
+  document.getElementById("cc-name").textContent   = current.name;
+  document.getElementById("cc-level").textContent  = `Lv.${current.level}`;
+  document.getElementById("cc-score").textContent  = score;
+  document.getElementById("cc-bar").style.width    = progress + "%";
+  document.getElementById("cc-next").textContent   = next
+    ? `次の進化まで ${next.minScore - score}pt`
+    : "🎊 最終進化達成！";
+  document.getElementById("cc-posts").textContent  = posts.length;
+  document.getElementById("cc-likes").textContent  = totalLikes;
+  document.getElementById("cc-shares").textContent = totalShares;
+
+  document.getElementById("char-card-overlay").classList.add("open");
+}
+
+function checkLevelUp(currentLevel) {
+  const stored = localStorage.getItem("ai-savings-char-level");
+  if (stored !== null) {
+    const lastLevel = parseInt(stored, 10);
+    if (currentLevel > lastLevel) {
+      localStorage.setItem("ai-savings-char-level", currentLevel);
+      setTimeout(() => showLevelUpPopup(lastLevel, currentLevel), 400);
+      return;
+    }
+  }
+  localStorage.setItem("ai-savings-char-level", currentLevel);
+}
+
+function showLevelUpPopup(oldLevel, newLevel) {
+  const oldChar = LEVELS[oldLevel - 1];
+  const newChar = LEVELS[newLevel - 1];
+  document.getElementById("lu-old-emoji").textContent = oldChar.emoji;
+  document.getElementById("lu-new-emoji").textContent = newChar.emoji;
+  document.getElementById("lu-new-name").textContent  = newChar.name;
+  document.getElementById("lu-new-level").textContent = `Lv.${newChar.level}`;
+  document.getElementById("levelup-overlay").classList.add("open");
+}
+
 // ===== 状態管理 =====
 let posts = [];
 let currentCell = null; // { tool, genre } クリック中のセル
@@ -310,7 +403,10 @@ function setLikedLocal(key, val) {
 // GAS から全カウントを取得（ページロード時に1回呼ぶ）
 // share__ プレフィックスのキーはシェア数、それ以外はいいね数
 async function loadLikeCounts() {
-  if (!CONFIG.GAS_LIKES_URL) return;
+  if (!CONFIG.GAS_LIKES_URL) {
+    renderCharacterWidget();
+    return;
+  }
   try {
     const res = await fetch(CONFIG.GAS_LIKES_URL + "?action=counts");
     const all = await res.json();
@@ -323,6 +419,7 @@ async function loadLikeCounts() {
   } catch (e) {
     console.warn("いいね数の取得失敗:", e);
   }
+  renderCharacterWidget();
 }
 
 function getShareKey(post) {
@@ -334,6 +431,7 @@ async function incrementShareCount(shareKey) {
   shareCountCache[shareKey] = (shareCountCache[shareKey] || 0) + 1;
   const countEl = document.getElementById("share-count-num");
   if (countEl) countEl.textContent = shareCountCache[shareKey];
+  renderCharacterWidget();
   await sendLikeToGAS(shareKey, "like");
 }
 
@@ -407,6 +505,7 @@ function openDetail(tool, genre, post) {
     const countHtml = CONFIG.GAS_LIKES_URL
       ? `<span class="like-count">${likeCountCache[postKey]}</span>` : "";
     this.innerHTML = `<span class="like-heart">${nowLiked ? "❤️" : "🤍"}</span> 参考になった！${countHtml}`;
+    renderCharacterWidget();
     // GASに非同期送信（失敗してもUIはそのまま）
     await sendLikeToGAS(postKey, action);
   });
@@ -516,6 +615,16 @@ function escHtml(str) {
 }
 
 // ===== イベントバインド =====
+document.getElementById("char-card-overlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove("open");
+});
+document.getElementById("char-card-close").addEventListener("click", () => {
+  document.getElementById("char-card-overlay").classList.remove("open");
+});
+document.getElementById("levelup-close").addEventListener("click", () => {
+  document.getElementById("levelup-overlay").classList.remove("open");
+});
+
 document.getElementById("modal-close").addEventListener("click", closeModal);
 document.getElementById("modal-overlay").addEventListener("click", e => {
   if (e.target === e.currentTarget) closeModal();
@@ -538,5 +647,6 @@ document.getElementById("btn-post-top").addEventListener("click", () => {
 (async () => {
   await loadData();
   renderMatrix();
-  loadLikeCounts(); // いいね数をバックグラウンド取得（待たない）
+  renderCharacterWidget(); // 投稿数だけで即時表示
+  loadLikeCounts();         // いいね/シェア取得後に再描画
 })();

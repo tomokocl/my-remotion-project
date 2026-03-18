@@ -20,6 +20,7 @@
           <h1 class="logo-title">AI節約術マトリックス</h1>
         </div>
       </div>
+      <div class="character-widget" id="character-widget"></div>
       <div class="header-stats">
         <div class="stat-pill">
           <span class="stat-num" id="total-count">0</span>
@@ -100,6 +101,47 @@
         <div class="detail-reaction-row" id="detail-reaction-row"></div>
         <div class="detail-share-row" id="detail-share-row"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- キャラクターカード -->
+  <div class="char-card-overlay" id="char-card-overlay">
+    <div class="char-card">
+      <button class="char-card-close" id="char-card-close">✕</button>
+      <div class="char-card-holo">
+        <div class="cc-emoji-wrap" id="cc-emoji">🥚</div>
+        <div class="cc-name-wrap">
+          <span class="cc-name" id="cc-name">たまご</span>
+          <span class="cc-level-badge" id="cc-level">Lv.1</span>
+        </div>
+      </div>
+      <div class="cc-body">
+        <div class="cc-score-row">
+          <span>スコア <strong id="cc-score">0</strong> pt</span>
+          <span class="cc-next-label" id="cc-next"></span>
+        </div>
+        <div class="cc-bar-track"><div class="cc-bar" id="cc-bar"></div></div>
+        <div class="cc-stats">
+          <div class="cc-stat"><span class="cc-stat-num" id="cc-posts">0</span><span class="cc-stat-label">投稿</span></div>
+          <div class="cc-stat"><span class="cc-stat-num" id="cc-likes">0</span><span class="cc-stat-label">❤️ いいね</span></div>
+          <div class="cc-stat"><span class="cc-stat-num" id="cc-shares">0</span><span class="cc-stat-label">📤 シェア</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 進化ポップアップ -->
+  <div class="levelup-overlay" id="levelup-overlay">
+    <div class="levelup-box">
+      <p class="lu-title">🎉 進化！</p>
+      <div class="lu-evo">
+        <span class="lu-emoji" id="lu-old-emoji">🥚</span>
+        <span class="lu-arrow">→</span>
+        <span class="lu-emoji lu-new" id="lu-new-emoji">🐣</span>
+      </div>
+      <p class="lu-name" id="lu-new-name">ひよこ</p>
+      <p class="lu-level" id="lu-new-level">Lv.2</p>
+      <button class="lu-close" id="levelup-close">やったー！</button>
     </div>
   </div>
 
