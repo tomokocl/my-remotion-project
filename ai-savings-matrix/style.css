@@ -55,7 +55,7 @@ body {
 
 /* ヘッダー背景画像（明るい写真用） */
 .site-header.has-bg-img {
-  background-image: url('assets/header.jpg');
+  background-image: url('header.png');
   background-size: cover;
   background-position: center 30%;
 }
