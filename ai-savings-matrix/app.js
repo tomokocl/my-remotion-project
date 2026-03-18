@@ -122,6 +122,7 @@ function renderCharacterWidget() {
 }
 
 function openCharacterCard() {
+  renderCharacterWidget(); // ウィジェットとカードを常に同じデータで描画
   const score = calcCharacterScore();
   const { current, next, progress } = getCharacterData(score);
   const totalLikes  = Object.values(likeCountCache).reduce((a, b) => a + b, 0);
