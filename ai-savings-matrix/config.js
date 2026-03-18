@@ -17,7 +17,7 @@ const CONFIG = {
   // スプレッドシートのヘッダー名の先頭一致で列を特定する
   // （フォームの質問文の最初の数文字を書けばOK）
   CSV_COLUMNS: {
-    tool:   "使ったAIツール",
+    tool:   "AIツール",
     genre:  "節約ジャンル",
     title:  "タイトル",
     detail: "節約術の詳細",
