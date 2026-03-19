@@ -520,8 +520,8 @@ function openModal(tool, genre, cellPosts) {
 function openModalByLevel(genre, level, cellPosts) {
   currentCell = { mode: "level", genre, level };
 
-  document.getElementById("modal-tool-badge").textContent  = `${level.icon} ${level.label}`;
-  document.getElementById("modal-genre-badge").textContent = `${genre.icon} ${genre.label}`;
+  document.getElementById("modal-tool-badge").innerHTML  = `${level.icon} ${level.label}`;
+  document.getElementById("modal-genre-badge").innerHTML = `${genre.icon} ${genre.label}`;
   document.getElementById("modal-title").textContent =
     `${genre.label} × ${level.label}（${level.desc}）の実例`;
 

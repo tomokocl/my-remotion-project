@@ -33,9 +33,9 @@ const CONFIG = {
 
   // 難易度レベル一覧
   LEVELS: [
-    { id: "beginner", label: "初級",  icon: "🟢", desc: "コピペOK" },
-    { id: "middle",   label: "中級",  icon: "🟡", desc: "カスタマイズ" },
-    { id: "advanced", label: "上級",  icon: "🔴", desc: "プロンプト設計" },
+    { id: "beginner", label: "初級",  icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>`, desc: "コピペOK" },
+    { id: "middle",   label: "中級",  icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linejoin="round"><polygon points="12,3 13.5,8.3 18.4,5.6 15.7,10.5 21,12 15.7,13.5 18.4,18.4 13.5,15.7 12,21 10.5,15.7 5.6,18.4 8.3,13.5 3,12 8.3,10.5 5.6,5.6 10.5,8.3"/></svg>`, desc: "カスタマイズ" },
+    { id: "advanced", label: "上級",  icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10v4l-5 3-5-3V3z"/><line x1="10" y1="10" x2="9.5" y2="13"/><line x1="14" y1="10" x2="14.5" y2="13"/><polygon points="12,13 13.2,16.5 17,16.5 14,18.5 15.2,22 12,20 8.8,22 10,18.5 7,16.5 10.8,16.5"/></svg>`, desc: "プロンプト設計" },
   ],
 
   // AIツール一覧
