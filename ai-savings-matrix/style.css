@@ -126,10 +126,10 @@ body {
 .logo-icon {
   width: 36px;
   height: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--pink), var(--purple));
   flex-shrink: 0;
-  box-shadow: 0 2px 12px rgba(255,45,123,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo-sub {
