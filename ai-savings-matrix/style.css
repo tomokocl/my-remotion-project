@@ -351,6 +351,14 @@ body {
   }
 }
 
+/* ===== SOLID BACKGROUND SECTION（matrix以降） ===== */
+.solid-bg {
+  background: var(--bg);
+  border-radius: 24px 24px 0 0;
+  margin-top: 32px;
+  padding-top: 8px;
+}
+
 /* ===== MATRIX WRAP ===== */
 .matrix-wrap {
   max-width: 1100px;
