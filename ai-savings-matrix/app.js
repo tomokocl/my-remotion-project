@@ -482,8 +482,8 @@ function renderMatrix() {
 function openModal(tool, genre, cellPosts) {
   currentCell = { tool, genre };
 
-  document.getElementById("modal-tool-badge").textContent  = `${tool.icon} ${tool.label}`;
-  document.getElementById("modal-genre-badge").textContent = `${genre.icon} ${genre.label}`;
+  document.getElementById("modal-tool-badge").innerHTML  = `${tool.icon} ${tool.label}`;
+  document.getElementById("modal-genre-badge").innerHTML = `${genre.icon} ${genre.label}`;
   document.getElementById("modal-title").textContent =
     `${tool.label} × ${genre.label} の実例`;
 
