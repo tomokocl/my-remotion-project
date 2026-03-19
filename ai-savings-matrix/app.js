@@ -650,8 +650,8 @@ function openDetail(tool, genre, post) {
     : `${tool.icon} ${tool.label}`;
   const badgesEl = document.getElementById("detail-badges");
   badgesEl.innerHTML = `
-    <span class="modal-tool-badge">${escHtml(toolLabel)}</span>
-    <span class="modal-genre-badge">${escHtml(genre.icon)} ${escHtml(genre.label)}</span>
+    <span class="modal-tool-badge">${tool.icon} ${escHtml(tool.id === "other" && post.tool_other ? post.tool_other : tool.label)}</span>
+    <span class="modal-genre-badge">${genre.icon} ${escHtml(genre.label)}</span>
   `;
 
   // タイトル・本文
