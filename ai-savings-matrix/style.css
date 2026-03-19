@@ -697,6 +697,17 @@ body {
   box-shadow: 0 4px 16px rgba(255,45,123,0.15);
 }
 
+.post-card-tool-other {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  background: var(--border);
+  border-radius: 999px;
+  padding: 1px 8px;
+  margin-bottom: 6px;
+}
+
 .post-card-title {
   font-size: 0.95rem;
   font-weight: 700;

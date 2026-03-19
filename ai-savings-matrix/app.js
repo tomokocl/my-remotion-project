@@ -36,9 +36,9 @@ const DUMMY_POSTS = [
     author: "Yさん（20代・一人暮らし）",
   },
   {
-    tool: "perplexity", genre: "food",
-    title: "業務スーパー活用術を調査",
-    detail: "Perplexityで「コスパ最強の業務スーパー商品」を徹底リサーチ。購入リストを最適化できた。",
+    tool: "manus", genre: "food",
+    title: "業務スーパー活用術をManusで調査",
+    detail: "Manusで「コスパ最強の業務スーパー商品」を徹底リサーチ。購入リストを最適化できた。",
     saving: "月5,000円削減",
     author: "Hさん（40代・4人家族）",
   },
@@ -257,10 +257,15 @@ function parseCSV(csv) {
     const rawTool  = getVal(values, "tool");
     const rawGenre = getVal(values, "genre");
 
+    // 「その他: Copilot」形式を分解
+    const otherMatch = rawTool.match(/^その他[:：]\s*(.+)$/);
+    const toolOther  = otherMatch ? otherMatch[1].trim() : "";
+    const toolSearch = otherMatch ? "その他" : rawTool;
+
     // ツール名（ラベルorID）→ id に正規化
     const toolObj = CONFIG.TOOLS.find(t =>
-      t.label.toLowerCase() === rawTool.toLowerCase() ||
-      t.id    .toLowerCase() === rawTool.toLowerCase()
+      t.label.toLowerCase() === toolSearch.toLowerCase() ||
+      t.id    .toLowerCase() === toolSearch.toLowerCase()
     );
 
     // ジャンル名（ラベルorID）→ id に正規化
@@ -269,8 +274,9 @@ function parseCSV(csv) {
     );
 
     return {
-      tool:      toolObj  ? toolObj.id   : rawTool.toLowerCase(),
-      genre:     genreObj ? genreObj.id  : rawGenre,
+      tool:       toolObj  ? toolObj.id  : rawTool.toLowerCase(),
+      tool_other: toolOther,
+      genre:      genreObj ? genreObj.id : rawGenre,
       title:     getVal(values, "title"),
       detail:    getVal(values, "detail"),
       saving:    getVal(values, "saving"),
@@ -363,6 +369,7 @@ function openModal(tool, genre, cellPosts) {
       card.className = "post-card";
       card.innerHTML = `
         <span class="post-card-arrow">›</span>
+        ${post.tool_other ? `<span class="post-card-tool-other">⚪ ${escHtml(post.tool_other)}</span>` : ""}
         <p class="post-card-title">${escHtml(post.title)}</p>
         <p class="post-card-detail">${escHtml(post.detail)}</p>
         ${post.saving ? `<span class="post-card-saving">💰 ${escHtml(post.saving)}</span>` : ""}
@@ -468,9 +475,12 @@ function renderLikeButton(key) {
 
 function openDetail(tool, genre, post) {
   // バッジ
+  const toolLabel = (tool.id === "other" && post.tool_other)
+    ? `⚪ ${post.tool_other}`
+    : `${tool.icon} ${tool.label}`;
   const badgesEl = document.getElementById("detail-badges");
   badgesEl.innerHTML = `
-    <span class="modal-tool-badge">${escHtml(tool.icon)} ${escHtml(tool.label)}</span>
+    <span class="modal-tool-badge">${escHtml(toolLabel)}</span>
     <span class="modal-genre-badge">${escHtml(genre.icon)} ${escHtml(genre.label)}</span>
   `;
 

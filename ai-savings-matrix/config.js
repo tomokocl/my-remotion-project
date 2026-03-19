@@ -35,7 +35,7 @@ const CONFIG = {
     { id: "chatgpt",    label: "ChatGPT",    icon: "🟢", color: "#10a37f" },
     { id: "claude",     label: "Claude",     icon: "🟠", color: "#d97706" },
     { id: "gemini",     label: "Gemini",     icon: "🔵", color: "#4285f4" },
-    { id: "perplexity", label: "Perplexity", icon: "🟣", color: "#7c3aed" },
+    { id: "manus",      label: "Manus",      icon: "🔴", color: "#e53e3e" },
     { id: "other",      label: "その他",     icon: "⚪", color: "#6b7280" },
   ],
 

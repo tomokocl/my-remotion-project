@@ -36,9 +36,9 @@ const DUMMY_POSTS = [
     author: "Yさん（20代・一人暮らし）",
   },
   {
-    tool: "perplexity", genre: "food",
-    title: "業務スーパー活用術を調査",
-    detail: "Perplexityで「コスパ最強の業務スーパー商品」を徹底リサーチ。購入リストを最適化できた。",
+    tool: "manus", genre: "food",
+    title: "業務スーパー活用術をManusで調査",
+    detail: "Manusで「コスパ最強の業務スーパー商品」を徹底リサーチ。購入リストを最適化できた。",
     saving: "月5,000円削減",
     author: "Hさん（40代・4人家族）",
   },
