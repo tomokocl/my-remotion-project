@@ -406,16 +406,16 @@ function toggleMatrixView() {
 
   if (currentView === "level") {
     switchMatrixPanel(toolPanel, levelPanel);
-    label.textContent = "カテゴリー別";
+    label.innerHTML = "カテゴリー別";
     arrow.textContent = "◀";
-    title.textContent = "🤖 AIツール × 節約ジャンル";
+    title.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px;margin-right:4px"><path d="M20 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h15a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 16H5V5h15v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>AIツール × 節約ジャンル`;
     tab.classList.add("active");
     currentView = "tool";
   } else {
     switchMatrixPanel(levelPanel, toolPanel);
-    label.textContent = "🔧 ツール別";
+    label.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="14" width="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px;margin-right:3px"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7 7 0 0 0-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84a.48.48 0 0 0-.47.41l-.36 2.54a7.36 7.36 0 0 0-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58a7.24 7.24 0 0 0-.07.94c0 .32.02.63.07.94L2.86 14.52a.47.47 0 0 0-.12.6l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.04.7 1.62.94l.36 2.54c.06.28.3.48.47.48h3.84c.27 0 .49-.2.47-.48l.36-2.54a7.16 7.16 0 0 0 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.6l-2.01-1.58zM12 15.6A3.6 3.6 0 0 1 8.4 12 3.6 3.6 0 0 1 12 8.4a3.6 3.6 0 0 1 3.6 3.6 3.6 3.6 0 0 1-3.6 3.6z"/></svg>ツール別`;
     arrow.textContent = "▶";
-    title.textContent = "📊 節約カテゴリー × 難易度レベル";
+    title.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px;margin-right:4px"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>節約カテゴリー × 難易度レベル`;
     tab.classList.remove("active");
     currentView = "level";
   }
