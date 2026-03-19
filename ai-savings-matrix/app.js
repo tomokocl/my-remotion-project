@@ -805,12 +805,10 @@ function handlePostButton() {
     if (CONFIG.FORM_FIELDS.level) {
       params.set(CONFIG.FORM_FIELDS.level, currentCell.level.label);
     }
-    localStorage.setItem("ai-savings-post-pending", "1");
     window.open(`${CONFIG.FORM_BASE_URL}?${params.toString()}`, "_blank");
   } else {
     const url = buildFormUrl(currentCell.tool, currentCell.genre);
     if (url) {
-      localStorage.setItem("ai-savings-post-pending", "1");
       window.open(url, "_blank");
     }
   }
@@ -863,20 +861,19 @@ document.getElementById("btn-post-top").addEventListener("click", () => {
     alert("まだフォームURLが設定されていません（config.js を更新してください）");
     return;
   }
-  localStorage.setItem("ai-savings-post-pending", "1");
   window.open(CONFIG.FORM_BASE_URL, "_blank");
 });
 
-// 投稿後にタブへ戻ったらカードを表示
-document.addEventListener("visibilitychange", async () => {
-  if (document.visibilityState === "visible" && localStorage.getItem("ai-savings-post-pending")) {
-    localStorage.removeItem("ai-savings-post-pending");
-    const submitted = confirm("フォームを送信しましたか？\n（「OK」を押すと投稿が反映されます）");
-    if (submitted) {
-      await loadData();
-      renderCharacterWidget();
-      openCharacterCard();
-    }
+// フォーム送信後、サイトに戻ってきたことを BroadcastChannel で他タブに通知
+const _submissionChannel = new BroadcastChannel("ai-savings-submission");
+if (document.referrer.includes("docs.google.com")) {
+  _submissionChannel.postMessage("submitted");
+}
+_submissionChannel.addEventListener("message", async (e) => {
+  if (e.data === "submitted") {
+    await loadData();
+    renderCharacterWidget();
+    openCharacterCard();
   }
 });
 
