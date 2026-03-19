@@ -1115,7 +1115,12 @@ body {
   border-radius: 50%;
   background: linear-gradient(135deg, var(--pink), var(--purple));
   flex-shrink: 0;
-  font-size: 0;
+  overflow: hidden;
+}
+.char-emoji img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  display: block;
 }
 .char-info   { display: flex; flex-direction: column; gap: 3px; }
 .char-name   { font-size: 0.72rem; color: #fff; font-weight: 700; line-height: 1; }
@@ -1176,12 +1181,17 @@ body {
 }
 
 .cc-emoji-wrap {
-  width: 72px; height: 72px;
+  width: 120px; height: 120px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--pink), var(--purple-mid), var(--purple));
   margin: 0 auto 10px;
-  font-size: 0;
+  overflow: hidden;
   box-shadow: 0 0 24px rgba(255,45,123,0.4), 0 0 48px rgba(124,58,237,0.2);
+}
+.cc-emoji-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  display: block;
 }
 .cc-name-wrap  { display: flex; align-items: center; justify-content: center; gap: 8px; }
 .cc-name       { font-size: 1.25rem; font-weight: 900; color: #fff; }
@@ -1250,12 +1260,17 @@ body {
 .lu-title { font-size: 1.7rem; font-weight: 900; color: var(--pink); margin-bottom: 20px; }
 .lu-evo   { display: flex; align-items: center; gap: 14px; justify-content: center; margin-bottom: 14px; }
 .lu-emoji {
-  width: 52px; height: 52px;
+  width: 72px; height: 72px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--pink), var(--purple));
-  font-size: 0;
   display: inline-block;
   vertical-align: middle;
+  overflow: hidden;
+}
+.lu-emoji img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  display: block;
 }
 .lu-new   { animation: lu-pulse 0.55s 0.35s both; }
 

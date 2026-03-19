@@ -95,12 +95,10 @@ const DUMMY_POSTS = [
 
 // ===== キャラクター育成 =====
 const LEVELS = [
-  { level: 1, name: "たまご",      emoji: "🥚", minScore: 0    },
-  { level: 2, name: "ひよこ",      emoji: "🐣", minScore: 30   },
-  { level: 3, name: "こども",      emoji: "🐥", minScore: 100  },
-  { level: 4, name: "わかば",      emoji: "🌱", minScore: 300  },
-  { level: 5, name: "せいちょう",  emoji: "🌿", minScore: 700  },
-  { level: 6, name: "まんかい",    emoji: "🌳", minScore: 1500 },
+  { level: 1, name: "チビアオ",     img: "assets/Lv1.png", minScore: 0   },
+  { level: 2, name: "アオコ",       img: "assets/Lv2.png", minScore: 50  },
+  { level: 3, name: "アオニャン",   img: "assets/Lv3.png", minScore: 150 },
+  { level: 4, name: "アオオウジャ", img: "assets/Lv4.png", minScore: 400 },
 ];
 
 function calcCharacterScore() {
@@ -131,7 +129,7 @@ function renderCharacterWidget() {
   const score = calcCharacterScore();
   const { current, progress } = getCharacterData(score);
   el.innerHTML = `
-    <span class="char-emoji">${current.emoji}</span>
+    <span class="char-emoji"><img src="${current.img}" alt="${current.name}"></span>
     <div class="char-info">
       <span class="char-name">${current.name}</span>
       <div class="char-bar-wrap"><div class="char-bar" style="width:${progress}%"></div></div>
@@ -149,7 +147,7 @@ function openCharacterCard() {
   const totalLikes  = Object.values(likeCountCache).reduce((a, b) => a + b, 0);
   const totalShares = Object.values(shareCountCache).reduce((a, b) => a + b, 0);
 
-  document.getElementById("cc-emoji").textContent  = current.emoji;
+  document.getElementById("cc-emoji").innerHTML = `<img src="${current.img}" alt="${current.name}">`;
   document.getElementById("cc-name").textContent   = current.name;
   document.getElementById("cc-level").textContent  = `Lv.${current.level}`;
   document.getElementById("cc-score").textContent  = score;
@@ -180,8 +178,8 @@ function checkLevelUp(currentLevel) {
 function showLevelUpPopup(oldLevel, newLevel) {
   const oldChar = LEVELS[oldLevel - 1];
   const newChar = LEVELS[newLevel - 1];
-  document.getElementById("lu-old-emoji").textContent = oldChar.emoji;
-  document.getElementById("lu-new-emoji").textContent = newChar.emoji;
+  document.getElementById("lu-old-emoji").innerHTML = `<img src="${oldChar.img}" alt="${oldChar.name}">`;
+  document.getElementById("lu-new-emoji").innerHTML = `<img src="${newChar.img}" alt="${newChar.name}">`;
   document.getElementById("lu-new-name").textContent  = newChar.name;
   document.getElementById("lu-new-level").textContent = `Lv.${newChar.level}`;
   document.getElementById("levelup-overlay").classList.add("open");
@@ -806,10 +804,14 @@ function handlePostButton() {
       [CONFIG.FORM_FIELDS.genre]: currentCell.genre.label,
       usp: "pp_url",
     });
+    localStorage.setItem("ai-savings-post-pending", "1");
     window.open(`${CONFIG.FORM_BASE_URL}?${params.toString()}`, "_blank");
   } else {
     const url = buildFormUrl(currentCell.tool, currentCell.genre);
-    if (url) window.open(url, "_blank");
+    if (url) {
+      localStorage.setItem("ai-savings-post-pending", "1");
+      window.open(url, "_blank");
+    }
   }
 }
 
@@ -860,7 +862,18 @@ document.getElementById("btn-post-top").addEventListener("click", () => {
     alert("まだフォームURLが設定されていません（config.js を更新してください）");
     return;
   }
+  localStorage.setItem("ai-savings-post-pending", "1");
   window.open(CONFIG.FORM_BASE_URL, "_blank");
+});
+
+// 投稿後にタブへ戻ったらカードを表示
+document.addEventListener("visibilitychange", async () => {
+  if (document.visibilityState === "visible" && localStorage.getItem("ai-savings-post-pending")) {
+    localStorage.removeItem("ai-savings-post-pending");
+    await loadData();
+    renderCharacterWidget();
+    openCharacterCard();
+  }
 });
 
 // ===== 初期化 =====
