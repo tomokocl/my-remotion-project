@@ -15,6 +15,7 @@ const CONFIG = {
   FORM_FIELDS: {
     tool:  "entry.1501532013",
     genre: "entry.114612757",
+    level: "entry.502674363",
   },
 
   // スプレッドシートのヘッダー名の先頭一致で列を特定する
@@ -47,14 +48,13 @@ const CONFIG = {
     { id: "other",      label: "その他",     icon: `<svg xmlns="http://www.w3.org/2000/svg" height="18" width="18" viewBox="0 0 24 24" fill="#6b7280"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>`, color: "#6b7280" },
   ],
 
-  // 節約ジャンル一覧
+  // 節約ジャンル一覧（フォームの選択肢と完全一致させること）
   GENRES: [
-    { id: "education", label: "学習・教育費",   icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#6366f1"><path d="M12 3 1 9l11 6 9-4.91V17h2V9L12 3zm0 12.08L5.08 11l-2.08 1.13V17c0 1.66 4 3 9 3s9-1.34 9-3v-4.87l-2 1.09-7 3.86z"/></svg>` },
-    { id: "outsource", label: "仕事・外注費",   icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#6366f1"><path d="M20 6h-2.18A3 3 0 0 0 15 4h-6a3 3 0 0 0-2.82 2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm-11 0a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1H9V6zm11 14H4V8h16v12z"/></svg>` },
-    { id: "creative",  label: "クリエイティブ", icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#6366f1"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm4-8.5a4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4 4 4 0 0 1 4 4zm-4-2a2 2 0 1 0 2 2 2 2 0 0 0-2-2z"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12M5.64 18.36l2.12-2.12M16.24 7.76l2.12-2.12"/></svg>` },
-    { id: "living",    label: "生活・固定費",   icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#6366f1"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>` },
-    { id: "money",     label: "マネー・税務",   icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#6366f1"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>` },
-    { id: "health",    label: "健康・メンタル", icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#6366f1"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>` },
-    { id: "lifestyle", label: "暮らしサービス", icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#6366f1"><path d="M20 6h-2.18A3 3 0 0 0 15 4H9a3 3 0 0 0-2.82 2H4a2 2 0 0 0-2 2v3h20V8a2 2 0 0 0-2-2zm-11 0a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1H9zm13 5H2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-7zm-9 5H8v-2h5v2zm5-4h-5V10h5v2z"/></svg>` },
+    { id: "education", label: "塾・家庭教師",   icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#6366f1"><path d="M12 3 1 9l11 6 9-4.91V17h2V9L12 3zm0 12.08L5.08 11l-2.08 1.13V17c0 1.66 4 3 9 3s9-1.34 9-3v-4.87l-2 1.09-7 3.86z"/></svg>` },
+    { id: "outsource", label: "サブスク整理",   icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#6366f1"><path d="M20 6h-2.18A3 3 0 0 0 15 4h-6a3 3 0 0 0-2.82 2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm-11 0a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1H9V6zm11 14H4V8h16v12z"/></svg>` },
+    { id: "living",    label: "保険・通信費",   icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#6366f1"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>` },
+    { id: "health",    label: "食費・日用品",   icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#6366f1"><path d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-4.5-6.72-5-8.03-5-1.06 0-8 .23-8 5h16.03z"/></svg>` },
+    { id: "creative",  label: "自己学習",       icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#6366f1"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2 14H10v-1h4v1zm0-3H10v-1h4v1zm-2-5a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>` },
+    { id: "money",     label: "税金・確定申告", icon: `<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="#6366f1"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>` },
   ],
 };

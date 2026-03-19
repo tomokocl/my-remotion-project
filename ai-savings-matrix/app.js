@@ -802,6 +802,7 @@ function handlePostButton() {
     }
     const params = new URLSearchParams({
       [CONFIG.FORM_FIELDS.genre]: currentCell.genre.label,
+      ...(CONFIG.FORM_FIELDS.level && { [CONFIG.FORM_FIELDS.level]: currentCell.level.label }),
       usp: "pp_url",
     });
     localStorage.setItem("ai-savings-post-pending", "1");
