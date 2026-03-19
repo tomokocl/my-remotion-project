@@ -887,6 +887,16 @@ _submissionChannel.addEventListener("message", async (e) => {
   }
 });
 
+// ===== HOW TO USE アコーディオン =====
+const _accToggle = document.getElementById("howto-acc-toggle");
+const _accBody   = document.getElementById("howto-acc-body");
+if (_accToggle && _accBody) {
+  _accToggle.addEventListener("click", () => {
+    const isOpen = _accBody.classList.toggle("is-open");
+    _accToggle.setAttribute("aria-expanded", String(isOpen));
+  });
+}
+
 // ===== 初期化 =====
 (async () => {
   await loadData();
