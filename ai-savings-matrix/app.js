@@ -868,7 +868,6 @@ document.getElementById("btn-post-top").addEventListener("click", () => {
 const _submissionChannel = new BroadcastChannel("ai-savings-submission");
 const _urlParams = new URLSearchParams(window.location.search);
 const _fromForm = _urlParams.has("submitted") || document.referrer.includes("docs.google.com");
-console.log("[submitted] search:", window.location.search, "| _fromForm:", _fromForm);
 if (_urlParams.has("submitted")) {
   history.replaceState({}, "", window.location.pathname);
 }
