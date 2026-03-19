@@ -800,11 +800,11 @@ function handlePostButton() {
       alert("まだフォームURLが設定されていません（config.js を更新してください）");
       return;
     }
-    const params = new URLSearchParams({
-      [CONFIG.FORM_FIELDS.genre]: currentCell.genre.label,
-      ...(CONFIG.FORM_FIELDS.level && { [CONFIG.FORM_FIELDS.level]: currentCell.level.label }),
-      usp: "pp_url",
-    });
+    const params = new URLSearchParams({ usp: "pp_url" });
+    params.set(CONFIG.FORM_FIELDS.genre, currentCell.genre.label);
+    if (CONFIG.FORM_FIELDS.level) {
+      params.set(CONFIG.FORM_FIELDS.level, currentCell.level.label);
+    }
     localStorage.setItem("ai-savings-post-pending", "1");
     window.open(`${CONFIG.FORM_BASE_URL}?${params.toString()}`, "_blank");
   } else {
@@ -871,9 +871,12 @@ document.getElementById("btn-post-top").addEventListener("click", () => {
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState === "visible" && localStorage.getItem("ai-savings-post-pending")) {
     localStorage.removeItem("ai-savings-post-pending");
-    await loadData();
-    renderCharacterWidget();
-    openCharacterCard();
+    const submitted = confirm("フォームを送信しましたか？\n（「OK」を押すと投稿が反映されます）");
+    if (submitted) {
+      await loadData();
+      renderCharacterWidget();
+      openCharacterCard();
+    }
   }
 });
 
