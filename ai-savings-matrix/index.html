@@ -56,7 +56,7 @@
         <div class="howto-step">
           <span class="howto-step-num">01</span>
           <p class="howto-step-title">マスを選ぶ</p>
-          <p class="howto-step-desc">気になるAIツール×節約ジャンルのマスをクリック</p>
+          <p class="howto-step-desc">節約カテゴリー×難易度レベルのマスをクリック（ツール別切替可）</p>
         </div>
         <div class="howto-arrow">›</div>
         <div class="howto-step">
@@ -76,20 +76,52 @@
 
   <!-- MATRIX -->
   <main class="matrix-wrap">
-    <div class="matrix-scroll">
-      <table class="matrix" id="matrix">
-        <thead>
-          <tr id="matrix-header">
-            <th class="corner-cell">
-              <span class="corner-tool">AIツール</span>
-              <span class="corner-slash">/</span>
-              <span class="corner-genre">節約ジャンル</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody id="matrix-body"></tbody>
-      </table>
+
+    <!-- ドッグイヤー切り替えヘッダー -->
+    <div class="matrix-header-row">
+      <span class="matrix-view-title" id="matrix-view-title">📊 節約カテゴリー × 難易度レベル</span>
+      <button class="dog-ear-tab" id="dog-ear-tab">
+        <span id="dog-ear-label">🔧 ツール別</span>
+        <span class="dog-ear-arrow" id="dog-ear-arrow">▶</span>
+      </button>
     </div>
+
+    <!-- VIEW 1: カテゴリー × 難易度（デフォルト） -->
+    <div class="matrix-panel" id="view-level">
+      <div class="matrix-scroll">
+        <table class="matrix" id="matrix-level">
+          <thead>
+            <tr id="matrix-level-header">
+              <th class="corner-cell">
+                <span class="corner-tool">節約カテゴリー</span>
+                <span class="corner-slash">/</span>
+                <span class="corner-genre">難易度</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="matrix-level-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIEW 2: ツール × ジャンル（ドッグイヤー） -->
+    <div class="matrix-panel" id="view-tool" style="display:none">
+      <div class="matrix-scroll">
+        <table class="matrix" id="matrix">
+          <thead>
+            <tr id="matrix-header">
+              <th class="corner-cell">
+                <span class="corner-tool">AIツール</span>
+                <span class="corner-slash">/</span>
+                <span class="corner-genre">節約ジャンル</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="matrix-body"></tbody>
+        </table>
+      </div>
+    </div>
+
     <p class="matrix-hint">↔ 横にスクロールできます</p>
   </main>
 

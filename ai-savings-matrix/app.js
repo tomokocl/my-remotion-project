@@ -1,70 +1,70 @@
 // ===== ダミーデータ =====
 const DUMMY_POSTS = [
   {
-    tool: "chatgpt", genre: "juku",
+    tool: "chatgpt", genre: "juku", level: "beginner",
     title: "中学受験の過去問解説をChatGPTに丸投げ",
     detail: "塾の月謝2万円を節約。苦手な算数の解説を毎日質問して、3ヶ月で志望校レベルに到達。",
     saving: "月2万円削減",
     author: "Tさん（40代・主婦）",
   },
   {
-    tool: "chatgpt", genre: "juku",
+    tool: "chatgpt", genre: "juku", level: "beginner",
     title: "高校英語の予習をChatGPTで完結",
     detail: "英語塾を解約。文法質問・英作文添削をAIで代替。模試の偏差値は維持できています。",
     saving: "月1.5万円削減",
     author: "Kさん（高2保護者）",
   },
   {
-    tool: "claude", genre: "subscribe",
+    tool: "claude", genre: "subscribe", level: "beginner",
     title: "全サブスクをリスト化してClaude分析",
     detail: "「使ってないサービス教えて」と聞いたら5つ見つかった。年間で計算したら驚きの金額に。",
     saving: "年間6万円削減",
     author: "Mさん（30代・会社員）",
   },
   {
-    tool: "gemini", genre: "insurance",
+    tool: "gemini", genre: "insurance", level: "middle",
     title: "Geminiで保険の見直しシミュレーション",
     detail: "複数の保険証券をテキスト入力して比較。不要な特約を発見し解約へ。担当者より詳しく教えてくれた。",
     saving: "月8,000円削減",
     author: "Sさん（50代・自営業）",
   },
   {
-    tool: "chatgpt", genre: "food",
+    tool: "chatgpt", genre: "food", level: "beginner",
     title: "冷蔵庫の食材でレシピ提案",
     detail: "余り物食材を入力するだけで夕食メニューが決まる。食品ロスが減り食費が激減した。",
     saving: "月3,000円削減",
     author: "Yさん（20代・一人暮らし）",
   },
   {
-    tool: "manus", genre: "food",
+    tool: "manus", genre: "food", level: "beginner",
     title: "業務スーパー活用術をManusで調査",
     detail: "Manusで「コスパ最強の業務スーパー商品」を徹底リサーチ。購入リストを最適化できた。",
     saving: "月5,000円削減",
     author: "Hさん（40代・4人家族）",
   },
   {
-    tool: "claude", genre: "learning",
+    tool: "claude", genre: "learning", level: "middle",
     title: "資格勉強の教材費をゼロに",
     detail: "FP2級の参考書を買わずにClaude相手に問答形式で勉強。1発合格できた。",
     saving: "教材費3万円削減",
     author: "Nさん（30代・転職活動中）",
   },
   {
-    tool: "chatgpt", genre: "tax",
+    tool: "chatgpt", genre: "tax", level: "middle",
     title: "確定申告の疑問をChatGPTで解決",
     detail: "税理士に頼まず副業の確定申告を自力で完成。不明な経費項目も全部聞けた。",
     saving: "税理士費用5万円削減",
     author: "Rさん（副業ライター）",
   },
   {
-    tool: "claude", genre: "insurance",
+    tool: "claude", genre: "insurance", level: "beginner",
     title: "格安SIMへの乗り換えシミュレーション",
     detail: "今の通信費と比較してClaude試算。家族4人分の最安プランを提案してもらい即乗り換え。",
     saving: "月1.2万円削減",
     author: "Oさん（30代・夫婦2人）",
   },
   {
-    tool: "other", genre: "learning",
+    tool: "other", genre: "learning", level: "middle",
     title: "Copilotで英語学習コストを大幅削減",
     detail: "英会話スクールを退会しAIと毎日フリートーク。TOEIC点数は上がって費用は激減。",
     saving: "月2万円削減",
@@ -168,7 +168,8 @@ function showLevelUpPopup(oldLevel, newLevel) {
 
 // ===== 状態管理 =====
 let posts = [];
-let currentCell = null; // { tool, genre } クリック中のセル
+let currentCell = null; // { mode, tool?, genre, level? } クリック中のセル
+let currentView = "level"; // "level" | "tool"
 
 // ===== データ読み込み =====
 async function loadData() {
@@ -273,10 +274,18 @@ function parseCSV(csv) {
       g.label === rawGenre || g.id === rawGenre
     );
 
+    // 難易度: 空の場合は "beginner" にデフォルト
+    const rawLevel = getVal(values, "level");
+    const levelObj = CONFIG.LEVELS.find(l =>
+      l.label === rawLevel || l.id === rawLevel
+    );
+    const levelId = levelObj ? levelObj.id : (rawLevel ? rawLevel : "beginner");
+
     return {
       tool:       toolObj  ? toolObj.id  : rawTool.toLowerCase(),
       tool_other: toolOther,
       genre:      genreObj ? genreObj.id : rawGenre,
+      level:      levelId,
       title:     getVal(values, "title"),
       detail:    getVal(values, "detail"),
       saving:    getVal(values, "saving"),
@@ -290,6 +299,105 @@ function parseCSV(csv) {
 // ===== 投稿フィルタ =====
 function getPostsFor(toolId, genreId) {
   return posts.filter(p => p.tool === toolId && p.genre === genreId);
+}
+
+function getPostsForLevel(genreId, levelId) {
+  return posts.filter(p => p.genre === genreId && (p.level === levelId));
+}
+
+// ===== カテゴリー×難易度 マトリックス描画 =====
+function renderLevelMatrix() {
+  const header = document.getElementById("matrix-level-header");
+  const body   = document.getElementById("matrix-level-body");
+
+  // ヘッダー行に難易度を追加
+  CONFIG.LEVELS.forEach(lv => {
+    const th = document.createElement("th");
+    th.className = "genre-th";
+    th.innerHTML = `<div class="genre-th-inner"><span class="genre-icon">${lv.icon}</span><span>${lv.label}</span><span class="level-desc">${lv.desc}</span></div>`;
+    header.appendChild(th);
+  });
+
+  // 各ジャンル行
+  CONFIG.GENRES.forEach(genre => {
+    const tr = document.createElement("tr");
+
+    // ジャンル名セル（行ヘッダー）
+    const genreTh = document.createElement("th");
+    genreTh.className = "tool-th";
+    genreTh.innerHTML = `<div class="tool-th-inner"><span class="genre-icon">${genre.icon}</span> ${genre.label}</div>`;
+    tr.appendChild(genreTh);
+
+    // 各難易度セル
+    CONFIG.LEVELS.forEach(level => {
+      const cellPosts = getPostsForLevel(genre.id, level.id);
+      const td = document.createElement("td");
+      td.className = "matrix-cell " + (cellPosts.length > 0 ? "filled" : "empty");
+
+      if (cellPosts.length > 0) {
+        td.innerHTML = `
+          <div class="cell-inner">
+            <span class="cell-check">✅</span>
+            <span class="cell-count">${cellPosts.length}件</span>
+            <span class="cell-preview">${cellPosts[0].title}</span>
+          </div>`;
+      } else {
+        td.innerHTML = `
+          <div class="cell-inner">
+            <span class="cell-plus">＋</span>
+            <span class="cell-new-label">投稿する</span>
+          </div>`;
+      }
+
+      td.addEventListener("click", () => openModalByLevel(genre, level, cellPosts));
+      tr.appendChild(td);
+    });
+
+    body.appendChild(tr);
+  });
+}
+
+// ===== ドッグイヤー切り替え =====
+function switchMatrixPanel(showEl, hideEl) {
+  hideEl.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+  hideEl.style.opacity = "0";
+  hideEl.style.transform = "translateY(-6px)";
+  setTimeout(() => {
+    hideEl.style.display = "none";
+    showEl.style.opacity = "0";
+    showEl.style.transform = "translateY(6px)";
+    showEl.style.display = "block";
+    requestAnimationFrame(() => {
+      showEl.style.transition = "opacity 0.25s ease, transform 0.25s ease";
+      showEl.style.opacity = "1";
+      showEl.style.transform = "translateY(0)";
+    });
+  }, 200);
+}
+
+function toggleMatrixView() {
+  const levelPanel = document.getElementById("view-level");
+  const toolPanel  = document.getElementById("view-tool");
+  const label = document.getElementById("dog-ear-label");
+  const arrow = document.getElementById("dog-ear-arrow");
+  const title = document.getElementById("matrix-view-title");
+  const tab   = document.getElementById("dog-ear-tab");
+
+  if (currentView === "level") {
+    switchMatrixPanel(toolPanel, levelPanel);
+    label.textContent = "カテゴリー別";
+    arrow.textContent = "◀";
+    title.textContent = "🤖 AIツール × 節約ジャンル";
+    tab.classList.add("active");
+    currentView = "tool";
+  } else {
+    switchMatrixPanel(levelPanel, toolPanel);
+    label.textContent = "🔧 ツール別";
+    arrow.textContent = "▶";
+    title.textContent = "📊 節約カテゴリー × 難易度レベル";
+    tab.classList.remove("active");
+    currentView = "level";
+  }
 }
 
 // ===== マトリックス描画 =====
@@ -377,6 +485,47 @@ function openModal(tool, genre, cellPosts) {
         ${post.x_account ? `<p class="post-card-detail" style="margin-top:2px;font-size:0.75rem;"><a href="https://x.com/${escHtml(post.x_account)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">𝕏 @${escHtml(post.x_account)}</a></p>` : ""}
       `;
       card.addEventListener("click", () => openDetail(tool, genre, post));
+      cardsEl.appendChild(card);
+    });
+  } else {
+    emptyEl.style.display = "block";
+  }
+
+  showView("list");
+  document.getElementById("modal-overlay").classList.add("open");
+}
+
+// ===== カテゴリー×難易度 モーダル =====
+function openModalByLevel(genre, level, cellPosts) {
+  currentCell = { mode: "level", genre, level };
+
+  document.getElementById("modal-tool-badge").textContent  = `${level.icon} ${level.label}`;
+  document.getElementById("modal-genre-badge").textContent = `${genre.icon} ${genre.label}`;
+  document.getElementById("modal-title").textContent =
+    `${genre.label} × ${level.label}（${level.desc}）の実例`;
+
+  const cardsEl = document.getElementById("modal-cards");
+  const emptyEl = document.getElementById("modal-empty");
+  cardsEl.innerHTML = "";
+
+  if (cellPosts.length > 0) {
+    emptyEl.style.display = "none";
+    cellPosts.forEach(post => {
+      const toolObj = CONFIG.TOOLS.find(t => t.id === post.tool)
+        || { icon: "⚪", label: "その他", id: "other", color: "#6b7280" };
+      const card = document.createElement("div");
+      card.className = "post-card";
+      card.innerHTML = `
+        <span class="post-card-arrow">›</span>
+        <span class="post-card-tool-chip" style="background:${toolObj.color}22;color:${toolObj.color};border:1px solid ${toolObj.color}44">${toolObj.icon} ${post.tool_other || toolObj.label}</span>
+        ${post.tool_other ? `<span class="post-card-tool-other">⚪ ${escHtml(post.tool_other)}</span>` : ""}
+        <p class="post-card-title">${escHtml(post.title)}</p>
+        <p class="post-card-detail">${escHtml(post.detail)}</p>
+        ${post.saving ? `<span class="post-card-saving">💰 ${escHtml(post.saving)}</span>` : ""}
+        ${post.author ? `<p class="post-card-detail" style="margin-top:6px;font-size:0.75rem;">— ${escHtml(post.author)}</p>` : ""}
+        ${post.x_account ? `<p class="post-card-detail" style="margin-top:2px;font-size:0.75rem;"><a href="https://x.com/${escHtml(post.x_account)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">𝕏 @${escHtml(post.x_account)}</a></p>` : ""}
+      `;
+      card.addEventListener("click", () => openDetail(toolObj, genre, post));
       cardsEl.appendChild(card);
     });
   } else {
@@ -627,8 +776,20 @@ function buildFormUrl(tool, genre) {
 
 function handlePostButton() {
   if (!currentCell) return;
-  const url = buildFormUrl(currentCell.tool, currentCell.genre);
-  if (url) window.open(url, "_blank");
+  if (currentCell.mode === "level") {
+    if (!CONFIG.FORM_BASE_URL) {
+      alert("まだフォームURLが設定されていません（config.js を更新してください）");
+      return;
+    }
+    const params = new URLSearchParams({
+      [CONFIG.FORM_FIELDS.genre]: currentCell.genre.label,
+      usp: "pp_url",
+    });
+    window.open(`${CONFIG.FORM_BASE_URL}?${params.toString()}`, "_blank");
+  } else {
+    const url = buildFormUrl(currentCell.tool, currentCell.genre);
+    if (url) window.open(url, "_blank");
+  }
 }
 
 // X アカウント入力を正規化（URL・@付き・ユーザー名のどれでも受け付ける）
@@ -662,6 +823,7 @@ document.getElementById("levelup-close").addEventListener("click", () => {
   document.getElementById("levelup-overlay").classList.remove("open");
 });
 
+document.getElementById("dog-ear-tab").addEventListener("click", toggleMatrixView);
 document.getElementById("modal-close").addEventListener("click", closeModal);
 document.getElementById("modal-overlay").addEventListener("click", e => {
   if (e.target === e.currentTarget) closeModal();
@@ -683,7 +845,8 @@ document.getElementById("btn-post-top").addEventListener("click", () => {
 // ===== 初期化 =====
 (async () => {
   await loadData();
-  renderMatrix();
-  renderCharacterWidget(); // 投稿数だけで即時表示
-  loadLikeCounts();         // いいね/シェア取得後に再描画
+  renderLevelMatrix(); // 1枚目: カテゴリー×難易度（デフォルト）
+  renderMatrix();      // 2枚目: ツール×ジャンル
+  renderCharacterWidget();
+  loadLikeCounts();
 })();

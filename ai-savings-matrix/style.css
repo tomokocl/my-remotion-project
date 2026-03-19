@@ -335,6 +335,92 @@ body {
   padding: 8px 24px 24px;
 }
 
+/* ===== MATRIX HEADER ROW（ドッグイヤー行） ===== */
+.matrix-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+
+.matrix-view-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--purple);
+}
+
+/* ===== DOG-EAR TAB ===== */
+.dog-ear-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--purple-pale);
+  border: 2px solid var(--purple-mid);
+  color: var(--purple);
+  border-radius: 10px 10px 0 10px; /* 右下だけ角なし → ドッグイヤー風 */
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* 折り目の三角 */
+.dog-ear-tab::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, var(--purple-mid) 50%, transparent 50%);
+}
+
+.dog-ear-tab:hover {
+  background: var(--purple-mid);
+  color: #fff;
+}
+
+.dog-ear-tab.active {
+  background: var(--purple);
+  color: #fff;
+  border-color: var(--purple-dark);
+}
+
+.dog-ear-tab.active::after {
+  background: linear-gradient(135deg, var(--purple-dark) 50%, transparent 50%);
+}
+
+.dog-ear-arrow {
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+}
+
+/* ===== MATRIX PANEL ===== */
+.matrix-panel {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* 難易度ヘッダーの説明文 */
+.level-desc {
+  font-size: 0.62rem;
+  color: var(--text-soft);
+  margin-top: 2px;
+}
+
+/* カード内ツールチップ */
+.post-card-tool-chip {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin-bottom: 4px;
+}
+
 .matrix-scroll {
   overflow-x: auto;
   border-radius: var(--radius);

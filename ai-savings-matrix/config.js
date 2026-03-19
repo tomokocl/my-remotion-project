@@ -22,6 +22,7 @@ const CONFIG = {
   CSV_COLUMNS: {
     tool:   "AIツール",
     genre:  "節約ジャンル",
+    level:  "難易度",
     title:  "タイトル",
     detail: "節約術の詳細",
     saving: "削減額",
@@ -29,6 +30,13 @@ const CONFIG = {
     media:     "実例の画像や動画",
     x_account: "Xアカウント",
   },
+
+  // 難易度レベル一覧
+  LEVELS: [
+    { id: "beginner", label: "初級",  icon: "🟢", desc: "コピペOK" },
+    { id: "middle",   label: "中級",  icon: "🟡", desc: "カスタマイズ" },
+    { id: "advanced", label: "上級",  icon: "🔴", desc: "プロンプト設計" },
+  ],
 
   // AIツール一覧
   TOOLS: [
