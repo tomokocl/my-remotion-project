@@ -131,10 +131,10 @@ function renderCharacterWidget() {
   el.innerHTML = `
     <span class="char-emoji"><img src="${current.img}" alt="${current.name}"></span>
     <div class="char-info">
+      <span class="char-lv">Lv.${current.level}</span>
       <span class="char-name">${current.name}</span>
       <div class="char-bar-wrap"><div class="char-bar" style="width:${progress}%"></div></div>
     </div>
-    <span class="char-lv">Lv.${current.level}</span>
   `;
   el.onclick = openCharacterCard;
   checkLevelUp(current.level);
