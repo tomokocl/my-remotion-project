@@ -864,11 +864,21 @@ document.getElementById("btn-post-top").addEventListener("click", () => {
   window.open(CONFIG.FORM_BASE_URL, "_blank");
 });
 
-// フォーム送信後、サイトに戻ってきたことを BroadcastChannel で他タブに通知
+// フォーム送信後の検知: ?submitted=1 または referrer で判定
 const _submissionChannel = new BroadcastChannel("ai-savings-submission");
-if (document.referrer.includes("docs.google.com")) {
-  _submissionChannel.postMessage("submitted");
+const _urlParams = new URLSearchParams(window.location.search);
+const _fromForm = _urlParams.has("submitted") || document.referrer.includes("docs.google.com");
+if (_urlParams.has("submitted")) {
+  history.replaceState({}, "", window.location.pathname);
 }
+
+async function _handleSubmissionReturn() {
+  _submissionChannel.postMessage("submitted");
+  await loadData();
+  renderCharacterWidget();
+  openCharacterCard();
+}
+
 _submissionChannel.addEventListener("message", async (e) => {
   if (e.data === "submitted") {
     await loadData();
@@ -884,4 +894,5 @@ _submissionChannel.addEventListener("message", async (e) => {
   renderMatrix();      // 2枚目: ツール×ジャンル
   renderCharacterWidget();
   loadLikeCounts();
+  if (_fromForm) await _handleSubmissionReturn();
 })();
