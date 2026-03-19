@@ -49,11 +49,12 @@ const CONFIG = {
 
   // 節約ジャンル一覧
   GENRES: [
-    { id: "juku",      label: "塾・家庭教師", icon: "📚" },
-    { id: "subscribe", label: "サブスク整理",  icon: "📱" },
-    { id: "insurance", label: "保険・通信費",  icon: "🛡️" },
-    { id: "food",      label: "食費・日用品",  icon: "🛒" },
-    { id: "learning",  label: "自己学習",      icon: "🎓" },
-    { id: "tax",       label: "税金・確定申告", icon: "📊" },
+    { id: "education", label: "学習・教育費",   icon: "🎓" },
+    { id: "outsource", label: "仕事・外注費",   icon: "💼" },
+    { id: "creative",  label: "クリエイティブ", icon: "🎨" },
+    { id: "living",    label: "生活・固定費",   icon: "🏠" },
+    { id: "money",     label: "マネー・税務",   icon: "💰" },
+    { id: "health",    label: "健康・メンタル", icon: "💪" },
+    { id: "lifestyle", label: "暮らしサービス", icon: "🎒" },
   ],
 };
