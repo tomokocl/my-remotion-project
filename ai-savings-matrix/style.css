@@ -437,9 +437,11 @@ body {
 }
 
 .acc-icon {
-  font-size: 1.3rem;
   flex-shrink: 0;
-  margin-top: 1px;
+  margin-top: 2px;
+  color: var(--pink);
+  display: flex;
+  align-items: flex-start;
 }
 
 .howto-acc-list li strong {
