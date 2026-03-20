@@ -1196,37 +1196,32 @@ body {
 .btn-share-copy:hover,
 .btn-share-x:hover { opacity: 0.8; }
 
-/* ===== CHARACTER SECTION ===== */
-.char-section {
-  display: flex;
-  justify-content: center;
-  padding: 32px 24px 8px;
-}
-
-/* ===== CHARACTER WIDGET ===== */
+/* ===== CHARACTER WIDGET (in hero, above text) ===== */
 .character-widget {
-  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 24px;
-  background: linear-gradient(135deg, rgba(30, 18, 60, 0.92), rgba(60, 20, 80, 0.88));
-  border: 1.5px solid rgba(255,255,255,0.18);
+  gap: 20px;
+  background: rgba(20, 10, 45, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255,255,255,0.2);
   border-radius: 24px;
-  padding: 24px 36px;
+  padding: 20px 32px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   user-select: none;
-  box-shadow: 0 8px 32px rgba(180, 60, 180, 0.18);
-  max-width: 480px;
+  box-shadow: 0 6px 28px rgba(0,0,0,0.3);
+  max-width: 420px;
   width: 100%;
+  margin-bottom: 20px;
 }
 .character-widget:hover {
   transform: translateY(-3px);
-  box-shadow: 0 14px 40px rgba(180, 60, 180, 0.28);
+  box-shadow: 0 12px 36px rgba(180, 60, 180, 0.3);
 }
 .char-emoji {
-  width: 110px; height: 110px;
+  width: 100px; height: 100px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--pink), var(--purple));
   overflow: hidden;
@@ -1238,16 +1233,17 @@ body {
   display: block;
 }
 .char-info { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; flex: 1; }
-.char-name { font-size: 1.25rem; color: #fff; font-weight: 700; line-height: 1; }
-.char-bar-wrap { width: 100%; height: 7px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; }
+.char-name { font-size: 1.15rem; color: #fff; font-weight: 700; line-height: 1; }
+.char-bar-wrap { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 4px; overflow: hidden; }
 .char-bar  { height: 100%; background: linear-gradient(90deg, var(--pink-light), var(--purple-mid)); border-radius: 4px; transition: width 0.6s ease; }
-.char-lv   { font-size: 0.9rem; color: rgba(255,255,255,0.65); font-weight: 700; white-space: nowrap; }
+.char-lv   { font-size: 0.85rem; color: rgba(255,255,255,0.65); font-weight: 700; white-space: nowrap; }
 
 @media (max-width: 480px) {
   .character-widget {
     flex-direction: column;
     align-items: center;
-    padding: 24px 20px;
+    padding: 20px 16px;
+    margin-bottom: 16px;
   }
   .char-info { align-items: center; }
 }
