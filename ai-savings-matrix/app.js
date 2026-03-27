@@ -899,6 +899,16 @@ if (_accToggle && _accBody) {
 
 // ===== DIAGNOSIS TOOL =====
 function initDiagnosisTool() {
+  // アコーディオン開閉
+  const accToggle = document.getElementById('diag-acc-toggle');
+  const accBody = document.getElementById('diag-acc-body');
+  if (accToggle && accBody) {
+    accToggle.addEventListener('click', () => {
+      const isOpen = accBody.classList.toggle('is-open');
+      accToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+  }
+
   const state = { genre: null, level: null, tool: null };
 
   // --- キーワード辞書 ---
