@@ -901,96 +901,146 @@ if (_accToggle && _accBody) {
 function initDiagnosisTool() {
   const state = { genre: null, level: null, tool: null };
 
-  // Step バーを更新
+  // --- キーワード辞書 ---
+  const GENRE_KEYWORDS = {
+    education: ['塾', '家庭教師', '勉強', '受験', '学習', '予習', '復習', '英語', '数学', '算数', '国語', '理科', '教材', '参考書', '偏差値', '模試', '資格', '検定', 'FP', '簿記', 'TOEIC', '英検', '英会話', 'スクール', '教えてもらっ', '添削', '解説'],
+    outsource: ['サブスク', '外注', 'ブログ', '翻訳', 'デザイン', '記事', 'バナー', 'ライティング', 'コーディング', '動画編集', 'SNS運用', '制作', '発注', '委託', '代行'],
+    living:    ['保険', '通信', 'SIM', 'スマホ', '携帯', '電気', 'ガス', '光熱', 'プラン', '乗り換え', '見直し', '固定費', '家賃', '引っ越し', '特約', '証券'],
+    health:    ['食費', 'レシピ', '食材', '冷蔵庫', '日用品', '買い物', 'スーパー', '業務スーパー', '献立', 'メニュー', '食品ロス', '余り物', 'コスパ', '弁当'],
+    creative:  ['自己学習', 'スキルアップ', '副業', 'プログラミング', 'デザイン学習', '独学', 'オンライン講座', 'Udemy', '本', '書籍'],
+    money:     ['税金', '確定申告', '節税', '経費', '税理士', 'ふるさと納税', '年末調整', '控除', '申告', '医療費', '住宅ローン'],
+  };
+
+  const TOOL_KEYWORDS = {
+    chatgpt: ['ChatGPT', 'chatgpt', 'GPT', 'gpt', 'チャットGPT', 'チャットジーピーティー', 'OpenAI'],
+    claude:  ['Claude', 'claude', 'クロード', 'Anthropic'],
+    gemini:  ['Gemini', 'gemini', 'ジェミニ', 'Bard', 'bard', 'Google AI'],
+    manus:   ['Manus', 'manus', 'マナス'],
+  };
+
+  const LEVEL_KEYWORDS = {
+    beginner: { keywords: ['コピペ', 'そのまま', '聞いた', '聞くだけ', '質問した', '質問するだけ', '入力した', '入力するだけ', '教えて', 'コピー', '貼り付け', '丸投げ', 'そのまま使', '見つけたものを'], weight: 1 },
+    middle:   { keywords: ['カスタマイズ', '変えた', '調整', '比較', 'シミュレーション', '分析', 'アレンジ', '自分の状況', '少し変え', 'カスタム', '工夫', '組み合わせ', 'リスト化', '洗い出', '一覧'], weight: 2 },
+    advanced: { keywords: ['プロンプト設計', 'ゼロから', '試行錯誤', '自動化', 'スクリプト', 'API', '自分で設計', '独自の', 'システム化', 'ワークフロー', '構築', '開発'], weight: 3 },
+  };
+
+  // --- テキスト解析 ---
+  function analyzeText(text) {
+    const t = text.toLowerCase();
+
+    // ジャンル判定（キーワードヒット数）
+    let bestGenre = null, bestGenreScore = 0;
+    for (const [id, keywords] of Object.entries(GENRE_KEYWORDS)) {
+      const score = keywords.filter(kw => t.includes(kw.toLowerCase())).length;
+      if (score > bestGenreScore) { bestGenreScore = score; bestGenre = id; }
+    }
+
+    // ツール判定
+    let bestTool = null, bestToolScore = 0;
+    for (const [id, keywords] of Object.entries(TOOL_KEYWORDS)) {
+      const score = keywords.filter(kw => t.includes(kw.toLowerCase())).length;
+      if (score > bestToolScore) { bestToolScore = score; bestTool = id; }
+    }
+
+    // 難易度判定（上位レベルを優先: advancedがヒットしたらadvanced）
+    let bestLevel = null, bestLevelScore = 0;
+    for (const [id, { keywords, weight }] of Object.entries(LEVEL_KEYWORDS)) {
+      const hits = keywords.filter(kw => t.includes(kw.toLowerCase())).length;
+      if (hits > 0 && weight > bestLevelScore) { bestLevelScore = weight; bestLevel = id; }
+    }
+
+    return {
+      genre: bestGenre ? CONFIG.GENRES.find(g => g.id === bestGenre) : null,
+      tool:  bestTool  ? CONFIG.TOOLS.find(t => t.id === bestTool)  : null,
+      level: bestLevel ? CONFIG.LEVELS.find(l => l.id === bestLevel) : null,
+      genreConfidence: bestGenreScore,
+      toolConfidence:  bestToolScore,
+      levelConfidence: bestLevelScore,
+    };
+  }
+
+  // --- Step バー更新 ---
   function setStep(step) {
     document.querySelectorAll('.diag-stepbar-item').forEach(el => {
       const n = parseInt(el.dataset.step);
       el.classList.toggle('active', n === step);
       el.classList.toggle('done', n < step);
     });
-    ['1', '2', '3', 'result'].forEach(id => {
+    ['1', '2'].forEach(id => {
       const el = document.getElementById(`diag-step-${id}`);
       if (el) el.style.display = 'none';
     });
-    const target = document.getElementById(`diag-step-${step === 4 ? 'result' : step}`);
+    const target = document.getElementById(`diag-step-${step}`);
     if (target) { target.style.display = ''; target.style.animation = 'none'; void target.offsetWidth; target.style.animation = ''; }
   }
 
-  // Step 1: ジャンル選択
-  const genreGrid = document.getElementById('diag-genre-grid');
-  if (!genreGrid) return;
-  CONFIG.GENRES.forEach(genre => {
-    const btn = document.createElement('button');
-    btn.className = 'diag-genre-btn';
-    btn.innerHTML = `<div class="dgb-icon">${genre.icon}</div><div class="dgb-label">${genre.label}</div>`;
-    btn.addEventListener('click', () => {
-      state.genre = genre;
-      buildStep2();
-      setStep(2);
-    });
-    genreGrid.appendChild(btn);
+  // --- Step 1: テキスト入力 ---
+  const textarea = document.getElementById('diag-textarea');
+  const analyzeBtn = document.getElementById('diag-btn-analyze');
+  if (!textarea || !analyzeBtn) return;
+
+  textarea.addEventListener('input', () => {
+    analyzeBtn.disabled = textarea.value.trim().length < 10;
   });
 
-  // Step 2: 難易度選択
-  const levelDescriptions = {
-    beginner: 'どこかで見たプロンプトをそのままコピペして使った',
-    middle:   'テンプレートを自分の状況に合わせて少し変えた',
-    advanced: '自分でゼロからプロンプトを書いて試行錯誤した',
-  };
-
-  function buildStep2() {
-    const list = document.getElementById('diag-level-list');
-    list.innerHTML = '';
-    CONFIG.LEVELS.forEach(level => {
-      const btn = document.createElement('button');
-      btn.className = 'diag-level-btn';
-      btn.innerHTML = `
-        <span class="dlb-icon">${level.icon}</span>
-        <span class="dlb-text">
-          <span class="dlb-title">${level.label}（${level.desc}）</span>
-          <span class="dlb-desc">${levelDescriptions[level.id] || ''}</span>
-        </span>`;
-      btn.addEventListener('click', () => {
-        state.level = level;
-        buildStep3();
-        setStep(3);
-      });
-      list.appendChild(btn);
+  // 例文チップ
+  document.querySelectorAll('.diag-example-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      textarea.value = chip.dataset.text;
+      textarea.dispatchEvent(new Event('input'));
+      textarea.focus();
     });
-  }
+  });
 
-  // Step 3: ツール選択
-  function buildStep3() {
-    const grid = document.getElementById('diag-tool-grid');
-    grid.innerHTML = '';
-    CONFIG.TOOLS.forEach(tool => {
-      const btn = document.createElement('button');
-      btn.className = 'diag-tool-btn';
-      btn.innerHTML = `<span>${tool.icon}</span><span>${tool.label}</span>`;
-      btn.addEventListener('click', () => {
-        state.tool = tool;
-        buildResult();
-        setStep(4);
-      });
-      grid.appendChild(btn);
-    });
-  }
+  // 診断実行
+  analyzeBtn.addEventListener('click', () => {
+    const result = analyzeText(textarea.value);
+    state.genre = result.genre || CONFIG.GENRES[0];
+    state.level = result.level || CONFIG.LEVELS[0];
+    state.tool  = result.tool  || CONFIG.TOOLS[0];
+    buildResultStep(result);
+    setStep(2);
+  });
 
-  // Result
-  function buildResult() {
-    const el = document.getElementById('diag-result');
+  // --- Step 2: 診断結果 + 修正UI ---
+  function buildResultStep(result) {
+    // 結果表示
+    const el = document.getElementById('diag-auto-result');
+    const genreMsg = result.genreConfidence > 0
+      ? `<span class="diag-badge">${state.genre.icon} ${state.genre.label}</span>`
+      : `<span class="diag-badge diag-badge-unsure">${state.genre.icon} ${state.genre.label}？</span>`;
+    const levelMsg = result.levelConfidence > 0
+      ? `<span class="diag-badge">${state.level.icon} ${state.level.label}</span>`
+      : `<span class="diag-badge diag-badge-unsure">${state.level.icon} ${state.level.label}？</span>`;
+    const toolMsg = result.toolConfidence > 0
+      ? `<span class="diag-badge">${state.tool.icon} ${state.tool.label}</span>`
+      : `<span class="diag-badge diag-badge-unsure">${state.tool.icon} ${state.tool.label}？</span>`;
+
+    const hasUnsure = result.genreConfidence === 0 || result.levelConfidence === 0 || result.toolConfidence === 0;
+
     el.innerHTML = `
       <p class="diag-result-label">診断結果</p>
       <div class="diag-result-badges">
-        <span class="diag-badge">${state.genre.icon} ${state.genre.label}</span>
+        ${genreMsg}
         <span class="diag-badge-x">×</span>
-        <span class="diag-badge">${state.level.icon} ${state.level.label}</span>
+        ${levelMsg}
         <span class="diag-badge-x">×</span>
-        <span class="diag-badge">${state.tool.icon} ${state.tool.label}</span>
+        ${toolMsg}
       </div>
-      <p class="diag-result-main">このマスに投稿できます！</p>
-      <p class="diag-result-note">下のボタンを押すと、カテゴリー・難易度・ツールが<br>フォームに自動入力された状態で開きます</p>`;
+      <p class="diag-result-main">${hasUnsure ? '？マークは自信がないところです。下で直してください' : 'このマスに投稿できます！'}</p>`;
 
+    // 修正用ボタン群を構築
+    buildCorrectionButtons('diag-fix-genre', CONFIG.GENRES, state.genre, (g) => {
+      state.genre = g; refreshResultBadges();
+    });
+    buildCorrectionButtons('diag-fix-level', CONFIG.LEVELS, state.level, (l) => {
+      state.level = l; refreshResultBadges();
+    });
+    buildCorrectionButtons('diag-fix-tool', CONFIG.TOOLS, state.tool, (t) => {
+      state.tool = t; refreshResultBadges();
+    });
+
+    // 投稿ボタン
     document.getElementById('diag-btn-submit').onclick = () => {
       if (!CONFIG.FORM_BASE_URL) { alert('フォームURLが設定されていません'); return; }
       const params = new URLSearchParams();
@@ -1001,9 +1051,41 @@ function initDiagnosisTool() {
     };
   }
 
+  function buildCorrectionButtons(containerId, items, selected, onSelect) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    items.forEach(item => {
+      const btn = document.createElement('button');
+      btn.className = 'diag-fix-btn' + (item.id === selected.id ? ' active' : '');
+      btn.innerHTML = `${item.icon} ${item.label}`;
+      btn.addEventListener('click', () => {
+        container.querySelectorAll('.diag-fix-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        onSelect(item);
+      });
+      container.appendChild(btn);
+    });
+  }
+
+  function refreshResultBadges() {
+    const el = document.getElementById('diag-auto-result');
+    el.innerHTML = `
+      <p class="diag-result-label">診断結果</p>
+      <div class="diag-result-badges">
+        <span class="diag-badge">${state.genre.icon} ${state.genre.label}</span>
+        <span class="diag-badge-x">×</span>
+        <span class="diag-badge">${state.level.icon} ${state.level.label}</span>
+        <span class="diag-badge-x">×</span>
+        <span class="diag-badge">${state.tool.icon} ${state.tool.label}</span>
+      </div>
+      <p class="diag-result-main">このマスに投稿できます！</p>`;
+  }
+
   // リスタート
   document.getElementById('diag-restart').addEventListener('click', () => {
     state.genre = null; state.level = null; state.tool = null;
+    textarea.value = '';
+    analyzeBtn.disabled = true;
     setStep(1);
   });
 }

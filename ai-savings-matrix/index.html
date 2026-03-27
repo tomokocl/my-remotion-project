@@ -152,49 +152,67 @@
       <div class="diagnosis-header">
         <div class="diagnosis-header-text">
           <h2 class="diagnosis-title">あなたの事例、どこに入る？</h2>
-          <p class="diagnosis-subtitle">3ステップで診断して、そのままフォームに投稿できます</p>
+          <p class="diagnosis-subtitle">体験を書くだけで自動分類 → そのまま投稿できます</p>
         </div>
       </div>
 
       <!-- STEP BAR -->
       <div class="diag-stepbar" id="diag-stepbar">
         <div class="diag-stepbar-item active" data-step="1">
-          <span class="dsb-num">1</span><span class="dsb-label">カテゴリー</span>
+          <span class="dsb-num">1</span><span class="dsb-label">体験を書く</span>
         </div>
         <div class="dsb-line"></div>
         <div class="diag-stepbar-item" data-step="2">
-          <span class="dsb-num">2</span><span class="dsb-label">難易度</span>
+          <span class="dsb-num">2</span><span class="dsb-label">自動診断</span>
         </div>
         <div class="dsb-line"></div>
         <div class="diag-stepbar-item" data-step="3">
-          <span class="dsb-num">3</span><span class="dsb-label">AIツール</span>
+          <span class="dsb-num">3</span><span class="dsb-label">投稿</span>
         </div>
       </div>
 
-      <!-- Step 1: カテゴリー -->
+      <!-- Step 1: 自由テキスト入力 -->
       <div class="diag-step" id="diag-step-1">
-        <p class="diag-question">どの節約をしましたか？</p>
-        <div class="diag-genre-grid" id="diag-genre-grid"></div>
+        <p class="diag-question">どんなAI節約をしましたか？<br><span class="diag-question-sub">自由に書いてください。カテゴリー・難易度・ツールを自動で判定します</span></p>
+        <textarea class="diag-textarea" id="diag-textarea" placeholder="例：ChatGPTに子どもの算数を教えてもらって、塾の月謝2万円を節約できた。プロンプトはネットで見つけたものをそのままコピペして使った。" rows="5"></textarea>
+        <div class="diag-examples">
+          <p class="diag-examples-title">こんな感じで書けばOK！</p>
+          <div class="diag-example-chips">
+            <button class="diag-example-chip" data-text="ChatGPTに子どもの数学の問題を解説してもらって塾をやめた。コピペで聞くだけで月2万円浮いた。">塾の代わりにAI</button>
+            <button class="diag-example-chip" data-text="Claudeに全部のサブスクを一覧にしてもらって、使ってないやつを洗い出した。自分の状況に合わせてプロンプトを調整した。">サブスク見直し</button>
+            <button class="diag-example-chip" data-text="Geminiで保険証券を読み込ませて不要な特約を分析。自分でプロンプトを設計して比較表を作った。">保険の見直し</button>
+            <button class="diag-example-chip" data-text="ChatGPTに冷蔵庫の余り物を伝えてレシピを教えてもらった。聞くだけで食品ロスが減って月3000円節約。">食費の節約</button>
+          </div>
+        </div>
+        <button class="diag-btn-analyze" id="diag-btn-analyze" disabled>診断する →</button>
       </div>
 
-      <!-- Step 2: 難易度 -->
+      <!-- Step 2: 自動診断結果 + 修正 -->
       <div class="diag-step" id="diag-step-2" style="display:none">
-        <p class="diag-question">AIをどのくらい活用しましたか？</p>
-        <div class="diag-level-list" id="diag-level-list"></div>
-      </div>
+        <div class="diag-auto-result" id="diag-auto-result"></div>
 
-      <!-- Step 3: ツール -->
-      <div class="diag-step" id="diag-step-3" style="display:none">
-        <p class="diag-question">使ったAIツールは？</p>
-        <div class="diag-tool-grid" id="diag-tool-grid"></div>
-      </div>
+        <div class="diag-corrections" id="diag-corrections">
+          <p class="diag-corrections-title">違ってたら選び直してください</p>
 
-      <!-- Result -->
-      <div class="diag-step" id="diag-step-result" style="display:none">
-        <div class="diag-result" id="diag-result"></div>
+          <div class="diag-correction-row">
+            <label class="diag-correction-label">カテゴリー</label>
+            <div class="diag-correction-options" id="diag-fix-genre"></div>
+          </div>
+
+          <div class="diag-correction-row">
+            <label class="diag-correction-label">難易度</label>
+            <div class="diag-correction-options" id="diag-fix-level"></div>
+          </div>
+
+          <div class="diag-correction-row">
+            <label class="diag-correction-label">AIツール</label>
+            <div class="diag-correction-options" id="diag-fix-tool"></div>
+          </div>
+        </div>
+
         <div class="diag-result-actions">
           <button class="diag-btn-submit" id="diag-btn-submit">このフォームで投稿する →</button>
-          <button class="diag-restart" id="diag-restart">もう一度診断する</button>
+          <button class="diag-restart" id="diag-restart">最初からやり直す</button>
         </div>
       </div>
     </div>
