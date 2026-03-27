@@ -897,6 +897,117 @@ if (_accToggle && _accBody) {
   });
 }
 
+// ===== DIAGNOSIS TOOL =====
+function initDiagnosisTool() {
+  const state = { genre: null, level: null, tool: null };
+
+  // Step バーを更新
+  function setStep(step) {
+    document.querySelectorAll('.diag-stepbar-item').forEach(el => {
+      const n = parseInt(el.dataset.step);
+      el.classList.toggle('active', n === step);
+      el.classList.toggle('done', n < step);
+    });
+    ['1', '2', '3', 'result'].forEach(id => {
+      const el = document.getElementById(`diag-step-${id}`);
+      if (el) el.style.display = 'none';
+    });
+    const target = document.getElementById(`diag-step-${step === 4 ? 'result' : step}`);
+    if (target) { target.style.display = ''; target.style.animation = 'none'; void target.offsetWidth; target.style.animation = ''; }
+  }
+
+  // Step 1: ジャンル選択
+  const genreGrid = document.getElementById('diag-genre-grid');
+  if (!genreGrid) return;
+  CONFIG.GENRES.forEach(genre => {
+    const btn = document.createElement('button');
+    btn.className = 'diag-genre-btn';
+    btn.innerHTML = `<div class="dgb-icon">${genre.icon}</div><div class="dgb-label">${genre.label}</div>`;
+    btn.addEventListener('click', () => {
+      state.genre = genre;
+      buildStep2();
+      setStep(2);
+    });
+    genreGrid.appendChild(btn);
+  });
+
+  // Step 2: 難易度選択
+  const levelDescriptions = {
+    beginner: 'どこかで見たプロンプトをそのままコピペして使った',
+    middle:   'テンプレートを自分の状況に合わせて少し変えた',
+    advanced: '自分でゼロからプロンプトを書いて試行錯誤した',
+  };
+
+  function buildStep2() {
+    const list = document.getElementById('diag-level-list');
+    list.innerHTML = '';
+    CONFIG.LEVELS.forEach(level => {
+      const btn = document.createElement('button');
+      btn.className = 'diag-level-btn';
+      btn.innerHTML = `
+        <span class="dlb-icon">${level.icon}</span>
+        <span class="dlb-text">
+          <span class="dlb-title">${level.label}（${level.desc}）</span>
+          <span class="dlb-desc">${levelDescriptions[level.id] || ''}</span>
+        </span>`;
+      btn.addEventListener('click', () => {
+        state.level = level;
+        buildStep3();
+        setStep(3);
+      });
+      list.appendChild(btn);
+    });
+  }
+
+  // Step 3: ツール選択
+  function buildStep3() {
+    const grid = document.getElementById('diag-tool-grid');
+    grid.innerHTML = '';
+    CONFIG.TOOLS.forEach(tool => {
+      const btn = document.createElement('button');
+      btn.className = 'diag-tool-btn';
+      btn.innerHTML = `<span>${tool.icon}</span><span>${tool.label}</span>`;
+      btn.addEventListener('click', () => {
+        state.tool = tool;
+        buildResult();
+        setStep(4);
+      });
+      grid.appendChild(btn);
+    });
+  }
+
+  // Result
+  function buildResult() {
+    const el = document.getElementById('diag-result');
+    el.innerHTML = `
+      <p class="diag-result-label">診断結果</p>
+      <div class="diag-result-badges">
+        <span class="diag-badge">${state.genre.icon} ${state.genre.label}</span>
+        <span class="diag-badge-x">×</span>
+        <span class="diag-badge">${state.level.icon} ${state.level.label}</span>
+        <span class="diag-badge-x">×</span>
+        <span class="diag-badge">${state.tool.icon} ${state.tool.label}</span>
+      </div>
+      <p class="diag-result-main">このマスに投稿できます！</p>
+      <p class="diag-result-note">下のボタンを押すと、カテゴリー・難易度・ツールが<br>フォームに自動入力された状態で開きます</p>`;
+
+    document.getElementById('diag-btn-submit').onclick = () => {
+      if (!CONFIG.FORM_BASE_URL) { alert('フォームURLが設定されていません'); return; }
+      const params = new URLSearchParams();
+      if (CONFIG.FORM_FIELDS.tool)  params.set(CONFIG.FORM_FIELDS.tool,  state.tool.label);
+      if (CONFIG.FORM_FIELDS.genre) params.set(CONFIG.FORM_FIELDS.genre, state.genre.label);
+      if (CONFIG.FORM_FIELDS.level) params.set(CONFIG.FORM_FIELDS.level, state.level.label);
+      window.open(`${CONFIG.FORM_BASE_URL}?${params.toString()}`, '_blank');
+    };
+  }
+
+  // リスタート
+  document.getElementById('diag-restart').addEventListener('click', () => {
+    state.genre = null; state.level = null; state.tool = null;
+    setStep(1);
+  });
+}
+
 // ===== 初期化 =====
 (async () => {
   await loadData();
@@ -904,5 +1015,6 @@ if (_accToggle && _accBody) {
   renderMatrix();      // 2枚目: ツール×ジャンル
   renderCharacterWidget();
   loadLikeCounts();
+  initDiagnosisTool();
   if (_fromForm) await _handleSubmissionReturn();
 })();

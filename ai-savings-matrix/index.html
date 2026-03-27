@@ -146,6 +146,60 @@
     </div>
   </section>
 
+  <!-- DIAGNOSIS TOOL -->
+  <section class="diagnosis-section">
+    <div class="diagnosis-inner">
+      <div class="diagnosis-header">
+        <div class="diagnosis-header-text">
+          <h2 class="diagnosis-title">あなたの事例、どこに入る？</h2>
+          <p class="diagnosis-subtitle">3ステップで診断して、そのままフォームに投稿できます</p>
+        </div>
+      </div>
+
+      <!-- STEP BAR -->
+      <div class="diag-stepbar" id="diag-stepbar">
+        <div class="diag-stepbar-item active" data-step="1">
+          <span class="dsb-num">1</span><span class="dsb-label">カテゴリー</span>
+        </div>
+        <div class="dsb-line"></div>
+        <div class="diag-stepbar-item" data-step="2">
+          <span class="dsb-num">2</span><span class="dsb-label">難易度</span>
+        </div>
+        <div class="dsb-line"></div>
+        <div class="diag-stepbar-item" data-step="3">
+          <span class="dsb-num">3</span><span class="dsb-label">AIツール</span>
+        </div>
+      </div>
+
+      <!-- Step 1: カテゴリー -->
+      <div class="diag-step" id="diag-step-1">
+        <p class="diag-question">どの節約をしましたか？</p>
+        <div class="diag-genre-grid" id="diag-genre-grid"></div>
+      </div>
+
+      <!-- Step 2: 難易度 -->
+      <div class="diag-step" id="diag-step-2" style="display:none">
+        <p class="diag-question">AIをどのくらい活用しましたか？</p>
+        <div class="diag-level-list" id="diag-level-list"></div>
+      </div>
+
+      <!-- Step 3: ツール -->
+      <div class="diag-step" id="diag-step-3" style="display:none">
+        <p class="diag-question">使ったAIツールは？</p>
+        <div class="diag-tool-grid" id="diag-tool-grid"></div>
+      </div>
+
+      <!-- Result -->
+      <div class="diag-step" id="diag-step-result" style="display:none">
+        <div class="diag-result" id="diag-result"></div>
+        <div class="diag-result-actions">
+          <button class="diag-btn-submit" id="diag-btn-submit">このフォームで投稿する →</button>
+          <button class="diag-restart" id="diag-restart">もう一度診断する</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- MATRIX -->
   <main class="matrix-wrap">
 
