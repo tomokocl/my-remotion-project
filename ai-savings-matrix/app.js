@@ -99,6 +99,10 @@ const LEVELS = [
   { level: 2, name: "アオコ",       img: "assets/Lv2.png", minScore: 50  },
   { level: 3, name: "アオニャン",   img: "assets/Lv3.png", minScore: 150 },
   { level: 4, name: "アオオウジャ", img: "assets/Lv4.png", minScore: 400 },
+  { level: 5, name: "チビモモ",     img: "assets/Lv5.png", minScore: 700 },
+  { level: 6, name: "モモコ",       img: "assets/Lv6.png", minScore: 1100 },
+  { level: 7, name: "モモニャン",   img: "assets/Lv7.png", minScore: 1600 },
+  { level: 8, name: "モモテンシ",   img: "assets/Lv8.png", minScore: 2200 },
 ];
 
 function calcCharacterScore() {
