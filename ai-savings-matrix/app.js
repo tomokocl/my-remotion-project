@@ -986,12 +986,18 @@ function initDiagnosisTool() {
   );
 
   // ③ 共有タイプ（HTMLに直書き済み）
+  const SHARE_LABELS = {
+    advanced: 'リンクで共有（GEM・GPTs等）',
+    middle:   'プロンプト・テンプレ共有',
+    beginner: '体験談として共有',
+  };
+
   document.querySelectorAll('#qpost-levels .qpost-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#qpost-levels .qpost-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const levelId = btn.dataset.level;
-      state.level = CONFIG.LEVELS.find(l => l.id === levelId) || { id: levelId, label: levelId };
+      state.level = { id: levelId, label: SHARE_LABELS[levelId] || levelId };
       updateSubmitState();
     });
   });
