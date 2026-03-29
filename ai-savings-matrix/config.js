@@ -9,7 +9,7 @@ const CONFIG = {
   GAS_LIKES_URL: "https://script.google.com/macros/s/AKfycbz7ejh14Jy0aotTZ0Ot3llKS5Wx7VDZG51zVYwaXGFaKJ2eW79Y3vJP8_TW7-7_1_9j3g/exec",
 
   // GAS やり方（howto）Web App URL（gas_howto.js をデプロイ後に入力）
-  GAS_HOWTO_URL: "",
+  GAS_HOWTO_URL: "https://script.google.com/macros/s/AKfycbz-x4ChiVg6y5nFQvMk6uVJ88l43OT_zFqlWXWGuxjCqol4_6xSGbDScosEjEqHwD83lQ/exec",
 
   // GoogleフォームのベースURL
   FORM_BASE_URL: "https://docs.google.com/forms/d/e/1FAIpQLSdGwLYspsO4hZfO5kjZUt0VfnS1xrokFFuEas01p6U88q5jpg/viewform",
