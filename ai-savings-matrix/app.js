@@ -944,7 +944,7 @@ if (_accToggle && _accBody) {
   });
 }
 
-// ===== DIAGNOSIS TOOL =====
+// ===== QUICK POST TOOL =====
 function initDiagnosisTool() {
   // アコーディオン開閉
   const accToggle = document.getElementById('diag-acc-toggle');
@@ -956,194 +956,74 @@ function initDiagnosisTool() {
     });
   }
 
-  const state = { genre: null, level: null, tool: null };
+  const state = { tool: null, genre: null, level: null };
 
-  // --- キーワード辞書 ---
-  const GENRE_KEYWORDS = {
-    education: ['塾', '家庭教師', '勉強', '受験', '学習', '予習', '復習', '英語', '数学', '算数', '国語', '理科', '教材', '参考書', '偏差値', '模試', '資格', '検定', 'FP', '簿記', 'TOEIC', '英検', '英会話', 'スクール', '教えてもらっ', '添削', '解説'],
-    outsource: ['サブスク', '外注', 'ブログ', '翻訳', 'デザイン', '記事', 'バナー', 'ライティング', 'コーディング', '動画編集', 'SNS運用', '制作', '発注', '委託', '代行'],
-    living:    ['保険', '通信', 'SIM', 'スマホ', '携帯', '電気', 'ガス', '光熱', 'プラン', '乗り換え', '見直し', '固定費', '家賃', '引っ越し', '特約', '証券'],
-    health:    ['食費', 'レシピ', '食材', '冷蔵庫', '日用品', '買い物', 'スーパー', '業務スーパー', '献立', 'メニュー', '食品ロス', '余り物', 'コスパ', '弁当'],
-    creative:  ['自己学習', 'スキルアップ', '副業', 'プログラミング', 'デザイン学習', '独学', 'オンライン講座', 'Udemy', '本', '書籍'],
-    money:     ['税金', '確定申告', '節税', '経費', '税理士', 'ふるさと納税', '年末調整', '控除', '申告', '医療費', '住宅ローン'],
-  };
-
-  const TOOL_KEYWORDS = {
-    chatgpt: ['ChatGPT', 'chatgpt', 'GPT', 'gpt', 'チャットGPT', 'チャットジーピーティー', 'OpenAI'],
-    claude:  ['Claude', 'claude', 'クロード', 'Anthropic'],
-    gemini:  ['Gemini', 'gemini', 'ジェミニ', 'Bard', 'bard', 'Google AI'],
-    manus:   ['Manus', 'manus', 'マナス'],
-  };
-
-  const LEVEL_KEYWORDS = {
-    beginner: { keywords: ['コピペ', 'そのまま', '聞いた', '聞くだけ', '質問した', '質問するだけ', '入力した', '入力するだけ', '教えて', 'コピー', '貼り付け', '丸投げ', 'そのまま使', '見つけたものを'], weight: 1 },
-    middle:   { keywords: ['カスタマイズ', '変えた', '調整', '比較', 'シミュレーション', '分析', 'アレンジ', '自分の状況', '少し変え', 'カスタム', '工夫', '組み合わせ', 'リスト化', '洗い出', '一覧'], weight: 2 },
-    advanced: { keywords: ['プロンプト設計', 'ゼロから', '試行錯誤', '自動化', 'スクリプト', 'API', '自分で設計', '独自の', 'システム化', 'ワークフロー', '構築', '開発'], weight: 3 },
-  };
-
-  // --- テキスト解析 ---
-  function analyzeText(text) {
-    const t = text.toLowerCase();
-
-    // ジャンル判定（キーワードヒット数）
-    let bestGenre = null, bestGenreScore = 0;
-    for (const [id, keywords] of Object.entries(GENRE_KEYWORDS)) {
-      const score = keywords.filter(kw => t.includes(kw.toLowerCase())).length;
-      if (score > bestGenreScore) { bestGenreScore = score; bestGenre = id; }
-    }
-
-    // ツール判定
-    let bestTool = null, bestToolScore = 0;
-    for (const [id, keywords] of Object.entries(TOOL_KEYWORDS)) {
-      const score = keywords.filter(kw => t.includes(kw.toLowerCase())).length;
-      if (score > bestToolScore) { bestToolScore = score; bestTool = id; }
-    }
-
-    // 難易度判定（上位レベルを優先: advancedがヒットしたらadvanced）
-    let bestLevel = null, bestLevelScore = 0;
-    for (const [id, { keywords, weight }] of Object.entries(LEVEL_KEYWORDS)) {
-      const hits = keywords.filter(kw => t.includes(kw.toLowerCase())).length;
-      if (hits > 0 && weight > bestLevelScore) { bestLevelScore = weight; bestLevel = id; }
-    }
-
-    return {
-      genre: bestGenre ? CONFIG.GENRES.find(g => g.id === bestGenre) : null,
-      tool:  bestTool  ? CONFIG.TOOLS.find(t => t.id === bestTool)  : null,
-      level: bestLevel ? CONFIG.LEVELS.find(l => l.id === bestLevel) : null,
-      genreConfidence: bestGenreScore,
-      toolConfidence:  bestToolScore,
-      levelConfidence: bestLevelScore,
-    };
-  }
-
-  // --- Step バー更新 ---
-  function setStep(step) {
-    document.querySelectorAll('.diag-stepbar-item').forEach(el => {
-      const n = parseInt(el.dataset.step);
-      el.classList.toggle('active', n === step);
-      el.classList.toggle('done', n < step);
-    });
-    ['1', '2'].forEach(id => {
-      const el = document.getElementById(`diag-step-${id}`);
-      if (el) el.style.display = 'none';
-    });
-    const target = document.getElementById(`diag-step-${step}`);
-    if (target) { target.style.display = ''; target.style.animation = 'none'; void target.offsetWidth; target.style.animation = ''; }
-  }
-
-  // --- Step 1: テキスト入力 ---
-  const textarea = document.getElementById('diag-textarea');
-  const analyzeBtn = document.getElementById('diag-btn-analyze');
-  if (!textarea || !analyzeBtn) return;
-
-  textarea.addEventListener('input', () => {
-    analyzeBtn.disabled = textarea.value.trim().length < 10;
-  });
-
-  // 例文チップ
-  document.querySelectorAll('.diag-example-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      textarea.value = chip.dataset.text;
-      textarea.dispatchEvent(new Event('input'));
-      textarea.focus();
-    });
-  });
-
-  // 診断実行
-  analyzeBtn.addEventListener('click', () => {
-    const result = analyzeText(textarea.value);
-    state.genre = result.genre || CONFIG.GENRES[0];
-    state.level = result.level || CONFIG.LEVELS[0];
-    state.tool  = result.tool  || CONFIG.TOOLS[0];
-    buildResultStep(result);
-    setStep(2);
-  });
-
-  // --- Step 2: 診断結果 + 修正UI ---
-  function buildResultStep(result) {
-    // 結果表示
-    const el = document.getElementById('diag-auto-result');
-    const genreMsg = result.genreConfidence > 0
-      ? `<span class="diag-badge">${state.genre.icon} ${state.genre.label}</span>`
-      : `<span class="diag-badge diag-badge-unsure">${state.genre.icon} ${state.genre.label}？</span>`;
-    const levelMsg = result.levelConfidence > 0
-      ? `<span class="diag-badge">${state.level.icon} ${state.level.label}</span>`
-      : `<span class="diag-badge diag-badge-unsure">${state.level.icon} ${state.level.label}？</span>`;
-    const toolMsg = result.toolConfidence > 0
-      ? `<span class="diag-badge">${state.tool.icon} ${state.tool.label}</span>`
-      : `<span class="diag-badge diag-badge-unsure">${state.tool.icon} ${state.tool.label}？</span>`;
-
-    const hasUnsure = result.genreConfidence === 0 || result.levelConfidence === 0 || result.toolConfidence === 0;
-
-    el.innerHTML = `
-      <p class="diag-result-label">診断結果</p>
-      <div class="diag-result-badges">
-        ${genreMsg}
-        <span class="diag-badge-x">×</span>
-        ${levelMsg}
-        <span class="diag-badge-x">×</span>
-        ${toolMsg}
-      </div>
-      <p class="diag-result-main">${hasUnsure ? '？マークは自信がないところです。下で直してください' : 'このマスに投稿できます！'}</p>`;
-
-    // 修正用ボタン群を構築
-    buildCorrectionButtons('diag-fix-genre', CONFIG.GENRES, state.genre, (g) => {
-      state.genre = g; refreshResultBadges();
-    });
-    buildCorrectionButtons('diag-fix-level', CONFIG.LEVELS, state.level, (l) => {
-      state.level = l; refreshResultBadges();
-    });
-    buildCorrectionButtons('diag-fix-tool', CONFIG.TOOLS, state.tool, (t) => {
-      state.tool = t; refreshResultBadges();
-    });
-
-    // 投稿ボタン
-    document.getElementById('diag-btn-submit').onclick = () => {
-      if (!CONFIG.FORM_BASE_URL) { alert('フォームURLが設定されていません'); return; }
-      const params = new URLSearchParams();
-      if (CONFIG.FORM_FIELDS.tool)  params.set(CONFIG.FORM_FIELDS.tool,  state.tool.label);
-      if (CONFIG.FORM_FIELDS.genre) params.set(CONFIG.FORM_FIELDS.genre, state.genre.label);
-      if (CONFIG.FORM_FIELDS.level) params.set(CONFIG.FORM_FIELDS.level, state.level.label);
-      window.open(`${CONFIG.FORM_BASE_URL}?${params.toString()}`, '_blank');
-    };
-  }
-
-  function buildCorrectionButtons(containerId, items, selected, onSelect) {
+  // ボタン選択ヘルパー
+  function setupButtonRow(containerId, items, key, makeLabel) {
     const container = document.getElementById(containerId);
-    container.innerHTML = '';
+    if (!container) return;
     items.forEach(item => {
       const btn = document.createElement('button');
-      btn.className = 'diag-fix-btn' + (item.id === selected.id ? ' active' : '');
-      btn.innerHTML = `${item.icon} ${item.label}`;
+      btn.className = 'qpost-btn';
+      btn.innerHTML = makeLabel(item);
       btn.addEventListener('click', () => {
-        container.querySelectorAll('.diag-fix-btn').forEach(b => b.classList.remove('active'));
+        container.querySelectorAll('.qpost-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        onSelect(item);
+        state[key] = item;
+        updateSubmitState();
       });
       container.appendChild(btn);
     });
   }
 
-  function refreshResultBadges() {
-    const el = document.getElementById('diag-auto-result');
-    el.innerHTML = `
-      <p class="diag-result-label">診断結果</p>
-      <div class="diag-result-badges">
-        <span class="diag-badge">${state.genre.icon} ${state.genre.label}</span>
-        <span class="diag-badge-x">×</span>
-        <span class="diag-badge">${state.level.icon} ${state.level.label}</span>
-        <span class="diag-badge-x">×</span>
-        <span class="diag-badge">${state.tool.icon} ${state.tool.label}</span>
-      </div>
-      <p class="diag-result-main">このマスに投稿できます！</p>`;
-  }
+  // ① ツール選択
+  setupButtonRow('qpost-tools', CONFIG.TOOLS, 'tool', t =>
+    `<span class="qpost-btn-icon">${t.icon}</span>${t.label}`
+  );
 
-  // リスタート
-  document.getElementById('diag-restart').addEventListener('click', () => {
-    state.genre = null; state.level = null; state.tool = null;
-    textarea.value = '';
-    analyzeBtn.disabled = true;
-    setStep(1);
+  // ② ジャンル選択
+  setupButtonRow('qpost-genres', CONFIG.GENRES, 'genre', g =>
+    `<span class="qpost-btn-icon">${g.icon}</span>${g.label}`
+  );
+
+  // ③ 共有タイプ（HTMLに直書き済み）
+  document.querySelectorAll('#qpost-levels .qpost-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#qpost-levels .qpost-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const levelId = btn.dataset.level;
+      state.level = CONFIG.LEVELS.find(l => l.id === levelId) || { id: levelId, label: levelId };
+      updateSubmitState();
+    });
+  });
+
+  // 送信ボタンの有効/無効 + サマリー表示
+  function updateSubmitState() {
+    const submitBtn = document.getElementById('qpost-submit');
+    const summary = document.getElementById('qpost-summary');
+    const ready = state.tool && state.genre && state.level;
+    submitBtn.disabled = !ready;
+
+    if (ready) {
+      summary.innerHTML = `${state.tool.icon} ${state.tool.label} × ${state.genre.icon} ${state.genre.label} × ${state.level.label}`;
+    } else {
+      const missing = [];
+      if (!state.tool)  missing.push('ツール');
+      if (!state.genre) missing.push('ジャンル');
+      if (!state.level) missing.push('共有タイプ');
+      summary.textContent = `あと${missing.join('・')}を選んでください`;
+    }
+  }
+  updateSubmitState();
+
+  // 送信 → Googleフォームをプリフィルで開く
+  document.getElementById('qpost-submit').addEventListener('click', () => {
+    if (!CONFIG.FORM_BASE_URL) { alert('フォームURLが設定されていません'); return; }
+    const params = new URLSearchParams();
+    if (CONFIG.FORM_FIELDS.tool)  params.set(CONFIG.FORM_FIELDS.tool,  state.tool.label);
+    if (CONFIG.FORM_FIELDS.genre) params.set(CONFIG.FORM_FIELDS.genre, state.genre.label);
+    if (CONFIG.FORM_FIELDS.level) params.set(CONFIG.FORM_FIELDS.level, state.level.label);
+    window.open(`${CONFIG.FORM_BASE_URL}?${params.toString()}`, '_blank');
   });
 }
 

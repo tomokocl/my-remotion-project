@@ -1684,256 +1684,92 @@ body {
   margin: 0 8px;
 }
 
-/* Step content */
-.diag-step {
-  animation: diag-fade 0.3s ease both;
-}
-
-@keyframes diag-fade {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.diag-question {
-  font-size: 1rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.diag-question-sub {
-  display: block;
-  font-size: 0.82rem;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.5);
-  margin-top: 8px;
-}
-
-/* Textarea (step 1) */
-.diag-textarea {
-  width: 100%;
-  min-height: 120px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 14px;
-  padding: 16px 18px;
-  font-size: 0.92rem;
-  font-family: inherit;
-  color: #fff;
-  line-height: 1.7;
-  resize: vertical;
-  transition: border-color 0.2s;
-  box-sizing: border-box;
-}
-
-.diag-textarea::placeholder {
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.diag-textarea:focus {
-  outline: none;
-  border-color: rgba(156, 93, 229, 0.6);
-}
-
-/* Example chips */
-.diag-examples {
-  margin-top: 16px;
+/* ===== QUICK POST FORM ===== */
+.qpost-section {
   margin-bottom: 20px;
 }
 
-.diag-examples-title {
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.4);
+.qpost-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
   margin-bottom: 10px;
-  text-align: center;
 }
 
-.diag-example-chips {
+.qpost-btn-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  justify-content: center;
 }
 
-.diag-example-chip {
-  background: rgba(124, 58, 237, 0.15);
-  border: 1px solid rgba(124, 58, 237, 0.3);
-  border-radius: 40px;
-  padding: 6px 16px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #c4b5fd;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.diag-example-chip:hover {
-  background: rgba(124, 58, 237, 0.3);
-  border-color: rgba(124, 58, 237, 0.5);
-}
-
-/* Analyze button */
-.diag-btn-analyze {
-  display: block;
-  margin: 0 auto;
-  background: linear-gradient(135deg, var(--pink), var(--purple-mid));
-  border: none;
-  border-radius: 40px;
-  padding: 14px 40px;
-  font-size: 0.95rem;
-  font-weight: 900;
-  color: #fff;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
-  box-shadow: 0 4px 20px rgba(255, 45, 123, 0.35);
-}
-
-.diag-btn-analyze:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.diag-btn-analyze:not(:disabled):hover {
-  opacity: 0.88;
-  transform: translateY(-2px);
-}
-
-/* Auto result (step 2) */
-.diag-auto-result {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
-  padding: 28px;
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-/* Badge unsure */
-.diag-badge-unsure {
-  border-style: dashed !important;
-  opacity: 0.7;
-}
-
-/* Correction UI */
-.diag-corrections {
-  margin-bottom: 28px;
-}
-
-.diag-corrections-title {
+.qpost-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 10px 16px;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.45);
-  text-align: center;
-  margin-bottom: 18px;
-}
-
-.diag-correction-row {
-  margin-bottom: 14px;
-}
-
-.diag-correction-label {
-  display: block;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.55);
-  margin-bottom: 8px;
-}
-
-.diag-correction-options {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 6px;
 }
 
-.diag-fix-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 40px;
-  padding: 6px 14px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.diag-fix-btn:hover {
+.qpost-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
+  transform: translateY(-1px);
 }
 
-.diag-fix-btn.active {
+.qpost-btn.active {
   background: rgba(124, 58, 237, 0.3);
   border-color: rgba(124, 58, 237, 0.6);
   color: #d8b4fe;
 }
 
-/* Result */
-.diag-result {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
-  padding: 28px 28px;
-  text-align: center;
-  margin-bottom: 24px;
+.qpost-btn-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
-.diag-result-label {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.55);
-  margin-bottom: 12px;
-}
-
-.diag-result-main {
-  font-size: 1.25rem;
-  font-weight: 900;
+.qpost-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  font-family: inherit;
   color: #fff;
-  margin-bottom: 16px;
-  line-height: 1.5;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
 }
 
-.diag-result-badges {
+.qpost-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.qpost-input:focus {
+  outline: none;
+  border-color: rgba(156, 93, 229, 0.6);
+}
+
+.qpost-submit-row {
+  text-align: center;
+  padding-top: 8px;
+}
+
+.qpost-selected-summary {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.diag-badge {
-  background: rgba(124, 58, 237, 0.25);
-  border: 1px solid rgba(124, 58, 237, 0.4);
-  border-radius: 40px;
-  padding: 6px 18px;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #d8b4fe;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.diag-badge-x {
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 0.9rem;
-}
-
-.diag-result-note {
-  font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.5);
-  line-height: 1.6;
-}
-
-.diag-result-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+  gap: 4px;
 }
 
 .diag-btn-submit {
@@ -1949,23 +1785,14 @@ body {
   box-shadow: 0 4px 20px rgba(255, 45, 123, 0.35);
 }
 
-.diag-btn-submit:hover {
+.diag-btn-submit:hover:not(:disabled) {
   opacity: 0.88;
   transform: translateY(-2px);
 }
 
-.diag-restart {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 0.82rem;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 4px;
-}
-
-.diag-restart:hover {
-  color: rgba(255, 255, 255, 0.7);
+.diag-btn-submit:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 @media (max-width: 600px) {
@@ -1975,12 +1802,8 @@ body {
   .diag-acc-sub { font-size: 0.72rem; }
   .diag-acc-cta { font-size: 0.78rem; }
   .diag-acc-body.is-open { padding: 0 18px 24px; }
-  .dsb-label { display: none; }
-  .dsb-line { width: 24px; }
-  .diag-textarea { min-height: 100px; font-size: 0.88rem; }
-  .diag-example-chips { gap: 6px; }
-  .diag-correction-options { gap: 5px; }
-  .diag-fix-btn { padding: 5px 10px; font-size: 0.72rem; }
+  .qpost-btn { padding: 8px 12px; font-size: 0.78rem; }
+  .qpost-btn-row { gap: 6px; }
 }
 
 /* ===== RESPONSIVE ===== */

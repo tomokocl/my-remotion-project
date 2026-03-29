@@ -146,81 +146,64 @@
     </div>
   </section>
 
-  <!-- DIAGNOSIS TOOL (アコーディオン) -->
+  <!-- QUICK POST TOOL (アコーディオン) -->
   <section class="diagnosis-section">
     <div class="diagnosis-inner">
       <button class="diag-acc-toggle" id="diag-acc-toggle" aria-expanded="false">
         <span class="diag-acc-toggle-left">
           <span class="diag-acc-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" height="22" width="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="22" width="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </span>
           <span class="diag-acc-text">
-            <span class="diag-acc-title">あなたの事例、どこに入る？</span>
-            <span class="diag-acc-sub">体験を書くだけで自動分類 → そのまま投稿</span>
+            <span class="diag-acc-title">かんたん投稿</span>
+            <span class="diag-acc-sub">4タップでフォームに飛べます</span>
           </span>
         </span>
-        <span class="diag-acc-cta">使ってみる <span class="diag-acc-arrow">▼</span></span>
+        <span class="diag-acc-cta">投稿する <span class="diag-acc-arrow">▼</span></span>
       </button>
 
       <div class="diag-acc-body" id="diag-acc-body">
-        <!-- STEP BAR -->
-        <div class="diag-stepbar" id="diag-stepbar">
-          <div class="diag-stepbar-item active" data-step="1">
-            <span class="dsb-num">1</span><span class="dsb-label">体験を書く</span>
-          </div>
-          <div class="dsb-line"></div>
-          <div class="diag-stepbar-item" data-step="2">
-            <span class="dsb-num">2</span><span class="dsb-label">自動診断</span>
-          </div>
-          <div class="dsb-line"></div>
-          <div class="diag-stepbar-item" data-step="3">
-            <span class="dsb-num">3</span><span class="dsb-label">投稿</span>
+        <!-- Q1: ツール選択 -->
+        <div class="qpost-section">
+          <p class="qpost-label">① 使ったAIツールは？</p>
+          <div class="qpost-btn-row" id="qpost-tools"></div>
+        </div>
+
+        <!-- Q2: ジャンル選択 -->
+        <div class="qpost-section">
+          <p class="qpost-label">② 何を節約した？</p>
+          <div class="qpost-btn-row" id="qpost-genres"></div>
+        </div>
+
+        <!-- Q3: 共有タイプ -->
+        <div class="qpost-section">
+          <p class="qpost-label">③ どうやって共有する？</p>
+          <div class="qpost-btn-row" id="qpost-levels">
+            <button class="qpost-btn" data-level="advanced">
+              <span class="qpost-btn-icon"><svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
+              リンクで共有（GEM・GPTs等）
+            </button>
+            <button class="qpost-btn" data-level="middle">
+              <span class="qpost-btn-icon"><svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></span>
+              プロンプト・テンプレ共有
+            </button>
+            <button class="qpost-btn" data-level="beginner">
+              <span class="qpost-btn-icon"><svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+              体験談として共有
+            </button>
           </div>
         </div>
 
-        <!-- Step 1: 自由テキスト入力 -->
-        <div class="diag-step" id="diag-step-1">
-          <p class="diag-question">どんなAI節約をしましたか？<br><span class="diag-question-sub">自由に書いてください。カテゴリー・難易度・ツールを自動で判定します</span></p>
-          <textarea class="diag-textarea" id="diag-textarea" placeholder="例：ChatGPTに子どもの算数を教えてもらって、塾の月謝2万円を節約できた。プロンプトはネットで見つけたものをそのままコピペして使った。" rows="4"></textarea>
-          <div class="diag-examples">
-            <p class="diag-examples-title">こんな感じで書けばOK！</p>
-            <div class="diag-example-chips">
-              <button class="diag-example-chip" data-text="ChatGPTに子どもの数学の問題を解説してもらって塾をやめた。コピペで聞くだけで月2万円浮いた。">塾の代わりにAI</button>
-              <button class="diag-example-chip" data-text="Claudeに全部のサブスクを一覧にしてもらって、使ってないやつを洗い出した。自分の状況に合わせてプロンプトを調整した。">サブスク見直し</button>
-              <button class="diag-example-chip" data-text="Geminiで保険証券を読み込ませて不要な特約を分析。自分でプロンプトを設計して比較表を作った。">保険の見直し</button>
-              <button class="diag-example-chip" data-text="ChatGPTに冷蔵庫の余り物を伝えてレシピを教えてもらった。聞くだけで食品ロスが減って月3000円節約。">食費の節約</button>
-            </div>
-          </div>
-          <button class="diag-btn-analyze" id="diag-btn-analyze" disabled>診断する →</button>
+        <!-- Q4: ひとこと（任意） -->
+        <div class="qpost-section">
+          <p class="qpost-label">④ ひとこと（任意）</p>
+          <input type="text" class="qpost-input" id="qpost-comment" placeholder="例：月2万浮いた！ なくてもOK">
         </div>
 
-        <!-- Step 2: 自動診断結果 + 修正 -->
-        <div class="diag-step" id="diag-step-2" style="display:none">
-          <div class="diag-auto-result" id="diag-auto-result"></div>
-
-          <div class="diag-corrections" id="diag-corrections">
-            <p class="diag-corrections-title">違ってたら選び直してください</p>
-
-            <div class="diag-correction-row">
-              <label class="diag-correction-label">カテゴリー</label>
-              <div class="diag-correction-options" id="diag-fix-genre"></div>
-            </div>
-
-            <div class="diag-correction-row">
-              <label class="diag-correction-label">難易度</label>
-              <div class="diag-correction-options" id="diag-fix-level"></div>
-            </div>
-
-            <div class="diag-correction-row">
-              <label class="diag-correction-label">AIツール</label>
-              <div class="diag-correction-options" id="diag-fix-tool"></div>
-            </div>
-          </div>
-
-          <div class="diag-result-actions">
-            <button class="diag-btn-submit" id="diag-btn-submit">このフォームで投稿する →</button>
-            <button class="diag-restart" id="diag-restart">最初からやり直す</button>
-          </div>
+        <!-- 送信ボタン -->
+        <div class="qpost-submit-row">
+          <button class="diag-btn-submit" id="qpost-submit" disabled>フォームを開いて投稿する →</button>
+          <p class="qpost-selected-summary" id="qpost-summary"></p>
         </div>
       </div>
     </div>
