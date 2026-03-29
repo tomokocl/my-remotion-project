@@ -1876,3 +1876,64 @@ body {
   .stc-posts   { padding: 0 16px 14px; }
   .stc-post-chip { font-size: 0.78rem; padding: 6px 10px; }
 }
+
+/* ===== Howto section in detail ===== */
+.detail-howto {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.detail-howto-label {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 10px;
+}
+
+.detail-howto-textarea {
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  line-height: 1.7;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.detail-howto-textarea:focus {
+  outline: none;
+  border-color: #7c3aed;
+}
+
+.detail-howto-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.detail-howto-save {
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.detail-howto-save:hover {
+  opacity: 0.85;
+}
+
+.detail-howto-status {
+  font-size: 0.78rem;
+  color: #6b7280;
+}

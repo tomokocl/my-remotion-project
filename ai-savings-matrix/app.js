@@ -275,7 +275,7 @@ function parseCSV(csv) {
       ? (values[colIndex[key]] || "").trim()
       : "";
 
-  return lines.slice(1).map(line => {
+  return lines.slice(1).map((line, i) => {
     const values = splitCSVFields(line);
 
     const rawTool  = getVal(values, "tool");
@@ -315,6 +315,8 @@ function parseCSV(csv) {
       author:    getVal(values, "author"),
       media:     getVal(values, "media"),
       x_account: normalizeXAccount(getVal(values, "x_account")),
+      howto:     getVal(values, "howto"),
+      _rowIndex: i + 2,  // +2 because: +1 for header, +1 for 1-based sheets
     };
   }).filter(p => p.tool && p.genre);
 }
@@ -770,6 +772,45 @@ function openDetail(tool, genre, post) {
   shareEl.querySelector(".btn-share-x").addEventListener("click", async function () {
     await incrementShareCount(shareKey);
   });
+
+  // やり方セクション
+  const howtoWrap = document.getElementById('detail-howto-wrap');
+  if (howtoWrap) {
+    const existing = post.howto || '';
+    howtoWrap.innerHTML = `
+      <div class="detail-howto">
+        <p class="detail-howto-label">📝 作り方・やり方</p>
+        <textarea class="detail-howto-textarea" id="detail-howto-text" rows="5" placeholder="どうやって作った？手順やコツを書いてください">${escHtml(existing)}</textarea>
+        <div class="detail-howto-actions">
+          <button class="detail-howto-save" id="detail-howto-save">保存する</button>
+          <span class="detail-howto-status" id="detail-howto-status"></span>
+        </div>
+      </div>`;
+
+    document.getElementById('detail-howto-save').addEventListener('click', async () => {
+      const text = document.getElementById('detail-howto-text').value;
+      const status = document.getElementById('detail-howto-status');
+      if (!CONFIG.GAS_HOWTO_URL) { status.textContent = 'GAS URLが未設定です'; return; }
+      status.textContent = '保存中...';
+      try {
+        const res = await fetch(CONFIG.GAS_HOWTO_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ row: post._rowIndex, howto: text }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          status.textContent = '✓ 保存しました';
+          post.howto = text;
+          setTimeout(() => { status.textContent = ''; }, 2000);
+        } else {
+          status.textContent = 'エラー: ' + (data.error || '不明');
+        }
+      } catch (e) {
+        status.textContent = 'エラー: ' + e.message;
+      }
+    });
+  }
 
   showView("detail");
   document.getElementById("modal").scrollTop = 0;

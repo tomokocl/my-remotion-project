@@ -8,6 +8,9 @@ const CONFIG = {
   // GAS いいね集計 Web App URL（gas_likes.js をデプロイ後に入力）
   GAS_LIKES_URL: "https://script.google.com/macros/s/AKfycbz7ejh14Jy0aotTZ0Ot3llKS5Wx7VDZG51zVYwaXGFaKJ2eW79Y3vJP8_TW7-7_1_9j3g/exec",
 
+  // GAS やり方（howto）Web App URL（gas_howto.js をデプロイ後に入力）
+  GAS_HOWTO_URL: "",
+
   // GoogleフォームのベースURL
   FORM_BASE_URL: "https://docs.google.com/forms/d/e/1FAIpQLSdGwLYspsO4hZfO5kjZUt0VfnS1xrokFFuEas01p6U88q5jpg/viewform",
 
@@ -30,6 +33,7 @@ const CONFIG = {
     author:    "投稿者名",
     media:     "実例の画像や動画",
     x_account: "Xアカウント",
+    howto:     "やり方",
   },
 
   // 難易度レベル一覧
