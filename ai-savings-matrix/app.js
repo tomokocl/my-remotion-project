@@ -192,7 +192,7 @@ function showLevelUpPopup(oldLevel, newLevel) {
 // ===== 状態管理 =====
 let posts = [];
 let currentCell = null; // { mode, tool?, genre, level? } クリック中のセル
-let currentView = "level"; // "level" | "tool"
+let currentView = "share"; // "share" | "level" | "tool"
 
 // ===== データ読み込み =====
 async function loadData() {
@@ -398,29 +398,70 @@ function switchMatrixPanel(showEl, hideEl) {
   }, 200);
 }
 
-function toggleMatrixView() {
-  const levelPanel = document.getElementById("view-level");
-  const toolPanel  = document.getElementById("view-tool");
-  const label = document.getElementById("dog-ear-label");
-  const arrow = document.getElementById("dog-ear-arrow");
-  const title = document.getElementById("matrix-view-title");
-  const tab   = document.getElementById("dog-ear-tab");
+function switchToView(viewName) {
+  const panels = { share: "view-share", level: "view-level", tool: "view-tool" };
+  const currentPanel = document.getElementById(panels[currentView]);
+  const nextPanel    = document.getElementById(panels[viewName]);
+  if (currentView === viewName || !nextPanel) return;
 
-  if (currentView === "level") {
-    switchMatrixPanel(toolPanel, levelPanel);
-    label.innerHTML = "カテゴリー別";
-    arrow.textContent = "◀";
-    title.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px;margin-right:4px"><path d="M20 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h15a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 16H5V5h15v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>AIツール × 節約ジャンル`;
-    tab.classList.add("active");
-    currentView = "tool";
-  } else {
-    switchMatrixPanel(levelPanel, toolPanel);
-    label.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="14" width="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px;margin-right:3px"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7 7 0 0 0-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84a.48.48 0 0 0-.47.41l-.36 2.54a7.36 7.36 0 0 0-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58a7.24 7.24 0 0 0-.07.94c0 .32.02.63.07.94L2.86 14.52a.47.47 0 0 0-.12.6l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.04.7 1.62.94l.36 2.54c.06.28.3.48.47.48h3.84c.27 0 .49-.2.47-.48l.36-2.54a7.16 7.16 0 0 0 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.6l-2.01-1.58zM12 15.6A3.6 3.6 0 0 1 8.4 12 3.6 3.6 0 0 1 12 8.4a3.6 3.6 0 0 1 3.6 3.6 3.6 3.6 0 0 1-3.6 3.6z"/></svg>ツール別`;
-    arrow.textContent = "▶";
-    title.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px;margin-right:4px"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>節約カテゴリー × 難易度レベル`;
-    tab.classList.remove("active");
-    currentView = "level";
+  switchMatrixPanel(nextPanel, currentPanel);
+
+  document.querySelectorAll('.matrix-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.view === viewName);
+  });
+  currentView = viewName;
+}
+
+// 「使い方で探す」ビュー描画
+function renderShareView() {
+  const SHARE_MAP = {
+    instant:  { levelIds: ['advanced'], container: 'posts-instant',  counter: 'count-instant' },
+    template: { levelIds: ['middle'],   container: 'posts-template', counter: 'count-template' },
+    howto:    { levelIds: ['beginner'], container: 'posts-howto',    counter: 'count-howto' },
+  };
+
+  for (const [type, cfg] of Object.entries(SHARE_MAP)) {
+    const matched = posts.filter(p => cfg.levelIds.includes(p.level));
+    const container = document.getElementById(cfg.container);
+    const counter   = document.getElementById(cfg.counter);
+    if (!container || !counter) continue;
+
+    counter.textContent = `${matched.length}件`;
+    container.innerHTML = '';
+
+    if (matched.length === 0) {
+      const empty = document.createElement('p');
+      empty.className = 'stc-empty';
+      empty.textContent = 'まだ投稿がありません';
+      container.parentElement.appendChild(empty);
+      continue;
+    }
+
+    matched.forEach(post => {
+      const chip = document.createElement('button');
+      chip.className = 'stc-post-chip';
+      const toolObj = CONFIG.TOOLS.find(t => t.id === post.tool);
+      chip.innerHTML = `<span class="chip-tool-icon">${toolObj ? toolObj.icon : ''}</span>${post.title || '(タイトルなし)'}`;
+      chip.addEventListener('click', () => {
+        // 既存のモーダルを流用してpost詳細を表示
+        const genreObj = CONFIG.GENRES.find(g => g.id === post.genre);
+        openModal(
+          toolObj ? toolObj.id : post.tool,
+          genreObj ? genreObj.id : post.genre,
+          [post]
+        );
+      });
+      container.appendChild(chip);
+    });
   }
+
+  // カード開閉
+  document.querySelectorAll('.stc-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const card = header.closest('.share-type-card');
+      card.classList.toggle('expanded');
+    });
+  });
 }
 
 // ===== マトリックス描画 =====
@@ -849,7 +890,9 @@ document.getElementById("levelup-close").addEventListener("click", () => {
   document.getElementById("levelup-overlay").classList.remove("open");
 });
 
-document.getElementById("dog-ear-tab").addEventListener("click", toggleMatrixView);
+document.querySelectorAll('.matrix-tab').forEach(tab => {
+  tab.addEventListener('click', () => switchToView(tab.dataset.view));
+});
 document.getElementById("modal-close").addEventListener("click", closeModal);
 document.getElementById("modal-overlay").addEventListener("click", e => {
   if (e.target === e.currentTarget) closeModal();
@@ -1107,8 +1150,9 @@ function initDiagnosisTool() {
 // ===== 初期化 =====
 (async () => {
   await loadData();
-  renderLevelMatrix(); // 1枚目: カテゴリー×難易度（デフォルト）
-  renderMatrix();      // 2枚目: ツール×ジャンル
+  renderShareView();     // 0枚目: 使い方で探す（デフォルト）
+  renderLevelMatrix();   // 1枚目: カテゴリー×難易度
+  renderMatrix();        // 2枚目: ツール×ジャンル
   renderCharacterWidget();
   loadLikeCounts();
   initDiagnosisTool();
