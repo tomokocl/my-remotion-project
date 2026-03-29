@@ -443,11 +443,10 @@ function renderShareView() {
       const toolObj = CONFIG.TOOLS.find(t => t.id === post.tool);
       chip.innerHTML = `<span class="chip-tool-icon">${toolObj ? toolObj.icon : ''}</span>${post.title || '(タイトルなし)'}`;
       chip.addEventListener('click', () => {
-        // 既存のモーダルを流用してpost詳細を表示
         const genreObj = CONFIG.GENRES.find(g => g.id === post.genre);
         openModal(
-          toolObj ? toolObj.id : post.tool,
-          genreObj ? genreObj.id : post.genre,
+          toolObj  || { icon: '', label: post.tool },
+          genreObj || { icon: '', label: post.genre },
           [post]
         );
       });
