@@ -958,7 +958,7 @@ function initDiagnosisTool() {
   const state = { tool: null, genre: null, level: null };
 
   // ボタン選択ヘルパー
-  function setupButtonRow(containerId, items, key, makeLabel) {
+  function setupButtonRow(containerId, items, key, makeLabel, onSelect) {
     const container = document.getElementById(containerId);
     if (!container) return;
     items.forEach(item => {
@@ -970,6 +970,7 @@ function initDiagnosisTool() {
         btn.classList.add('active');
         state[key] = item;
         updateSubmitState();
+        if (onSelect) onSelect(item);
       });
       container.appendChild(btn);
     });
@@ -980,10 +981,10 @@ function initDiagnosisTool() {
     `<span class="qpost-btn-icon">${t.icon}</span>${t.label}`
   );
 
-  // ② ジャンル選択
+  // ② ジャンル選択（選択後に提案パネル更新）
   setupButtonRow('qpost-genres', CONFIG.GENRES, 'genre', g =>
     `<span class="qpost-btn-icon">${g.icon}</span>${g.label}`
-  );
+  , () => showSuggestPanel());
 
   // ③ 共有タイプ（HTMLに直書き済み）
   const SHARE_LABELS = {
@@ -992,6 +993,81 @@ function initDiagnosisTool() {
     beginner: '体験談として共有',
   };
 
+  // ジャンル別の提案テンプレ
+  const SUGGEST_TEMPLATES = {
+    education: {
+      gem: '「○○教科の問題を解説してくれるGEM」として公開',
+      gpt: '「子どもの勉強サポートGPT」として共有',
+      prompt: '「○○を教えて」のプロンプトテンプレとして共有',
+    },
+    outsource: {
+      gem: '「サブスク見直し診断GEM」として公開',
+      gpt: '「いらないサブスクを見つけるGPT」として共有',
+      prompt: '「サブスク一覧を分析して」のプロンプトとして共有',
+    },
+    living: {
+      gem: '「保険・通信費の比較GEM」として公開',
+      gpt: '「最安プランを提案するGPT」として共有',
+      prompt: '「料金プランを比較して」のプロンプトとして共有',
+    },
+    health: {
+      gem: '「冷蔵庫の余り物レシピGEM」として公開',
+      gpt: '「食費節約メニュー提案GPT」として共有',
+      prompt: '「この食材でレシピ考えて」のプロンプトとして共有',
+    },
+    creative: {
+      gem: '「スキルアップ学習プランGEM」として公開',
+      gpt: '「独学サポートGPT」として共有',
+      prompt: '「学習計画を作って」のプロンプトとして共有',
+    },
+    money: {
+      gem: '「確定申告サポートGEM」として公開',
+      gpt: '「経費仕分けGPT」として共有',
+      prompt: '「確定申告の項目を教えて」のプロンプトとして共有',
+    },
+  };
+
+  function showSuggestPanel() {
+    const panel = document.getElementById('qpost-suggest');
+    const body = document.getElementById('qpost-suggest-body');
+
+    if (!state.level || state.level.id !== 'beginner' || !state.genre) {
+      panel.style.display = 'none';
+      return;
+    }
+
+    const suggestions = SUGGEST_TEMPLATES[state.genre.id];
+    if (!suggestions) {
+      panel.style.display = 'none';
+      return;
+    }
+
+    body.innerHTML = `
+      <div class="qpost-suggest-item">
+        <span class="qpost-suggest-icon">🔗</span>
+        <div>
+          <strong>Gemini GEMにするなら →</strong>
+          <p>${suggestions.gem}</p>
+        </div>
+      </div>
+      <div class="qpost-suggest-item">
+        <span class="qpost-suggest-icon">🤖</span>
+        <div>
+          <strong>ChatGPT GPTsにするなら →</strong>
+          <p>${suggestions.gpt}</p>
+        </div>
+      </div>
+      <div class="qpost-suggest-item">
+        <span class="qpost-suggest-icon">📋</span>
+        <div>
+          <strong>プロンプト共有にするなら →</strong>
+          <p>${suggestions.prompt}</p>
+        </div>
+      </div>
+      <p class="qpost-suggest-note">体験談としての投稿ももちろんOK！そのまま進んでください</p>`;
+    panel.style.display = '';
+  }
+
   document.querySelectorAll('#qpost-levels .qpost-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#qpost-levels .qpost-btn').forEach(b => b.classList.remove('active'));
@@ -999,6 +1075,7 @@ function initDiagnosisTool() {
       const levelId = btn.dataset.level;
       state.level = { id: levelId, label: SHARE_LABELS[levelId] || levelId };
       updateSubmitState();
+      showSuggestPanel();
     });
   });
 

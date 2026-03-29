@@ -1772,6 +1772,62 @@ body {
   gap: 4px;
 }
 
+/* Suggest panel */
+.qpost-suggest {
+  margin-bottom: 20px;
+}
+
+.qpost-suggest-inner {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 14px;
+  padding: 18px 20px;
+  animation: diag-fade 0.3s ease both;
+}
+
+@keyframes diag-fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.qpost-suggest-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #10b981;
+  margin-bottom: 14px;
+}
+
+.qpost-suggest-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.qpost-suggest-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.qpost-suggest-item strong {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.qpost-suggest-item p {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 2px 0 0;
+}
+
+.qpost-suggest-note {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.35);
+  text-align: center;
+  margin-top: 12px;
+}
+
 .diag-btn-submit {
   background: linear-gradient(135deg, var(--pink), var(--purple-mid));
   border: none;
