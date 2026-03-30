@@ -780,7 +780,8 @@ function openDetail(tool, genre, post) {
     howtoWrap.innerHTML = `
       <div class="detail-howto">
         <p class="detail-howto-label">📝 作り方・やり方</p>
-        <textarea class="detail-howto-textarea" id="detail-howto-text" rows="5" placeholder="どうやって作った？手順やコツを書いてください">${escHtml(existing)}</textarea>
+        <textarea class="detail-howto-textarea" id="detail-howto-text" rows="5" placeholder="【きっかけ】なぜやろうと思った？&#10;【解決したかったこと】どうなりたかった？&#10;【できた未来】やってみてどう変わった？">${escHtml(existing)}</textarea>
+        ${CONFIG.GEM_PROMPT_MAKER_URL ? `<a class="detail-howto-gem-link" href="${CONFIG.GEM_PROMPT_MAKER_URL}" target="_blank" rel="noopener">✨ この体験をGEMにしてみる →</a>` : ''}
         <div class="detail-howto-actions">
           <button class="detail-howto-save" id="detail-howto-save">保存する</button>
           <span class="detail-howto-status" id="detail-howto-status"></span>
@@ -1105,6 +1106,9 @@ function initDiagnosisTool() {
           <p>${suggestions.prompt}</p>
         </div>
       </div>
+      <a class="qpost-suggest-gem-link" href="${CONFIG.GEM_PROMPT_MAKER_URL || '#'}" target="_blank" rel="noopener">
+        ✨ きっかけ・悩み・理想の未来を書いてGEMに投げてみる →
+      </a>
       <p class="qpost-suggest-note">体験談としての投稿ももちろんOK！そのまま進んでください</p>`;
     panel.style.display = '';
   }

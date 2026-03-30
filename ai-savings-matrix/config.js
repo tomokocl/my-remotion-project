@@ -11,6 +11,9 @@ const CONFIG = {
   // GAS やり方（howto）Web App URL（gas_howto.js をデプロイ後に入力）
   GAS_HOWTO_URL: "https://script.google.com/macros/s/AKfycbz-x4ChiVg6y5nFQvMk6uVJ88l43OT_zFqlWXWGuxjCqol4_6xSGbDScosEjEqHwD83lQ/exec",
 
+  // プロンプト作成GEM URL
+  GEM_PROMPT_MAKER_URL: "https://gemini.google.com/gem/13yqC5spiALLh9edJQUOajXGyEFu_KX3n?usp=sharing",
+
   // GoogleフォームのベースURL
   FORM_BASE_URL: "https://docs.google.com/forms/d/e/1FAIpQLSdGwLYspsO4hZfO5kjZUt0VfnS1xrokFFuEas01p6U88q5jpg/viewform",
 
