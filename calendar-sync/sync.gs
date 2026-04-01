@@ -102,6 +102,10 @@ function incrementalSync() {
       const events = response.items || [];
 
       for (const event of events) {
+        // [auto-sync] タグ付きイベントはスキップ（ループ防止）
+        if (event.summary && event.summary.includes(SYNC_TAG)) continue;
+        if (event.description && event.description.includes(SYNC_TAG)) continue;
+
         if (event.status === "cancelled") {
           // 削除されたイベント
           const bEventId = eventMap[event.id];
@@ -190,6 +194,10 @@ function fullSync() {
     const events = response.items || [];
 
     for (const event of events) {
+      // [auto-sync] タグ付きイベントはスキップ（ループ防止）
+      if (event.summary && event.summary.includes(SYNC_TAG)) continue;
+      if (event.description && event.description.includes(SYNC_TAG)) continue;
+
       if (event.status !== "cancelled" && event.start && event.end) {
         const newId = createBusyBlock(event);
         if (newId) {
