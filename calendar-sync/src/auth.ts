@@ -26,6 +26,7 @@ export function getAccountBAuth() {
 export function getAuthUrl(state: string) {
   const client = createOAuth2Client();
   return client.generateAuthUrl({
+    response_type: "code",
     access_type: "offline",
     scope: SCOPES,
     prompt: "consent",
