@@ -196,6 +196,7 @@ function fullSync() {
           eventMap[event.id] = newId;
           created++;
         }
+        Utilities.sleep(500); // レート制限回避: 0.5秒待機
       }
     }
 
@@ -303,6 +304,7 @@ function cleanupBusyBlocks() {
       if (event.description && event.description.includes(SYNC_TAG)) {
         try {
           Calendar.Events.remove(ACCOUNT_B_CALENDAR_ID, event.id);
+          Utilities.sleep(500); // レート制限回避
         } catch (e) {
           // ignore
         }
