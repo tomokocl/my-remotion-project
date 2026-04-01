@@ -93,6 +93,7 @@ journalctl のデフォルトで問題ないが、必要なら logrotate を設�
 
 ## 注意事項
 
+- **Cloudflare のプロキシ（オレンジ雲）は絶対に使わないこと。** Google Calendar の Webhook が Cloudflare の Bot 対策/WAF でブロックされる。DNS は「DNS only（グレー雲）」にするか、Cloudflare を経由しない構成にすること。SSL は nginx + Let's Encrypt で処理するので Cloudflare の SSL は不要。
 - Webhook の受信には HTTPS が必須（Google の要件）
 - Watch チャネルは約7日で期限切れになるが、サーバーが自動で更新する
 - サーバーが落ちている間の変更は、再起動時の初期同期で拾われる
