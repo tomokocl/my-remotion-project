@@ -418,14 +418,21 @@ function switchToView(viewName) {
 
 // 「使い方で探す」ビュー描画
 function renderShareView() {
+  // URLやプロンプトの有無で分類（levelフィールドではなく実データで判定）
+  function classifyPost(p) {
+    if (p.url) return 'instant';
+    if (p.prompt) return 'template';
+    return 'howto';
+  }
+
   const SHARE_MAP = {
-    instant:  { levelIds: ['advanced'], container: 'posts-instant',  counter: 'count-instant' },
-    template: { levelIds: ['middle'],   container: 'posts-template', counter: 'count-template' },
-    howto:    { levelIds: ['beginner'], container: 'posts-howto',    counter: 'count-howto' },
+    instant:  { container: 'posts-instant',  counter: 'count-instant' },
+    template: { container: 'posts-template', counter: 'count-template' },
+    howto:    { container: 'posts-howto',    counter: 'count-howto' },
   };
 
   for (const [type, cfg] of Object.entries(SHARE_MAP)) {
-    const matched = posts.filter(p => cfg.levelIds.includes(p.level));
+    const matched = posts.filter(p => classifyPost(p) === type);
     const container = document.getElementById(cfg.container);
     const counter   = document.getElementById(cfg.counter);
     if (!container || !counter) continue;
