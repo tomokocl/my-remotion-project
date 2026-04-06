@@ -365,10 +365,9 @@ function parseCSV(csv) {
       post.url = collectedUrls[0];
     }
 
-    // mediaにDrive以外の一般URL → 共有URLに移動候補
-    if (post.media && isGeneralUrl(post.media) && !isDriveUrl(post.media)
-        && !post.media.match(/\.(jpg|jpeg|png|gif|mp4|webm|mov)/i)) {
-      if (!post.url) post.url = post.media;
+    // mediaにDriveや一般URLがある → 共有URLにもコピー（画像としても残す）
+    if (post.media && isGeneralUrl(post.media) && !post.url) {
+      post.url = post.media;
     }
 
     // Xアカウントを正規化
