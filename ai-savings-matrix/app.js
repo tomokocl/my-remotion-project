@@ -321,27 +321,53 @@ function parseCSV(csv) {
       _rowIndex: i + 2,
     };
 
-    // --- フィールド自動修正: 間違った場所に入力されたデータを正しいフィールドへ ---
+    // --- フィールド自動修正 ---
     const isXUrl = (s) => /(?:x\.com|twitter\.com)\/[A-Za-z0-9_]/i.test(s);
     const isGeneralUrl = (s) => /^https?:\/\//i.test(s);
+    const isXHandle = (s) => /^@?[A-Za-z0-9_]{1,15}$/.test(s);
+    const isDriveUrl = (s) => /drive\.google\.com/i.test(s);
 
-    // x_accountにX以外のURL → urlに移動
-    if (post.x_account && isGeneralUrl(post.x_account) && !isXUrl(post.x_account)) {
-      if (!post.url) post.url = post.x_account;
-      post.x_account = '';
+    // 全フィールドからURLとXアカウントを収集して正しく振り分ける
+    const allFields = ['x_account', 'url', 'media', 'prompt', 'howto'];
+    let collectedUrls = [];
+    let collectedX = [];
+
+    for (const key of allFields) {
+      const val = post[key];
+      if (!val) continue;
+      if (isXUrl(val)) {
+        collectedX.push(val);
+        if (key !== 'x_account') post[key] = '';
+      } else if (key === 'x_account' && isGeneralUrl(val)) {
+        // Xアカウント欄にX以外のURL
+        collectedUrls.push(val);
+        post[key] = '';
+      }
     }
-    // urlにXのURL → x_accountに移動
-    if (post.url && isXUrl(post.url)) {
-      if (!post.x_account) post.x_account = post.url;
+
+    // urlフィールドがURLでない場合（「初級」などのゴミデータ）→ クリア
+    if (post.url && !isGeneralUrl(post.url)) {
       post.url = '';
     }
-    // mediaにXのURL → x_accountに移動
-    if (post.media && isXUrl(post.media)) {
-      if (!post.x_account) post.x_account = post.media;
-      post.media = '';
+
+    // x_accountフィールドがURLでもハンドルでもない場合 → クリア
+    if (post.x_account && !isXUrl(post.x_account) && !isXHandle(post.x_account) && !isGeneralUrl(post.x_account)) {
+      post.x_account = '';
     }
-    // mediaに一般URL（画像/動画でない）→ urlに移動
-    if (post.media && isGeneralUrl(post.media) && !post.media.match(/\.(jpg|jpeg|png|gif|mp4|webm|mov)/i) && !post.media.includes('drive.google.com/file')) {
+
+    // 収集したXアカウントを設定
+    if (collectedX.length > 0 && !post.x_account) {
+      post.x_account = collectedX[0];
+    }
+
+    // 収集したURLを設定（共有URL欄が空なら）
+    if (collectedUrls.length > 0 && !post.url) {
+      post.url = collectedUrls[0];
+    }
+
+    // mediaにDrive以外の一般URL → 共有URLに移動候補
+    if (post.media && isGeneralUrl(post.media) && !isDriveUrl(post.media)
+        && !post.media.match(/\.(jpg|jpeg|png|gif|mp4|webm|mov)/i)) {
       if (!post.url) post.url = post.media;
     }
 
