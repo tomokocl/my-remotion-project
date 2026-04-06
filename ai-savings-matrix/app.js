@@ -324,33 +324,51 @@ function parseCSV(csv) {
     // --- フィールド自動修正 ---
     const isXUrl = (s) => /(?:x\.com|twitter\.com)\/[A-Za-z0-9_]/i.test(s);
     const isGeneralUrl = (s) => /^https?:\/\//i.test(s);
+    const containsUrl = (s) => /https?:\/\/[^\s"'<>]+/i.test(s);
+    const extractUrl = (s) => { const m = s.match(/https?:\/\/[^\s"'<>]+/i); return m ? m[0] : ''; };
     const isXHandle = (s) => /^@?[A-Za-z0-9_]{1,15}$/.test(s);
-    const isDriveUrl = (s) => /drive\.google\.com/i.test(s);
 
-    // 全フィールドからURLとXアカウントを収集して正しく振り分ける
-    const allFields = ['x_account', 'url', 'media', 'prompt', 'howto'];
+    // 全フィールドからURLとXアカウントを収集
+    const scanFields = ['x_account', 'url', 'media', 'prompt', 'detail', 'howto'];
     let collectedUrls = [];
     let collectedX = [];
 
-    for (const key of allFields) {
+    for (const key of scanFields) {
       const val = post[key];
       if (!val) continue;
+
+      // フィールド全体がXのURLの場合
       if (isXUrl(val)) {
         collectedX.push(val);
         if (key !== 'x_account') post[key] = '';
-      } else if (key === 'x_account' && isGeneralUrl(val)) {
-        // Xアカウント欄にX以外のURL
+        continue;
+      }
+
+      // Xアカウント欄にX以外のURL → URLとして回収
+      if (key === 'x_account' && isGeneralUrl(val)) {
         collectedUrls.push(val);
         post[key] = '';
+        continue;
+      }
+
+      // prompt/detail/howtoの中にURLが埋まっている場合 → URLを抽出（元テキストは残す）
+      if ((key === 'prompt' || key === 'detail' || key === 'howto') && containsUrl(val)) {
+        const found = extractUrl(val);
+        if (found && !isXUrl(found)) collectedUrls.push(found);
+      }
+
+      // media欄のURL → URLとして回収
+      if (key === 'media' && isGeneralUrl(val)) {
+        collectedUrls.push(val);
       }
     }
 
-    // urlフィールドがURLでない場合（「初級」などのゴミデータ）→ クリア
+    // urlフィールドがURLでない場合 → クリア
     if (post.url && !isGeneralUrl(post.url)) {
       post.url = '';
     }
 
-    // x_accountフィールドがURLでもハンドルでもない場合 → クリア
+    // x_accountフィールドがURLでもハンドルでもない → クリア
     if (post.x_account && !isXUrl(post.x_account) && !isXHandle(post.x_account) && !isGeneralUrl(post.x_account)) {
       post.x_account = '';
     }
@@ -361,13 +379,8 @@ function parseCSV(csv) {
     }
 
     // 収集したURLを設定（共有URL欄が空なら）
-    if (collectedUrls.length > 0 && !post.url) {
+    if (!post.url && collectedUrls.length > 0) {
       post.url = collectedUrls[0];
-    }
-
-    // mediaにDriveや一般URLがある → 共有URLにもコピー（画像としても残す）
-    if (post.media && isGeneralUrl(post.media) && !post.url) {
-      post.url = post.media;
     }
 
     // Xアカウントを正規化
