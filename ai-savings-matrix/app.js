@@ -304,7 +304,7 @@ function parseCSV(csv) {
     );
     const levelId = levelObj ? levelObj.id : (rawLevel ? rawLevel : "beginner");
 
-    return {
+    const post = {
       tool:       toolObj  ? toolObj.id  : rawTool.toLowerCase(),
       tool_other: toolOther,
       genre:      genreObj ? genreObj.id : rawGenre,
@@ -314,12 +314,41 @@ function parseCSV(csv) {
       saving:    getVal(values, "saving"),
       author:    getVal(values, "author"),
       media:     getVal(values, "media"),
-      x_account: normalizeXAccount(getVal(values, "x_account")),
+      x_account: getVal(values, "x_account"),
       howto:     getVal(values, "howto"),
       url:       getVal(values, "url"),
       prompt:    getVal(values, "prompt"),
-      _rowIndex: i + 2,  // +2 because: +1 for header, +1 for 1-based sheets
+      _rowIndex: i + 2,
     };
+
+    // --- フィールド自動修正: 間違った場所に入力されたデータを正しいフィールドへ ---
+    const isXUrl = (s) => /(?:x\.com|twitter\.com)\/[A-Za-z0-9_]/i.test(s);
+    const isGeneralUrl = (s) => /^https?:\/\//i.test(s);
+
+    // x_accountにX以外のURL → urlに移動
+    if (post.x_account && isGeneralUrl(post.x_account) && !isXUrl(post.x_account)) {
+      if (!post.url) post.url = post.x_account;
+      post.x_account = '';
+    }
+    // urlにXのURL → x_accountに移動
+    if (post.url && isXUrl(post.url)) {
+      if (!post.x_account) post.x_account = post.url;
+      post.url = '';
+    }
+    // mediaにXのURL → x_accountに移動
+    if (post.media && isXUrl(post.media)) {
+      if (!post.x_account) post.x_account = post.media;
+      post.media = '';
+    }
+    // mediaに一般URL（画像/動画でない）→ urlに移動
+    if (post.media && isGeneralUrl(post.media) && !post.media.match(/\.(jpg|jpeg|png|gif|mp4|webm|mov)/i) && !post.media.includes('drive.google.com/file')) {
+      if (!post.url) post.url = post.media;
+    }
+
+    // Xアカウントを正規化
+    post.x_account = normalizeXAccount(post.x_account);
+
+    return post;
   }).filter(p => p.tool && p.genre);
 }
 
