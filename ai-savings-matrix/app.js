@@ -499,9 +499,11 @@ function switchToView(viewName) {
 function renderShareView() {
   // URLやプロンプトの有無で分類（levelフィールドではなく実データで判定）
   function classifyPost(p) {
-    if (p.url) return 'instant';
-    if (p.prompt) return 'template';
-    return 'howto';
+    // URLがあっても、Googleドライブの成果物だけなら「参考にできる」
+    const isDriveOnly = (s) => /^https?:\/\/drive\.google\.com/i.test(s);
+    if (p.url && !isDriveOnly(p.url)) return 'instant';  // GEM/GPTs/アプリURL
+    if (p.prompt) return 'template';  // プロンプトやテンプレ
+    return 'howto';  // 体験談・Driveの成果物
   }
 
   const SHARE_MAP = {
