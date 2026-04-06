@@ -37,6 +37,8 @@ const CONFIG = {
     media:     "実例の画像や動画",
     x_account: "Xアカウント",
     howto:     "やり方",
+    url:       "共有URL",
+    prompt:    "プロンプト/テンプレ",
   },
 
   // 難易度レベル一覧

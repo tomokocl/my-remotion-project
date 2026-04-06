@@ -316,6 +316,8 @@ function parseCSV(csv) {
       media:     getVal(values, "media"),
       x_account: normalizeXAccount(getVal(values, "x_account")),
       howto:     getVal(values, "howto"),
+      url:       getVal(values, "url"),
+      prompt:    getVal(values, "prompt"),
       _rowIndex: i + 2,  // +2 because: +1 for header, +1 for 1-based sheets
     };
   }).filter(p => p.tool && p.genre);
@@ -773,44 +775,112 @@ function openDetail(tool, genre, post) {
     await incrementShareCount(shareKey);
   });
 
-  // やり方セクション
+  // 共有URL・プロンプト・作り方セクション
   const howtoWrap = document.getElementById('detail-howto-wrap');
   if (howtoWrap) {
-    const existing = post.howto || '';
-    howtoWrap.innerHTML = `
-      <div class="detail-howto">
-        <p class="detail-howto-label">📝 作り方・やり方</p>
-        <textarea class="detail-howto-textarea" id="detail-howto-text" rows="5" placeholder="【きっかけ】なぜやろうと思った？&#10;【解決したかったこと】どうなりたかった？&#10;【できた未来】やってみてどう変わった？">${escHtml(existing)}</textarea>
-        ${CONFIG.GEM_PROMPT_MAKER_URL ? `<a class="detail-howto-gem-link" href="${CONFIG.GEM_PROMPT_MAKER_URL}" target="_blank" rel="noopener">✨ この体験をGEMにしてみる →</a>` : ''}
-        <div class="detail-howto-actions">
-          <button class="detail-howto-save" id="detail-howto-save">保存する</button>
-          <span class="detail-howto-status" id="detail-howto-status"></span>
-        </div>
-      </div>`;
+    let html = '<div class="detail-howto">';
 
-    document.getElementById('detail-howto-save').addEventListener('click', async () => {
-      const text = document.getElementById('detail-howto-text').value;
-      const status = document.getElementById('detail-howto-status');
-      if (!CONFIG.GAS_HOWTO_URL) { status.textContent = 'GAS URLが未設定です'; return; }
-      status.textContent = '保存中...';
-      try {
-        const res = await fetch(CONFIG.GAS_HOWTO_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ row: post._rowIndex, howto: text }),
+    // 共有URLがある場合 → リンクボタンを表示
+    if (post.url) {
+      html += `
+        <div class="detail-share-url">
+          <p class="detail-howto-label">🔗 すぐ使える</p>
+          <a class="detail-share-url-btn" href="${escHtml(post.url)}" target="_blank" rel="noopener">
+            ${escHtml(post.url)}
+          </a>
+        </div>`;
+    }
+
+    // プロンプト/テンプレがある場合 → コピー可能なブロック表示
+    if (post.prompt) {
+      html += `
+        <div class="detail-prompt-block">
+          <p class="detail-howto-label">📋 プロンプト / テンプレ</p>
+          <pre class="detail-prompt-text" id="detail-prompt-text">${escHtml(post.prompt)}</pre>
+          <button class="detail-prompt-copy" id="detail-prompt-copy">コピーする</button>
+        </div>`;
+    }
+
+    // やり方がある場合 → 表示（読み取り専用）+ 編集ボタン
+    // やり方がない場合 → 入力フォーム
+    const existing = post.howto || '';
+    if (existing) {
+      html += `
+        <div class="detail-howto-display">
+          <p class="detail-howto-label">📝 作り方・やり方</p>
+          <div class="detail-howto-content">${escHtml(existing).replace(/\n/g, '<br>')}</div>
+          <button class="detail-howto-edit-btn" id="detail-howto-edit-btn">編集する</button>
+        </div>
+        <div class="detail-howto-editor" id="detail-howto-editor" style="display:none">
+          <textarea class="detail-howto-textarea" id="detail-howto-text" rows="5">${escHtml(existing)}</textarea>
+          <div class="detail-howto-actions">
+            <button class="detail-howto-save" id="detail-howto-save">保存する</button>
+            <span class="detail-howto-status" id="detail-howto-status"></span>
+          </div>
+        </div>`;
+    } else {
+      html += `
+        <div class="detail-howto-editor" id="detail-howto-editor">
+          <p class="detail-howto-label">📝 作り方・やり方</p>
+          <textarea class="detail-howto-textarea" id="detail-howto-text" rows="5" placeholder="【きっかけ】なぜやろうと思った？&#10;【解決したかったこと】どうなりたかった？&#10;【できた未来】やってみてどう変わった？"></textarea>
+          ${CONFIG.GEM_PROMPT_MAKER_URL ? `<a class="detail-howto-gem-link" href="${CONFIG.GEM_PROMPT_MAKER_URL}" target="_blank" rel="noopener">✨ この体験をGEMにしてみる →</a>` : ''}
+          <div class="detail-howto-actions">
+            <button class="detail-howto-save" id="detail-howto-save">保存する</button>
+            <span class="detail-howto-status" id="detail-howto-status"></span>
+          </div>
+        </div>`;
+    }
+
+    html += '</div>';
+    howtoWrap.innerHTML = html;
+
+    // プロンプトコピーボタン
+    const copyBtn = document.getElementById('detail-prompt-copy');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(post.prompt).then(() => {
+          copyBtn.textContent = '✓ コピーしました';
+          setTimeout(() => { copyBtn.textContent = 'コピーする'; }, 2000);
         });
-        const data = await res.json();
-        if (data.ok) {
-          status.textContent = '✓ 保存しました';
-          post.howto = text;
-          setTimeout(() => { status.textContent = ''; }, 2000);
-        } else {
-          status.textContent = 'エラー: ' + (data.error || '不明');
+      });
+    }
+
+    // 編集ボタン（やり方がある場合）
+    const editBtn = document.getElementById('detail-howto-edit-btn');
+    if (editBtn) {
+      editBtn.addEventListener('click', () => {
+        editBtn.closest('.detail-howto-display').style.display = 'none';
+        document.getElementById('detail-howto-editor').style.display = '';
+      });
+    }
+
+    // 保存ボタン
+    const saveBtn = document.getElementById('detail-howto-save');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', async () => {
+        const text = document.getElementById('detail-howto-text').value;
+        const status = document.getElementById('detail-howto-status');
+        if (!CONFIG.GAS_HOWTO_URL) { status.textContent = 'GAS URLが未設定です'; return; }
+        status.textContent = '保存中...';
+        try {
+          const res = await fetch(CONFIG.GAS_HOWTO_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ row: post._rowIndex, howto: text }),
+          });
+          const data = await res.json();
+          if (data.ok) {
+            status.textContent = '✓ 保存しました';
+            post.howto = text;
+            setTimeout(() => { status.textContent = ''; }, 2000);
+          } else {
+            status.textContent = 'エラー: ' + (data.error || '不明');
+          }
+        } catch (e) {
+          status.textContent = 'エラー: ' + e.message;
         }
-      } catch (e) {
-        status.textContent = 'エラー: ' + e.message;
-      }
-    });
+      });
+    }
   }
 
   showView("detail");

@@ -1938,6 +1938,95 @@ body {
   color: #6b7280;
 }
 
+/* 共有URLボタン */
+.detail-share-url {
+  margin-bottom: 16px;
+}
+
+.detail-share-url-btn {
+  display: block;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, #ecfdf5, #ede9fe);
+  border: 1px solid #10b981;
+  border-radius: 12px;
+  color: #059669;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  word-break: break-all;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.detail-share-url-btn:hover {
+  background: linear-gradient(135deg, #d1fae5, #ddd6fe);
+  transform: translateY(-1px);
+}
+
+/* プロンプトブロック */
+.detail-prompt-block {
+  margin-bottom: 16px;
+}
+
+.detail-prompt-text {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #374151;
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 0;
+}
+
+.detail-prompt-copy {
+  margin-top: 8px;
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.detail-prompt-copy:hover {
+  opacity: 0.85;
+}
+
+/* やり方表示（読み取り） */
+.detail-howto-display {
+  margin-bottom: 8px;
+}
+
+.detail-howto-content {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.detail-howto-edit-btn {
+  margin-top: 8px;
+  background: none;
+  border: none;
+  color: #7c3aed;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
 .detail-howto-gem-link {
   display: inline-block;
   margin-top: 10px;
