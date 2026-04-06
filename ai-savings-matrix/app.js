@@ -275,8 +275,20 @@ function parseCSV(csv) {
       ? (values[colIndex[key]] || "").trim()
       : "";
 
+  const headerCount = rawHeaders.length;
+
   return lines.slice(1).map((line, i) => {
-    const values = splitCSVFields(line);
+    let values = splitCSVFields(line);
+
+    // 列数がヘッダーより多い場合 → 金額のカンマ等で列がズレている
+    // 削減額の列を探して、数字部分を結合して修正する
+    if (values.length > headerCount && colIndex.saving !== undefined) {
+      const si = colIndex.saving;
+      const extra = values.length - headerCount;
+      // 削減額の後ろのextra個のフィールドを結合
+      const merged = values[si] + ',' + values.slice(si + 1, si + 1 + extra).join(',');
+      values = [...values.slice(0, si), merged, ...values.slice(si + 1 + extra)];
+    }
 
     const rawTool  = getVal(values, "tool");
     const rawGenre = getVal(values, "genre");
