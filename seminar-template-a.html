@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セミナーバナー テキスト組 パターンA</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+
+  .banner {
+    width: 1200px;
+    height: 630px;
+    background: #ffffff;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+  }
+
+  /* ── 左側メインコンテンツ ── */
+  .main-content {
+    flex: 1;
+    padding: 40px 36px 32px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 上部ロゴエリア */
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 12px;
+  }
+
+  .logo-placeholder {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a3a5c;
+    letter-spacing: 0.08em;
+    padding: 6px 0;
+    border-bottom: 2px solid #1a3a5c;
+  }
+
+  .logo-separator {
+    font-size: 22px;
+    color: #ccc;
+    font-weight: 300;
+  }
+
+  .logo-placeholder-sub {
+    font-size: 14px;
+    font-weight: 700;
+    color: #2a8fd4;
+    letter-spacing: 0.05em;
+  }
+
+  /* キャッチコピー */
+  .catchcopy {
+    font-size: 17px;
+    font-weight: 700;
+    color: #e64545;
+    margin-bottom: 8px;
+    line-height: 1.6;
+    letter-spacing: 0.04em;
+  }
+
+  /* サブキャッチ */
+  .subcatch {
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  /* メイン見出し */
+  .main-heading {
+    margin-bottom: 14px;
+  }
+
+  .main-heading-line {
+    font-size: 38px;
+    font-weight: 900;
+    color: #1a1a1a;
+    line-height: 1.35;
+    letter-spacing: 0.02em;
+  }
+
+  .main-heading-accent {
+    color: #2a8fd4;
+  }
+
+  /* バッジ群 */
+  .badges {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
+  }
+
+  .badge--accent {
+    background: #1a3a5c;
+    color: #fff;
+  }
+
+  .badge--outline {
+    border: 2px solid #2a8fd4;
+    color: #2a8fd4;
+    background: transparent;
+  }
+
+  .badge--red {
+    background: #e64545;
+    color: #fff;
+  }
+
+  /* 見出し補足テキスト */
+  .heading-supplement {
+    font-size: 26px;
+    font-weight: 900;
+    color: #1a1a1a;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    letter-spacing: 0.01em;
+  }
+
+  /* 開催情報 */
+  .event-info {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-top: auto;
+  }
+
+  .event-info-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background: #e64545;
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+
+  .event-info-online {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background: #2a8fd4;
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+
+  .event-date {
+    font-size: 18px;
+    font-weight: 900;
+    color: #1a1a1a;
+    letter-spacing: 0.02em;
+  }
+
+  .event-date-large {
+    font-size: 28px;
+  }
+
+  .event-time {
+    font-size: 16px;
+    font-weight: 500;
+    color: #555;
+  }
+
+  /* ── 右側 登壇者エリア ── */
+  .speaker-area {
+    width: 340px;
+    background: linear-gradient(135deg, #e8f4fd 0%, #d4ecf9 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 30px 28px 28px;
+    position: relative;
+  }
+
+  .speaker-photo-placeholder {
+    width: 200px;
+    height: 240px;
+    background: linear-gradient(180deg, #c5dff0 0%, #a3c8e0 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6a9cc0;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+  .speaker-info {
+    text-align: center;
+    width: 100%;
+  }
+
+  .speaker-affiliation {
+    font-size: 12px;
+    font-weight: 500;
+    color: #5a7a8f;
+    margin-bottom: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .speaker-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #5a7a8f;
+    margin-bottom: 6px;
+  }
+
+  .speaker-name {
+    font-size: 22px;
+    font-weight: 900;
+    color: #1a3a5c;
+    letter-spacing: 0.08em;
+  }
+
+  .speaker-name-suffix {
+    font-size: 14px;
+    font-weight: 500;
+    color: #5a7a8f;
+    margin-left: 4px;
+  }
+
+  /* 装飾ライン */
+  .deco-line {
+    position: absolute;
+    top: 0;
+    right: 340px;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #2a8fd4 0%, #1a3a5c 100%);
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <div class="deco-line"></div>
+
+  <div class="main-content">
+    <!-- 上部：ロゴエリア -->
+    <div class="logo-area">
+      <span class="logo-placeholder">データ活用研究所</span>
+      <span class="logo-separator">&times;</span>
+      <span class="logo-placeholder-sub">SurveyCloud</span>
+    </div>
+
+    <!-- キャッチコピー -->
+    <div class="catchcopy">リサーチの品質が気になる方必見!</div>
+
+    <!-- サブキャッチ -->
+    <div class="subcatch">AIで調査モニターの品質向上!</div>
+
+    <!-- バッジ -->
+    <div class="badges">
+      <span class="badge badge--accent">特許取得</span>
+    </div>
+
+    <!-- メイン見出し -->
+    <div class="main-heading">
+      <div class="main-heading-line">
+        <span class="main-heading-accent">データ活用研究所</span>と開発した
+      </div>
+      <div class="main-heading-line">独自技術を大公開!</div>
+    </div>
+
+    <!-- 開催情報 -->
+    <div class="event-info">
+      <span class="event-info-label">無料</span>
+      <span class="event-info-online">オンライン</span>
+      <span class="event-date">2025.<span class="event-date-large">8.10</span>(木)</span>
+      <span class="event-time">14:00〜</span>
+    </div>
+  </div>
+
+  <!-- 右側：登壇者 -->
+  <div class="speaker-area">
+    <div class="speaker-photo-placeholder">登壇者写真</div>
+    <div class="speaker-info">
+      <div class="speaker-affiliation">データ活用研究所 ビジネスサイエンス系</div>
+      <div class="speaker-name">
+        山田 太郎
+        <span class="speaker-name-suffix">准教授</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

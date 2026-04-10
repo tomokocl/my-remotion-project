@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>セミナーバナー テキスト組 パターンB</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+
+  .banner {
+    width: 1200px;
+    height: 630px;
+    background: #ffffff;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── 上部帯 ── */
+  .top-bar {
+    background: linear-gradient(90deg, #1a2a4a 0%, #2c4070 100%);
+    padding: 14px 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .top-bar-catch {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffd966;
+    letter-spacing: 0.06em;
+  }
+
+  .top-bar-highlight {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 900;
+    background: rgba(255,255,255,0.12);
+    padding: 2px 10px;
+    border-radius: 3px;
+  }
+
+  .top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .top-bar-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: #1a2a4a;
+    background: #ffd966;
+    padding: 3px 10px;
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  .top-bar-series {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── メインエリア ── */
+  .main-area {
+    flex: 1;
+    display: flex;
+    padding: 0;
+  }
+
+  /* 左側：テキスト */
+  .text-content {
+    flex: 1;
+    padding: 36px 32px 28px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* サブキャッチ */
+  .subcatch {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a2a4a;
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  .subcatch-accent {
+    color: #e64545;
+    font-size: 20px;
+    font-weight: 900;
+  }
+
+  /* メイン見出し */
+  .main-heading {
+    margin-bottom: 6px;
+  }
+
+  .main-heading-line {
+    font-size: 40px;
+    font-weight: 900;
+    color: #1a1a1a;
+    line-height: 1.35;
+    letter-spacing: 0.01em;
+  }
+
+  .heading-bracket {
+    color: #2a8fd4;
+  }
+
+  .heading-emphasis {
+    position: relative;
+    display: inline;
+  }
+
+  .heading-emphasis::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 2px;
+    width: 100%;
+    height: 8px;
+    background: rgba(42, 143, 212, 0.15);
+    z-index: -1;
+  }
+
+  /* シリーズラベル */
+  .series-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    margin-top: 6px;
+  }
+
+  .series-label-tag {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    background: #1a2a4a;
+    padding: 4px 14px;
+    border-radius: 3px;
+    letter-spacing: 0.06em;
+  }
+
+  /* 開催情報 */
+  .event-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .event-info-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .event-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  .event-badge--benefit {
+    background: #ffd966;
+    color: #1a2a4a;
+  }
+
+  .event-badge--free {
+    background: #e64545;
+    color: #fff;
+  }
+
+  .event-date {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  .event-date-month {
+    font-size: 22px;
+    font-weight: 900;
+  }
+
+  .event-date-day {
+    font-size: 30px;
+    font-weight: 900;
+  }
+
+  .event-day-of-week {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e64545;
+  }
+
+  .event-time {
+    font-size: 18px;
+    font-weight: 900;
+    color: #1a2a4a;
+  }
+
+  .event-note {
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  /* ── 右側 登壇者エリア ── */
+  .speakers-area {
+    width: 460px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 16px;
+    padding: 20px 28px 0;
+    background: linear-gradient(180deg, #f8f9fc 0%, #eef2f7 100%);
+    position: relative;
+  }
+
+  .speaker-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+  }
+
+  .speaker-photo-placeholder {
+    width: 150px;
+    height: 190px;
+    background: linear-gradient(180deg, #d4dce8 0%, #b8c6d8 100%);
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8a9ab5;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .speaker-info {
+    text-align: center;
+    padding: 10px 4px 16px;
+    width: 100%;
+  }
+
+  .speaker-affiliation {
+    font-size: 10px;
+    font-weight: 500;
+    color: #7a8a9f;
+    margin-bottom: 2px;
+    letter-spacing: 0.03em;
+    line-height: 1.4;
+  }
+
+  .speaker-name {
+    font-size: 18px;
+    font-weight: 900;
+    color: #1a2a4a;
+    letter-spacing: 0.06em;
+  }
+
+  .speaker-name-suffix {
+    font-size: 12px;
+    font-weight: 500;
+    color: #7a8a9f;
+    margin-left: 2px;
+  }
+
+  .speaker-divider {
+    width: 1px;
+    height: 200px;
+    background: #d4dce8;
+    align-self: center;
+    margin-bottom: 40px;
+  }
+
+  /* ── 下部帯 ── */
+  .bottom-bar {
+    background: #1a2a4a;
+    padding: 8px 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .bottom-bar-text {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.04em;
+  }
+
+  .bottom-bar-capacity {
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffd966;
+    letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <!-- 上部帯 -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <span class="top-bar-catch">必要な<span class="top-bar-highlight">6つのポイント</span>が分かる!</span>
+    </div>
+    <div class="top-bar-right">
+      <span class="top-bar-series">第2回 リサーチアカデミー</span>
+      <span class="top-bar-badge">Zoomでオンライン配信</span>
+    </div>
+  </div>
+
+  <div class="main-area">
+    <!-- 左側テキスト -->
+    <div class="text-content">
+      <!-- サブキャッチ -->
+      <div class="subcatch">
+        関係者に褒められる
+      </div>
+
+      <!-- メイン見出し -->
+      <div class="main-heading">
+        <div class="main-heading-line">
+          ネットリサーチの
+        </div>
+        <div class="main-heading-line">
+          <span class="heading-bracket">「</span><span class="heading-emphasis">調査概要</span><span class="heading-bracket">」</span>の作り方
+        </div>
+      </div>
+
+      <!-- シリーズラベル -->
+      <div class="series-label">
+        <span class="series-label-tag">調査企画編</span>
+      </div>
+
+      <!-- 開催情報 -->
+      <div class="event-info">
+        <div class="event-info-row">
+          <span class="event-badge event-badge--benefit">特典あり</span>
+          <span class="event-badge event-badge--free">無料</span>
+        </div>
+        <div class="event-info-row">
+          <span class="event-date">
+            <span class="event-date-month">5.</span><span class="event-date-day">24</span>
+          </span>
+          <span class="event-day-of-week">(火)</span>
+          <span class="event-time">15:00〜</span>
+        </div>
+      </div>
+      <div class="event-note">※ アーカイブ配信あり</div>
+    </div>
+
+    <!-- 右側：登壇者2名 -->
+    <div class="speakers-area">
+      <div class="speaker-card">
+        <div class="speaker-photo-placeholder">登壇者写真</div>
+        <div class="speaker-info">
+          <div class="speaker-affiliation">マーケティング総研<br>リサーチ部門 部長</div>
+          <div class="speaker-name">
+            佐藤 一郎
+            <span class="speaker-name-suffix">氏</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="speaker-divider"></div>
+
+      <div class="speaker-card">
+        <div class="speaker-photo-placeholder">登壇者写真</div>
+        <div class="speaker-info">
+          <div class="speaker-affiliation">データ活用研究所<br>代表取締役</div>
+          <div class="speaker-name">
+            鈴木 次郎
+            <span class="speaker-name-suffix">氏</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 下部帯 -->
+  <div class="bottom-bar">
+    <span class="bottom-bar-text">主催：マーケティング総研株式会社</span>
+    <span class="bottom-bar-capacity">先着200名の参加者大歓迎!</span>
+  </div>
+</div>
+
+</body>
+</html>
