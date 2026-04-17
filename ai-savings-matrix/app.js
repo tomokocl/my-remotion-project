@@ -395,6 +395,17 @@ function parseCSV(csv) {
       post.url = collectedUrls[0];
     }
 
+    // 共有タイプが「プロンプト・テンプレ共有」なのに prompt 欄が空 → 他の長文欄から引き上げ
+    const isPromptType =
+      post.level === 'middle' || /プロンプト|テンプレ/.test(post.level || '');
+    if (isPromptType && !post.prompt) {
+      if (post.howto && post.howto.length >= 20) {
+        post.prompt = post.howto;
+      } else if (post.detail && post.detail.length >= 20) {
+        post.prompt = post.detail;
+      }
+    }
+
     // Xアカウントを正規化
     post.x_account = normalizeXAccount(post.x_account);
 
@@ -498,11 +509,15 @@ function switchToView(viewName) {
 // 「使い方で探す」ビュー描画
 function renderShareView() {
   // URLやプロンプトの有無で分類（levelフィールドではなく実データで判定）
+  // URL/prompt がどちらも空の場合は共有タイプ（level）をフォールバックとして使う
   function classifyPost(p) {
     // URLがあっても、Googleドライブの成果物だけなら「参考にできる」
     const isDriveOnly = (s) => /^https?:\/\/drive\.google\.com/i.test(s);
     if (p.url && !isDriveOnly(p.url)) return 'instant';  // GEM/GPTs/アプリURL
     if (p.prompt) return 'template';  // プロンプトやテンプレ
+    const lvl = p.level || '';
+    if (lvl === 'middle'   || /プロンプト|テンプレ/.test(lvl)) return 'template';
+    if (lvl === 'advanced' || /リンク|GEM|GPT/.test(lvl))      return 'instant';
     return 'howto';  // 体験談・Driveの成果物
   }
 
