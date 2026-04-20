@@ -887,7 +887,7 @@ function openDetail(tool, genre, post) {
     if (post.url) {
       html += `
         <div class="detail-share-url">
-          <p class="detail-howto-label">🔗 すぐ使える</p>
+          <p class="detail-howto-label">🔗 完成した共有用プロンプト（URL）</p>
           <a class="detail-share-url-btn" href="${escHtml(post.url)}" target="_blank" rel="noopener">
             ${escHtml(post.url)}
           </a>
@@ -898,7 +898,7 @@ function openDetail(tool, genre, post) {
     if (post.prompt) {
       html += `
         <div class="detail-prompt-block">
-          <p class="detail-howto-label">📋 プロンプト / テンプレ</p>
+          <p class="detail-howto-label">📋 作成時のプロンプト</p>
           <pre class="detail-prompt-text" id="detail-prompt-text">${escHtml(post.prompt)}</pre>
           <button class="detail-prompt-copy" id="detail-prompt-copy">コピーする</button>
         </div>`;
@@ -1202,7 +1202,14 @@ function initDiagnosisTool() {
   , () => showSuggestPanel());
 
   // ③ 共有タイプ（HTMLに直書き済み）
+  // 表示用ラベル（UI上の要約などに使用）
   const SHARE_LABELS = {
+    advanced: '完成した共有用プロンプト',
+    middle:   '作成時のプロンプト',
+    beginner: '体験談',
+  };
+  // フォームのラジオ選択肢と完全一致させる値（プリフィル用）
+  const SHARE_FORM_VALUES = {
     advanced: 'リンクで共有（GEM・GPTs等）',
     middle:   'プロンプト・テンプレ共有',
     beginner: '体験談として共有',
@@ -1275,7 +1282,7 @@ function initDiagnosisTool() {
       <div class="qpost-suggest-item">
         <span class="qpost-suggest-icon">📋</span>
         <div>
-          <strong>プロンプト共有にするなら →</strong>
+          <strong>作成時のプロンプトとして共有するなら →</strong>
           <p>${suggestions.prompt}</p>
         </div>
       </div>
@@ -1322,7 +1329,10 @@ function initDiagnosisTool() {
     const params = new URLSearchParams();
     if (CONFIG.FORM_FIELDS.tool)  params.set(CONFIG.FORM_FIELDS.tool,  state.tool.label);
     if (CONFIG.FORM_FIELDS.genre) params.set(CONFIG.FORM_FIELDS.genre, state.genre.label);
-    if (CONFIG.FORM_FIELDS.level) params.set(CONFIG.FORM_FIELDS.level, state.level.label);
+    if (CONFIG.FORM_FIELDS.level) {
+      // フォーム側の選択肢ラベルに合わせてプリフィル
+      params.set(CONFIG.FORM_FIELDS.level, SHARE_FORM_VALUES[state.level.id] || state.level.label);
+    }
     window.open(`${CONFIG.FORM_BASE_URL}?${params.toString()}`, '_blank');
   });
 }
