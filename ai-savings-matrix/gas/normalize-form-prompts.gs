@@ -21,34 +21,49 @@
  */
 
 /**
- * フォームを取得する。
- * - フォーム紐付きスクリプトなら FormApp.getActiveForm() を使う
- * - スプシ紐付きスクリプトなら、スプシに連動しているフォームの編集URLから取得する
+ * フォーム編集URL を直接ここに貼れば、どの Apps Script プロジェクトからでも実行できる。
+ * 空文字のままなら自動検出を試みる。
+ *
+ * 取り方:
+ *   1. Google フォームを「編集モード」で開く
+ *   2. ブラウザのアドレスバーの URL をまるごとコピー
+ *      例: https://docs.google.com/forms/d/1AbCd.../edit
+ *      (d/ の直後が「編集用 ID」。d/e/ のパブリック配布URLとは別物)
+ */
+var FORM_EDIT_URL = '';
+
+/**
+ * フォームを取得する。優先順位:
+ *   1. FORM_EDIT_URL が設定されていればそれを使う
+ *   2. FormApp.getActiveForm() (フォーム紐付きスクリプトの場合)
+ *   3. スプシ紐付きスクリプトなら、各シートの getFormUrl() からリンク先フォームを取得
  */
 function getTargetForm_() {
-  // 1) フォーム紐付きの場合
+  // 1) 直接指定
+  if (FORM_EDIT_URL) {
+    return FormApp.openByUrl(FORM_EDIT_URL);
+  }
+
+  // 2) フォーム紐付きの場合
   try {
     const f = FormApp.getActiveForm();
     if (f) return f;
   } catch (e) {
-    // FormApp.getActiveForm() がスプシ側で呼ばれると例外が出ることもあるので無視
+    // スプシ側で呼ばれた場合に例外が出ることもあるので無視
   }
 
-  // 2) スプシ紐付きの場合 → アクティブシートからリンクされたフォームを引く
+  // 3) スプシ紐付きの場合 → アクティブシートからリンクされたフォームを引く
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   if (!ss) {
-    throw new Error('フォームもスプシも特定できません。スクリプトをフォームかスプシに紐付けて実行してください。');
+    throw new Error('フォームもスプシも特定できません。FORM_EDIT_URL を設定するか、フォーム/スプシに紐付けて実行してください。');
   }
   const sheets = ss.getSheets();
   for (let i = 0; i < sheets.length; i++) {
     const url = sheets[i].getFormUrl();
     if (url) return FormApp.openByUrl(url);
   }
-  // スプシ本体の関連フォーム (古い形式)
-  const ssFormUrl = ss.getFormUrl && ss.getFormUrl();
-  if (ssFormUrl) return FormApp.openByUrl(ssFormUrl);
 
-  throw new Error('このスプシにリンクされているフォームが見つかりません。');
+  throw new Error('このスプシにリンクされているフォームが見つかりません。ファイル冒頭の FORM_EDIT_URL にフォームの編集URLを直接貼って再実行してください。');
 }
 
 function normalizeFormPromptQuestions() {
