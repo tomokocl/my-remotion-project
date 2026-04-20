@@ -508,17 +508,21 @@ function switchToView(viewName) {
 
 // 「使い方で探す」ビュー描画
 function renderShareView() {
-  // URLやプロンプトの有無で分類（levelフィールドではなく実データで判定）
-  // URL/prompt がどちらも空の場合は共有タイプ（level）をフォールバックとして使う
-  function classifyPost(p) {
-    // URLがあっても、Googleドライブの成果物だけなら「参考にできる」
-    const isDriveOnly = (s) => /^https?:\/\/drive\.google\.com/i.test(s);
-    if (p.url && !isDriveOnly(p.url)) return 'instant';  // GEM/GPTs/アプリURL
-    if (p.prompt) return 'template';  // プロンプトやテンプレ
+  // URL と prompt は両立しうるため、カードは排他ではなくクロスリスト方式で判定する
+  const isDriveOnly = (s) => /^https?:\/\/drive\.google\.com/i.test(s);
+  function showsIn(p, type) {
+    const hasRealUrl = p.url && !isDriveOnly(p.url);
     const lvl = p.level || '';
-    if (lvl === 'middle'   || /プロンプト|テンプレ/.test(lvl)) return 'template';
-    if (lvl === 'advanced' || /リンク|GEM|GPT/.test(lvl))      return 'instant';
-    return 'howto';  // 体験談・Driveの成果物
+    const lvlSaysPrompt = lvl === 'middle'   || /プロンプト|テンプレ/.test(lvl);
+    const lvlSaysLink   = lvl === 'advanced' || /リンク|GEM|GPT/.test(lvl);
+    if (type === 'instant') {
+      return hasRealUrl || (!p.prompt && lvlSaysLink);
+    }
+    if (type === 'template') {
+      return !!p.prompt || (!hasRealUrl && lvlSaysPrompt);
+    }
+    // howto: URL もプロンプトも無いもの（Driveのみの投稿も含む）
+    return !hasRealUrl && !p.prompt && !lvlSaysLink && !lvlSaysPrompt;
   }
 
   const SHARE_MAP = {
@@ -528,7 +532,7 @@ function renderShareView() {
   };
 
   for (const [type, cfg] of Object.entries(SHARE_MAP)) {
-    const matched = posts.filter(p => classifyPost(p) === type);
+    const matched = posts.filter(p => showsIn(p, type));
     const container = document.getElementById(cfg.container);
     const counter   = document.getElementById(cfg.counter);
     if (!container || !counter) continue;
