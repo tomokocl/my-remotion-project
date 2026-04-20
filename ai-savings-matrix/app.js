@@ -262,12 +262,19 @@ function parseCSV(csv) {
   const lines = splitCSVRows(csv.trim());
   const rawHeaders = splitCSVFields(lines[0]);
 
-  // CSVヘッダーとconfig.CSV_COLUMNSを部分一致で対応付け
+  // CSVヘッダーとconfig.CSV_COLUMNSを部分一致で対応付け（最長一致を優先）
+  // 例: 「節約難易度」列は「難易度」より「節約難易度」に優先マッチさせる
   const colIndex = {}; // internalKey → 列インデックス
   rawHeaders.forEach((h, i) => {
+    let bestKey = null;
+    let bestLen = 0;
     for (const [key, prefix] of Object.entries(CONFIG.CSV_COLUMNS)) {
-      if (h.includes(prefix)) colIndex[key] = i;
+      if (h.includes(prefix) && prefix.length > bestLen) {
+        bestKey = key;
+        bestLen = prefix.length;
+      }
     }
+    if (bestKey) colIndex[bestKey] = i;
   });
 
   const getVal = (values, key) =>
@@ -316,11 +323,18 @@ function parseCSV(csv) {
     );
     const levelId = levelObj ? levelObj.id : (rawLevel ? rawLevel : "beginner");
 
+    // 節約難易度（新Q列）: 明示入力があれば 初級/中級/上級 → beginner/middle/advanced に正規化
+    const rawDifficulty = getVal(values, "difficulty");
+    const difficultyObj = CONFIG.LEVELS.find(l =>
+      l.label === rawDifficulty || l.id === rawDifficulty
+    );
+
     const post = {
       tool:       toolObj  ? toolObj.id  : rawTool.toLowerCase(),
       tool_other: toolOther,
       genre:      genreObj ? genreObj.id : rawGenre,
       level:      levelId,
+      difficulty: difficultyObj ? difficultyObj.id : '',
       title:     getVal(values, "title"),
       detail:    getVal(values, "detail"),
       saving:    getVal(values, "saving"),
@@ -395,14 +409,36 @@ function parseCSV(csv) {
       post.url = collectedUrls[0];
     }
 
-    // 共有タイプが「プロンプト・テンプレ共有」なのに prompt 欄が空 → 他の長文欄から引き上げ
+    // プロンプト共有タイプ（共有タイプ=プロンプト/節約難易度=中級/タイトルに「テンプレ」等）
+    // なのに prompt 欄が空 → 他の長文欄から引き上げ
     const isPromptType =
-      post.level === 'middle' || /プロンプト|テンプレ/.test(post.level || '');
+      post.difficulty === 'middle' ||
+      post.level === 'middle' ||
+      /プロンプト|テンプレ/.test(post.level || '') ||
+      /プロンプト|テンプレ/.test(post.title || '');
     if (isPromptType && !post.prompt) {
       if (post.howto && post.howto.length >= 20) {
         post.prompt = post.howto;
       } else if (post.detail && post.detail.length >= 20) {
         post.prompt = post.detail;
+      }
+    }
+
+    // 節約難易度 が未入力なら自動推定
+    //   URL共有がある/共有タイプが「リンクで共有」→ 上級
+    //   プロンプトがある/共有タイプが「プロンプト共有」/タイトルに「テンプレ」→ 中級
+    //   それ以外（体験談）→ 初級
+    if (!post.difficulty) {
+      const isDriveOnly = (s) => /^https?:\/\/drive\.google\.com/i.test(s);
+      const hasRealUrl = post.url && !isDriveOnly(post.url);
+      const lvl = post.level || '';
+      const title = post.title || '';
+      if (hasRealUrl || /リンク|GEM|GPT/.test(lvl)) {
+        post.difficulty = 'advanced';
+      } else if (post.prompt || /プロンプト|テンプレ/.test(lvl) || /プロンプト|テンプレ/.test(title)) {
+        post.difficulty = 'middle';
+      } else {
+        post.difficulty = 'beginner';
       }
     }
 
@@ -419,7 +455,8 @@ function getPostsFor(toolId, genreId) {
 }
 
 function getPostsForLevel(genreId, levelId) {
-  return posts.filter(p => p.genre === genreId && (p.level === levelId));
+  // カテゴリー別(旧)ビューは節約難易度 (post.difficulty) で配置する
+  return posts.filter(p => p.genre === genreId && p.difficulty === levelId);
 }
 
 // ===== カテゴリー×難易度 マトリックス描画 =====
@@ -508,21 +545,19 @@ function switchToView(viewName) {
 
 // 「使い方で探す」ビュー描画
 function renderShareView() {
-  // URL と prompt は両立しうるため、カードは排他ではなくクロスリスト方式で判定する
+  // URL と prompt は両立しうるため、カードは排他ではなくクロスリスト方式で判定する。
+  // parseCSV 側で post.difficulty が必ず埋まっているため、主にそれを使用する。
   const isDriveOnly = (s) => /^https?:\/\/drive\.google\.com/i.test(s);
   function showsIn(p, type) {
     const hasRealUrl = p.url && !isDriveOnly(p.url);
-    const lvl = p.level || '';
-    const lvlSaysPrompt = lvl === 'middle'   || /プロンプト|テンプレ/.test(lvl);
-    const lvlSaysLink   = lvl === 'advanced' || /リンク|GEM|GPT/.test(lvl);
     if (type === 'instant') {
-      return hasRealUrl || (!p.prompt && lvlSaysLink);
+      return hasRealUrl || p.difficulty === 'advanced';
     }
     if (type === 'template') {
-      return !!p.prompt || (!hasRealUrl && lvlSaysPrompt);
+      return !!p.prompt || p.difficulty === 'middle';
     }
-    // howto: URL もプロンプトも無いもの（Driveのみの投稿も含む）
-    return !hasRealUrl && !p.prompt && !lvlSaysLink && !lvlSaysPrompt;
+    // howto: 節約難易度=初級 かつ URL/プロンプトなし（Driveのみの投稿も含む）
+    return p.difficulty === 'beginner' && !hasRealUrl && !p.prompt;
   }
 
   const SHARE_MAP = {
