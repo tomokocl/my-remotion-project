@@ -409,17 +409,18 @@ function parseCSV(csv) {
       post.url = collectedUrls[0];
     }
 
-    // プロンプト列の最終フォールバック:
-    // 列マッピングで拾えなかった場合、ヘッダに「プロンプト」「テンプレ」を含む
-    // 全列を走査して最初の非空セルを採用する（フォームに複数のプロンプト系質問が
-    // 追加されたケースに備える）
-    if (!post.prompt) {
+    // プロンプト列の正規化:
+    // スプシに複数の プロンプト/テンプレ 系列（例: 旧列と新列）がある場合、
+    // 最長の値を持つ列を採用する。初期マッピングが空列を選んでしまう事故を防ぐ。
+    {
+      let best = (post.prompt || '').trim();
       for (let ci = 0; ci < rawHeaders.length; ci++) {
         const h = String(rawHeaders[ci] || '');
         if (!/プロンプト|テンプレ/.test(h)) continue;
         const v = (values[ci] || '').trim();
-        if (v && v.length > 5) { post.prompt = v; break; }
+        if (v.length > best.length) best = v;
       }
+      post.prompt = best;
     }
 
     // プロンプト共有タイプ（共有タイプ=プロンプト/節約難易度=中級/タイトルに「テンプレ」等）
