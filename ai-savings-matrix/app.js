@@ -409,6 +409,19 @@ function parseCSV(csv) {
       post.url = collectedUrls[0];
     }
 
+    // プロンプト列の最終フォールバック:
+    // 列マッピングで拾えなかった場合、ヘッダに「プロンプト」「テンプレ」を含む
+    // 全列を走査して最初の非空セルを採用する（フォームに複数のプロンプト系質問が
+    // 追加されたケースに備える）
+    if (!post.prompt) {
+      for (let ci = 0; ci < rawHeaders.length; ci++) {
+        const h = String(rawHeaders[ci] || '');
+        if (!/プロンプト|テンプレ/.test(h)) continue;
+        const v = (values[ci] || '').trim();
+        if (v && v.length > 5) { post.prompt = v; break; }
+      }
+    }
+
     // プロンプト共有タイプ（共有タイプ=プロンプト/節約難易度=中級/タイトルに「テンプレ」等）
     // なのに prompt 欄が空 → 他の長文欄から引き上げ
     const isPromptType =

@@ -38,7 +38,7 @@ const CONFIG = {
     x_account: "Xアカウント",
     howto:     "やり方",
     url:       "共有URL",
-    prompt:    "プロンプト/テンプレ",
+    prompt:    "プロンプト",
   },
 
   // 難易度レベル一覧
