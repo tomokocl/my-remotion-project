@@ -8,28 +8,53 @@
  *   - 2 問目 → 「作成時のプロンプト」
  *   - 3 問目以降 → 削除
  *
- * 実行手順:
- * 1. Google フォームを開く (スプシではなくフォーム本体)
- * 2. 右上の ⋮ メニュー → 「スクリプトエディタ」を開く
- *    (またはフォームに紐付いた Apps Script プロジェクトを開く)
- * 3. 新しいスクリプトファイル `normalize-form-prompts` を追加してこのコードを貼り付け
- * 4. 保存 → 関数セレクタで `normalizeFormPromptQuestions` を選んで ▶ 実行
- * 5. 初回は承認ダイアログが出る → 許可
- * 6. 実行ログ（表示 → 実行ログ）で結果を確認
+ * 実行手順（スプシ側 Apps Script からでも、フォーム側からでもどちらでも可）:
+ * 1. スプシ or フォームの Apps Script を開く
+ * 2. 新しいスクリプトファイル `normalize-form-prompts` を追加してこのコードを貼り付け
+ * 3. 保存 → 関数セレクタで `normalizeFormPromptQuestions` を選んで ▶ 実行
+ * 4. 初回は承認ダイアログが出る → 許可
+ * 5. 実行ログ（表示 → 実行ログ）で結果を確認
  *
  * ⚠ 重要:
  *   - 実行前にフォームのコピーをバックアップとして作成推奨
- *   - この関数はフォームに紐付けて実行する必要があります
- *     （スプシ側 Apps Script から実行する場合は下部 NOTE 参照）
- *   - 1 回だけ実行してください（重複検出がないので複数回実行で意図せず削除される可能性）
- *
- * NOTE: スプシ側 Apps Script から実行したい場合は
- *       FormApp.getActiveForm() の代わりに FormApp.openByUrl(EDIT_FORM_URL) に
- *       置き換えてください。EDIT_FORM_URL は「編集用URL (/edit 付き)」です。
+ *   - 1 回だけ実行してください
  */
 
+/**
+ * フォームを取得する。
+ * - フォーム紐付きスクリプトなら FormApp.getActiveForm() を使う
+ * - スプシ紐付きスクリプトなら、スプシに連動しているフォームの編集URLから取得する
+ */
+function getTargetForm_() {
+  // 1) フォーム紐付きの場合
+  try {
+    const f = FormApp.getActiveForm();
+    if (f) return f;
+  } catch (e) {
+    // FormApp.getActiveForm() がスプシ側で呼ばれると例外が出ることもあるので無視
+  }
+
+  // 2) スプシ紐付きの場合 → アクティブシートからリンクされたフォームを引く
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss) {
+    throw new Error('フォームもスプシも特定できません。スクリプトをフォームかスプシに紐付けて実行してください。');
+  }
+  const sheets = ss.getSheets();
+  for (let i = 0; i < sheets.length; i++) {
+    const url = sheets[i].getFormUrl();
+    if (url) return FormApp.openByUrl(url);
+  }
+  // スプシ本体の関連フォーム (古い形式)
+  const ssFormUrl = ss.getFormUrl && ss.getFormUrl();
+  if (ssFormUrl) return FormApp.openByUrl(ssFormUrl);
+
+  throw new Error('このスプシにリンクされているフォームが見つかりません。');
+}
+
 function normalizeFormPromptQuestions() {
-  const form = FormApp.getActiveForm();
+  const form = getTargetForm_();
+  Logger.log('対象フォーム: ' + form.getTitle());
+
   const items = form.getItems();
 
   // プロンプト/テンプレを含む全質問を抽出（ページブレイク・セクションヘッダは除外）
@@ -37,7 +62,6 @@ function normalizeFormPromptQuestions() {
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     const type = item.getType();
-    // ページブレイクやセクションヘッダは除外
     if (type === FormApp.ItemType.PAGE_BREAK || type === FormApp.ItemType.SECTION_HEADER) continue;
     const title = item.getTitle();
     if (/プロンプト|テンプレ/.test(title)) {
