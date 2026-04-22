@@ -563,22 +563,16 @@ function switchToView(viewName) {
 
 // 「使い方で探す」ビュー描画
 function renderShareView() {
-  // URL と prompt は両立しうるため、カードは排他ではなくクロスリスト方式で判定する。
-  // difficulty に加えて、共有タイプ(level) と タイトルのキーワードも最終フォールバックに使う。
+  // 排他分類: 1つの投稿は 1つのカードにのみ表示する
+  //   すぐ使える   : 非Driveの URL あり
+  //   コピペで使える: URLなし かつ プロンプト(完成した共有用 or 作成時)あり
+  //   参考にできる  : それ以外（DriveのみのURLも含む）
   const isDriveOnly = (s) => /^https?:\/\/drive\.google\.com/i.test(s);
   function showsIn(p, type) {
     const hasRealUrl = p.url && !isDriveOnly(p.url);
-    const lvl = p.level || '';
-    const title = p.title || '';
-    const lvlSaysPrompt    = /プロンプト|テンプレ/.test(lvl);
-    const lvlSaysLink      = /リンク|GEM|GPT/.test(lvl);
-    const titleSaysPrompt  = /プロンプト|テンプレ/.test(title);
-    const isInstant  = hasRealUrl || p.difficulty === 'advanced' || lvlSaysLink;
-    const isTemplate = !!p.prompt || p.difficulty === 'middle'   || lvlSaysPrompt || titleSaysPrompt;
-    if (type === 'instant')  return isInstant;
-    if (type === 'template') return isTemplate;
-    // howto: instant/template のどちらにも属さないものだけ
-    return !isInstant && !isTemplate;
+    if (type === 'instant')  return hasRealUrl;
+    if (type === 'template') return !hasRealUrl && !!p.prompt;
+    return !hasRealUrl && !p.prompt;
   }
 
   const SHARE_MAP = {
