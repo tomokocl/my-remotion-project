@@ -564,18 +564,21 @@ function switchToView(viewName) {
 // 「使い方で探す」ビュー描画
 function renderShareView() {
   // URL と prompt は両立しうるため、カードは排他ではなくクロスリスト方式で判定する。
-  // parseCSV 側で post.difficulty が必ず埋まっているため、主にそれを使用する。
+  // difficulty に加えて、共有タイプ(level) と タイトルのキーワードも最終フォールバックに使う。
   const isDriveOnly = (s) => /^https?:\/\/drive\.google\.com/i.test(s);
   function showsIn(p, type) {
     const hasRealUrl = p.url && !isDriveOnly(p.url);
-    if (type === 'instant') {
-      return hasRealUrl || p.difficulty === 'advanced';
-    }
-    if (type === 'template') {
-      return !!p.prompt || p.difficulty === 'middle';
-    }
-    // howto: 節約難易度=初級 かつ URL/プロンプトなし（Driveのみの投稿も含む）
-    return p.difficulty === 'beginner' && !hasRealUrl && !p.prompt;
+    const lvl = p.level || '';
+    const title = p.title || '';
+    const lvlSaysPrompt    = /プロンプト|テンプレ/.test(lvl);
+    const lvlSaysLink      = /リンク|GEM|GPT/.test(lvl);
+    const titleSaysPrompt  = /プロンプト|テンプレ/.test(title);
+    const isInstant  = hasRealUrl || p.difficulty === 'advanced' || lvlSaysLink;
+    const isTemplate = !!p.prompt || p.difficulty === 'middle'   || lvlSaysPrompt || titleSaysPrompt;
+    if (type === 'instant')  return isInstant;
+    if (type === 'template') return isTemplate;
+    // howto: instant/template のどちらにも属さないものだけ
+    return !isInstant && !isTemplate;
   }
 
   const SHARE_MAP = {
