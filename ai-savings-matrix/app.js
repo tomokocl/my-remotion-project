@@ -311,6 +311,10 @@ function parseCSV(csv) {
       t.id    .toLowerCase() === toolSearch.toLowerCase()
     );
 
+    // 未登録のツール名（例: 「コーデックス」）は「その他」にまとめ、元の名前を tool_other に保持
+    const normalizedTool  = toolObj ? toolObj.id : 'other';
+    const normalizedOther = toolOther || (toolObj ? '' : rawTool);
+
     // ジャンル名（ラベルorID）→ id に正規化
     const genreObj = CONFIG.GENRES.find(g =>
       g.label === rawGenre || g.id === rawGenre
@@ -330,8 +334,8 @@ function parseCSV(csv) {
     );
 
     const post = {
-      tool:       toolObj  ? toolObj.id  : rawTool.toLowerCase(),
-      tool_other: toolOther,
+      tool:       normalizedTool,
+      tool_other: normalizedOther,
       genre:      genreObj ? genreObj.id : rawGenre,
       level:      levelId,
       difficulty: difficultyObj ? difficultyObj.id : '',

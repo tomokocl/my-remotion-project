@@ -70,8 +70,23 @@ function writeDifficultyForRow_(sheet, row) {
   var url    = colUrl    > 0 ? String(sheet.getRange(row, colUrl).getValue()    || '').trim() : '';
   var prompt = colPrompt > 0 ? String(sheet.getRange(row, colPrompt).getValue() || '').trim() : '';
 
-  var isDriveUrl = /^https?:\/\/drive\.google\.com/i.test(url);
-  var hasRealUrl = /^https?:\/\//i.test(url) && !isDriveUrl;
+  // 共有URL列が空でも、他の長文列に URL が埋め込まれている場合を拾う
+  // （投稿者が間違って prompt/detail/howto 等に URL を貼ったケースに対応）
+  var hasRealUrl = /^https?:\/\//i.test(url) && !/^https?:\/\/drive\.google\.com/i.test(url);
+  if (!hasRealUrl) {
+    var rowValues = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
+    for (var vi = 0; vi < rowValues.length; vi++) {
+      if ((vi + 1) === colDiff || (vi + 1) === colUrl) continue;
+      var v = String(rowValues[vi] || '');
+      var m = v.match(/https?:\/\/[^\s"'<>]+/i);
+      if (!m) continue;
+      var foundUrl = m[0];
+      if (/^https?:\/\/drive\.google\.com/i.test(foundUrl)) continue; // Drive除外
+      if (/(?:x\.com|twitter\.com)\/[A-Za-z0-9_]/i.test(foundUrl)) continue; // X除外
+      hasRealUrl = true;
+      break;
+    }
+  }
 
   var difficulty;
   if (hasRealUrl || /リンク|GEM|GPT/.test(level)) {
