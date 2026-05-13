@@ -1,28 +1,41 @@
-# 椎葉ともこ ブランド設計ドキュメント
+# 椎葉ともこ｜感覚を言葉とAIで整える人 — ブランド設計ドキュメント
 
-Coconala アカウント（[users/1076132](https://coconala.com/users/1076132) ／ サービス [services/3659900](https://coconala.com/services/3659900)）と接続する、ポッドキャスト・Threads・note の運用設計をまとめたディレクトリです。
+Coconala アカウント（[users/1076132](https://coconala.com/users/1076132) ／ サービス「スピ系セラピスト専用AI発信アシスタントを作ります」[services/3659900](https://coconala.com/services/3659900)）と連動する、ポッドキャスト・Threads・note の運用設計をまとめたディレクトリです。
+
+## 前提
+
+- **公開名**: 椎葉ともこ
+- **肩書き**: 感覚を言葉とAIで整える人
+- **提供サービス**: スピ系セラピスト・占い師・講師 向けの AI 発信アシスタント制作（GPTs／プロンプト設計／世界観の言語化）
+- **実績**: スピ系 Instagram 3.3万人運用、AI 講師、AI 活用サポート、ツール制作、Coconala 総販売 6 件
+- **トーン**: フレンドリー・寄り添い型／敬語ベース／断定を控える
+- **免責**: 売上・集客の保証はしない／医療・診断・法律・金融は扱わない
+
+## ファイル一覧
 
 | ファイル | 内容 |
 | --- | --- |
-| [01-account-design.md](./01-account-design.md) | アカウント設計（ペルソナ／提供価値／トーン／媒体別の役割） |
-| [02-podcast-themes.md](./02-podcast-themes.md) | ポッドキャスト企画（番組名／構成テンプレ／半年分のエピソード） |
-| [03-threads-posts.md](./03-threads-posts.md) | Threads プロフィール文＋投稿サンプル 30 本 |
+| [01-account-design.md](./01-account-design.md) | アカウント設計（ペルソナ／提供価値／差別化／トーン／媒体別役割／90日プラン） |
+| [02-podcast-themes.md](./02-podcast-themes.md) | ポッドキャスト「世界観のままAIで」企画（構成テンプレ／半年分のエピソード） |
+| [03-threads-posts.md](./03-threads-posts.md) | Threads プロフィール文＋投稿サンプル 30 本（共感／プロンプト処方／世界観Tips／裏側） |
 | [04-note-contents.md](./04-note-contents.md) | note の運用方針／3か月分の記事企画 12 本／有料マガジン設計 |
 
-## 全体の発信フロー
+## 発信フロー
 
 ```
-note(月2-4本／長文・SEO)
-   ↓ 引用 200字 + リンク
-Threads(毎日／短文・人柄)
-   ↓ 「詳しくはラジオで」
-Podcast(週1／15-20分／信頼)
-   ↓ 「個別相談はプロフリンク」
-Coconala(受注・クロージング)
+Instagram(既存3.3万)        ← 認知の母艦
+       ↓ プロフリンク
+note(月2-4本・長文・SEO)    ← 検索流入と資産
+       ↓ 引用 200字 + リンク
+Threads(毎日・短文)         ← 人柄と継続接触
+       ↓ 「詳しくはラジオで」
+Podcast(週1・15-20分)        ← 信頼の醸成
+       ↓ 「個別相談はプロフから」
+Coconala                     ← 受注・クロージング
 ```
 
 ## 次のアクション
 
-1. ハンドルネームでの各アカウント開設（Threads / note / Spotify for Podcasters）
-2. プロフィール画像／カバー画像の作成（Canva テンプレ）
-3. ローンチ初週: Threads 7本／note 1本／Podcast Ep.1 収録
+1. 各媒体のプロフィール文・カバー画像を本ドキュメントから流用してセット
+2. ローンチ初週: Threads 7本（投稿サンプルから抜粋）／note 1本目（記事案#1）／Podcast Ep.1 収録
+3. Coconala の残2枠を埋めた後、テンプレ販売・有料マガジンへの拡張を検討
