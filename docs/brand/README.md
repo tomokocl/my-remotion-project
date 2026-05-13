@@ -34,6 +34,7 @@
 | [03-threads-posts.md](./03-threads-posts.md) | Threads プロフィール文＋投稿サンプル 30 本（B2B 18本 / B2C 12本） |
 | [04-note-contents.md](./04-note-contents.md) | note の運用方針／3か月分の記事企画 12 本（B2B 7本 / B2C 5本） |
 | [05-card-reading-service.md](./05-card-reading-service.md) | 新規カードリーディング（非同期テキスト）の商品設計・Coconala下書き |
+| [06-standfm-account.md](./06-standfm-account.md) | Stand.fm アカウント構築手順・プロフィール文・週1×20本のテーマ |
 
 ## 媒体別の比率まとめ
 
