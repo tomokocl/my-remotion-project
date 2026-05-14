@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Webinar Promo Studio Mock</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Workflow">
+      <div class="brand">
+        <div class="brand-mark">W</div>
+        <div>
+          <div class="brand-title">Webinar Promo Studio</div>
+          <div class="brand-subtitle">非公開ワークフローで告知制作</div>
+        </div>
+      </div>
+
+      <nav class="steps" aria-label="制作ステップ">
+        <button class="step is-active" data-step="0">
+          <span>0</span>
+          <strong>企画書入力</strong>
+          <small>貼り付け / アップロード</small>
+        </button>
+        <button class="step" data-step="1">
+          <span>1</span>
+          <strong>15項目確認</strong>
+          <small>読み取り承認</small>
+        </button>
+        <button class="step" data-step="2">
+          <span>2</span>
+          <strong>コピー生成</strong>
+          <small>ジャーニー起点</small>
+        </button>
+        <button class="step" data-step="3">
+          <span>3</span>
+          <strong>サムネ制作</strong>
+          <small>X / LINE</small>
+        </button>
+        <button class="step" data-step="4">
+          <span>4</span>
+          <strong>告知文生成</strong>
+          <small>概要 / おすすめ / アジェンダ</small>
+        </button>
+        <button class="step" data-step="5">
+          <span>5</span>
+          <strong>最終出力</strong>
+          <small>チェック済み一式</small>
+        </button>
+      </nav>
+
+      <div class="security-note">
+        <strong>運用メモ</strong>
+        <p>スキル本文・プロンプト・APIキーはサーバー側に保存。利用者には結果だけを表示。</p>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Wizard Mock</p>
+          <h1>ウェビナー告知制作</h1>
+        </div>
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          チェック工程つき
+        </div>
+      </header>
+
+      <section class="screen is-visible" data-panel="0">
+        <div class="screen-heading">
+          <div>
+            <p class="eyebrow">Step 0</p>
+            <h2>企画書を入れる</h2>
+          </div>
+          <button class="ghost-button" type="button">下書き保存</button>
+        </div>
+
+        <section class="how-to">
+          <div>
+            <strong>使い方</strong>
+            <p>企画書を貼るかファイルを入れて、日時などの不足情報を右で補足します。次の画面でAIの読み取り結果を確認・修正してから制作に進みます。</p>
+          </div>
+          <ol>
+            <li>企画書を入れる</li>
+            <li>15項目を確認する</li>
+            <li>承認して生成する</li>
+          </ol>
+        </section>
+
+        <div class="input-layout">
+          <section class="panel">
+            <h3>企画書・メモ</h3>
+            <textarea aria-label="企画書入力">ここに企画書全文やミーティングメモを貼り付けます。
+
+例：
+SNS発信が続かない人向けに、AI分析で発信の軸を見つけるウェビナー。
+商品化やクライアントワークの前に、自分が何を語れるのかを整理する...</textarea>
+            <div class="file-drop">
+              <span class="icon">↑</span>
+              <div>
+                <strong>ファイルをアップロード</strong>
+                <small>docx / pdf / txt / md</small>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel compact-panel">
+            <h3>必須メタ情報</h3>
+            <label>日時<input value="5/26（火）21:30〜22:30"></label>
+            <label>講師名<input value="椎葉 ともこ"></label>
+            <label>アーカイブ<select><option>翌日以降に会員サイトで公開</option><option>なし</option></select></label>
+            <label>出力サイズ<select><option>X 16:9 と LINE 1024×678</option><option>X 16:9 のみ</option><option>LINE 1024×678 のみ</option></select></label>
+          </section>
+        </div>
+
+        <div class="action-row">
+          <button class="primary-button next" type="button">15項目を抽出</button>
+        </div>
+      </section>
+
+      <section class="screen" data-panel="1">
+        <div class="screen-heading">
+          <div>
+            <p class="eyebrow">Step 1</p>
+            <h2>ゼロポイント確認</h2>
+          </div>
+          <span class="review-label">承認前は生成しない</span>
+        </div>
+
+        <div class="zero-grid">
+          <label>1. ウェビナー仮タイトル<input value="SNS迷子を卒業しませんか？"></label>
+          <label>2. 誰向けか<input value="SNSやnoteをやらなきゃと思いながら止まっているAI学習者"></label>
+          <label>3. 今どこで困っているか<input value="何のために発信するのか分からず、行動が続かない"></label>
+          <label>4. 参加後どうなってほしいか<input value="自分の発信の軸と次の一手が見える"></label>
+          <label>5. 当日話す主な内容<input value="SNS分析、発信軸、商品化/案件獲得前の考え方"></label>
+          <label>6. 使いたいキーワード<input value="SNS迷子、AI分析、発信の軸"></label>
+          <label>7. 避けたい表現<input value="稼げる断言、ツール万能、初心者を責める言い方"></label>
+          <label>8. 日時<input value="5/26（火）21:30〜22:30"></label>
+          <label>9. 講師名・肩書き<input value="SHIFT AI認定講師 椎葉 ともこ"></label>
+          <label>10. アーカイブ有無<input value="翌日以降に会員サイトで公開"></label>
+          <label>11. なぜ今やるのか<input value="AI学習を行動や発信に接続する人を増やすため"></label>
+          <label>12. 申し込む理由<input value="SNSを続ける目的と具体的な方向性がほしい"></label>
+          <label>13. 申し込まない不安<input value="難しそう、自分に関係あるか分からない"></label>
+          <label>14. 最終的につなげたい先<input value="商品づくり、クライアントワーク、発信継続"></label>
+          <label>15. 参考素材<input value="過去サムネ、告知文、ブランドDESIGN.md"></label>
+        </div>
+
+        <div class="action-row">
+          <button class="secondary-button prev" type="button">戻る</button>
+          <button class="primary-button next" type="button">この内容で承認</button>
+        </div>
+      </section>
+
+      <section class="screen" data-panel="2">
+        <div class="screen-heading">
+          <div>
+            <p class="eyebrow">Step 2</p>
+            <h2>コピーを選んで直す</h2>
+          </div>
+          <span class="passed">Journey OK</span>
+        </div>
+
+        <div class="edit-hint">
+          <strong>ここで決め打ちしない</strong>
+          <p>AIが出した候補を選び、必要ならその場で書き換えます。コピーを変えたら、後続のサムネと告知文もこの内容に合わせて再生成します。</p>
+        </div>
+
+        <div class="copy-layout copy-edit-layout">
+          <section class="panel copy-candidates">
+            <h3>コピー候補</h3>
+            <button class="candidate is-selected" type="button">
+              <strong>SNS迷子を 卒業しませんか？</strong>
+              <small>手前の悩みに刺す。今回の推奨。</small>
+            </button>
+            <button class="candidate" type="button">
+              <strong>なんのために SNSやってる？</strong>
+              <small>目的迷子に寄せた問いかけ。</small>
+            </button>
+            <button class="candidate" type="button">
+              <strong>発信が続かない理由、AIで見える</strong>
+              <small>分析の価値を少し前に出す。</small>
+            </button>
+            <button class="ghost-button full-button" type="button">候補をもう一度出す</button>
+          </section>
+
+          <section class="panel copy-editor">
+            <h3>採用コピーを編集</h3>
+            <label>メインコピー
+              <textarea class="small-textarea" aria-label="メインコピー編集">SNS迷子を
+卒業しませんか？</textarea>
+            </label>
+            <label>サブコピー
+              <input value="AI分析で見つける発信の軸">
+            </label>
+            <div class="editor-actions">
+              <button class="secondary-button" type="button">このコピーで再チェック</button>
+              <button class="primary-button" type="button">採用してサムネへ</button>
+            </div>
+          </section>
+
+          <section class="panel preview-panel">
+            <h3>サムネ上の見え方</h3>
+            <div class="copy-preview">
+              <span>SNS迷子を</span>
+              <strong>卒業しませんか？</strong>
+              <small>AI分析で見つける発信の軸</small>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h3>チェック結果</h3>
+            <ul class="check-list">
+              <li><span></span>見た人の悩みに入っている</li>
+              <li><span></span>ツール名を主役にしすぎていない</li>
+              <li><span></span>商品化や案件獲得に寄りすぎていない</li>
+              <li><span></span>サムネで読める短さ</li>
+            </ul>
+          </section>
+        </div>
+
+        <div class="action-row">
+          <button class="secondary-button prev" type="button">戻る</button>
+          <button class="primary-button next" type="button">サムネ制作へ</button>
+        </div>
+      </section>
+
+      <section class="screen" data-panel="3">
+        <div class="screen-heading">
+          <div>
+            <p class="eyebrow">Step 3</p>
+            <h2>サムネ2サイズ</h2>
+          </div>
+          <span class="review-label">チェック前は出力不可</span>
+        </div>
+
+        <div class="thumb-layout">
+          <section class="thumb-block">
+            <div class="thumb x-thumb">
+              <div class="thumb-top">SHIFT AI WEBINAR</div>
+              <div class="thumb-copy"><span>SNS迷子を</span><strong>卒業しませんか？</strong><small>AI分析で見つける発信の軸</small></div>
+              <div class="axis-visual"></div>
+              <div class="date-bar">5/26（火）21:30〜22:30</div>
+            </div>
+            <h3>X用 16:9</h3>
+          </section>
+
+          <section class="thumb-block">
+            <div class="thumb line-thumb">
+              <div class="thumb-top">SHIFT AI WEBINAR</div>
+              <div class="thumb-copy"><span>SNS迷子を</span><strong>卒業しませんか？</strong><small>AI分析で見つける発信の軸</small></div>
+              <div class="axis-visual"></div>
+              <div class="date-bar">5/26（火）21:30〜22:30</div>
+            </div>
+            <h3>LINE用 1024×678</h3>
+          </section>
+        </div>
+
+        <section class="quality-strip">
+          <div><strong>余白</strong><span>OK</span></div>
+          <div><strong>文字</strong><span>OK</span></div>
+          <div><strong>装飾意図</strong><span>OK</span></div>
+          <div><strong>サイズ差分</strong><span>OK</span></div>
+        </section>
+
+        <div class="action-row">
+          <button class="secondary-button prev" type="button">戻る</button>
+          <button class="primary-button next" type="button">告知文を生成</button>
+        </div>
+      </section>
+
+      <section class="screen" data-panel="4">
+        <div class="screen-heading">
+          <div>
+            <p class="eyebrow">Step 4</p>
+            <h2>サムネに合わせた告知文</h2>
+          </div>
+          <span class="passed">Copy Check OK</span>
+        </div>
+
+        <section class="announcement">
+          <h3>概要文</h3>
+          <p>AIを学んでいるのに、SNS発信が続かない。何を投稿すればいいのか分からない。そんな「SNS迷子」から卒業するためのウェビナーです。</p>
+          <p>当日は、AI分析を使って自分の発信内容や強みを整理し、商品づくりやクライアントワークにつながる「発信の軸」を見つける考え方をお伝えします。</p>
+          <p class="archive">※アーカイブは翌日以降に会員サイトで公開されます。</p>
+          <h3>■こんな方におすすめ</h3>
+          <ul>
+            <li>SNSやnoteをやらなきゃと思いながら、何を発信すればいいか分からない方</li>
+            <li>AIを学んでいるのに、具体的な行動につながっていない方</li>
+            <li>商品づくりやクライアントワークの前に、自分の方向性を整理したい方</li>
+          </ul>
+          <h3>■当日のアジェンダ</h3>
+          <ul>
+            <li>なぜSNS発信が続かないのか</li>
+            <li>AI分析で見つける「発信の軸」とは</li>
+            <li>商品づくり、案件獲得につながる発信の考え方</li>
+          </ul>
+        </section>
+
+        <div class="action-row">
+          <button class="secondary-button prev" type="button">戻る</button>
+          <button class="primary-button next" type="button">最終出力へ</button>
+        </div>
+      </section>
+
+      <section class="screen" data-panel="5">
+        <div class="screen-heading">
+          <div>
+            <p class="eyebrow">Step 5</p>
+            <h2>完成パッケージ</h2>
+          </div>
+          <span class="passed">Ready</span>
+        </div>
+
+        <div class="export-grid">
+          <button class="export-item" type="button"><span>↓</span><strong>X用サムネ</strong><small>16:9 PNG</small></button>
+          <button class="export-item" type="button"><span>↓</span><strong>LINE用サムネ</strong><small>1024×678 PNG</small></button>
+          <button class="export-item" type="button"><span>□</span><strong>告知文コピー</strong><small>会員サイト掲載用</small></button>
+          <button class="export-item" type="button"><span>✓</span><strong>チェックログ</strong><small>承認済み15項目つき</small></button>
+        </div>
+
+        <section class="panel final-note">
+          <h3>この画面で見せるもの</h3>
+          <p>利用者には完成物と承認済みの要約だけを表示。内部スキル、プロンプト、品質判定の詳細ロジックはサーバー側に保持します。</p>
+        </section>
+
+        <div class="action-row">
+          <button class="secondary-button prev" type="button">戻る</button>
+          <button class="primary-button" type="button">新しい企画を作成</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
