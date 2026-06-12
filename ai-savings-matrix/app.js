@@ -1,1404 +1,502 @@
-// ===== ダミーデータ =====
-const DUMMY_POSTS = [
-  {
-    tool: "chatgpt", genre: "education", level: "beginner",
-    title: "中学受験の過去問解説をChatGPTに丸投げ",
-    detail: "塾の月謝2万円を節約。苦手な算数の解説を毎日質問して、3ヶ月で志望校レベルに到達。",
-    saving: "月2万円削減",
-    author: "Tさん（40代・主婦）",
-  },
-  {
-    tool: "chatgpt", genre: "education", level: "beginner",
-    title: "高校英語の予習をChatGPTで完結",
-    detail: "英語塾を解約。文法質問・英作文添削をAIで代替。模試の偏差値は維持できています。",
-    saving: "月1.5万円削減",
-    author: "Kさん（高2保護者）",
-  },
-  {
-    tool: "claude", genre: "living", level: "beginner",
-    title: "全サブスクをリスト化してClaude分析",
-    detail: "「使ってないサービス教えて」と聞いたら5つ見つかった。年間で計算したら驚きの金額に。",
-    saving: "年間6万円削減",
-    author: "Mさん（30代・会社員）",
-  },
-  {
-    tool: "gemini", genre: "living", level: "middle",
-    title: "Geminiで保険の見直しシミュレーション",
-    detail: "複数の保険証券をテキスト入力して比較。不要な特約を発見し解約へ。担当者より詳しく教えてくれた。",
-    saving: "月8,000円削減",
-    author: "Sさん（50代・自営業）",
-  },
-  {
-    tool: "chatgpt", genre: "living", level: "beginner",
-    title: "冷蔵庫の食材でレシピ提案",
-    detail: "余り物食材を入力するだけで夕食メニューが決まる。食品ロスが減り食費が激減した。",
-    saving: "月3,000円削減",
-    author: "Yさん（20代・一人暮らし）",
-  },
-  {
-    tool: "manus", genre: "living", level: "beginner",
-    title: "業務スーパー活用術をManusで調査",
-    detail: "Manusで「コスパ最強の業務スーパー商品」を徹底リサーチ。購入リストを最適化できた。",
-    saving: "月5,000円削減",
-    author: "Hさん（40代・4人家族）",
-  },
-  {
-    tool: "claude", genre: "education", level: "middle",
-    title: "資格勉強の教材費をゼロに",
-    detail: "FP2級の参考書を買わずにClaude相手に問答形式で勉強。1発合格できた。",
-    saving: "教材費3万円削減",
-    author: "Nさん（30代・転職活動中）",
-  },
-  {
-    tool: "chatgpt", genre: "money", level: "middle",
-    title: "確定申告の疑問をChatGPTで解決",
-    detail: "税理士に頼まず副業の確定申告を自力で完成。不明な経費項目も全部聞けた。",
-    saving: "税理士費用5万円削減",
-    author: "Rさん（副業ライター）",
-  },
-  {
-    tool: "claude", genre: "living", level: "beginner",
-    title: "格安SIMへの乗り換えシミュレーション",
-    detail: "今の通信費と比較してClaude試算。家族4人分の最安プランを提案してもらい即乗り換え。",
-    saving: "月1.2万円削減",
-    author: "Oさん（30代・夫婦2人）",
-  },
-  {
-    tool: "other", genre: "education", level: "middle",
-    title: "Copilotで英語学習コストを大幅削減",
-    detail: "英会話スクールを退会しAIと毎日フリートーク。TOEIC点数は上がって費用は激減。",
-    saving: "月2万円削減",
-    author: "Aさん（20代・就活中）",
-  },
-  {
-    tool: "chatgpt", genre: "outsource", level: "beginner",
-    title: "ブログ記事の外注をやめてChatGPTに",
-    detail: "月3本のブログ記事を外注（1本1.5万円）していたが、AIで構成→執筆→校正まで完結。品質も遜色なし。",
-    saving: "月4.5万円削減",
-    author: "Fさん（30代・副業ブロガー）",
-  },
-  {
-    tool: "claude", genre: "outsource", level: "middle",
-    title: "翻訳会社への外注をClaudeで代替",
-    detail: "英語マニュアルの日本語化を翻訳会社に頼んでいたがClaudeで対応。精度は十分で納期も激短縮。",
-    saving: "月3万円削減",
-    author: "Bさん（40代・製造業）",
-  },
-  {
-    tool: "chatgpt", genre: "creative", level: "middle",
-    title: "SNSバナーをAI生成で内製化",
-    detail: "毎月デザイナーに発注していたバナーをChatGPT×画像生成AIで制作。外注ゼロに。",
-    saving: "月2万円削減",
-    author: "Cさん（20代・ECサイト運営）",
-  },
-];
+const CASES = Array.isArray(window.AI_SAVINGS_CASES) ? window.AI_SAVINGS_CASES : [];
+const STORAGE_KEY = "ai-savings-matrix-logs-v1";
+const LEVELS = {
+  beginner: "初級",
+  middle: "中級",
+  advanced: "上級"
+};
 
-// ===== キャラクター育成 =====
-const LEVELS = [
-  { level: 1, name: "チビアオ",     img: "assets/Lv1.png", minScore: 0   },
-  { level: 2, name: "アオコ",       img: "assets/Lv2.png", minScore: 50  },
-  { level: 3, name: "アオニャン",   img: "assets/Lv3.png", minScore: 150 },
-  { level: 4, name: "アオオウジャ", img: "assets/Lv4.png", minScore: 400 },
-  { level: 5, name: "チビモモ",     img: "assets/Lv5.png", minScore: 700 },
-  { level: 6, name: "モモコ",       img: "assets/Lv6.png", minScore: 1100 },
-  { level: 7, name: "モモニャン",   img: "assets/Lv7.png", minScore: 1600 },
-  { level: 8, name: "モモテンシ",   img: "assets/Lv8.png", minScore: 2200 },
-];
+let activeLevel = "beginner";
+let selectedCase = null;
 
-function calcCharacterScore() {
-  const postScore  = posts.length * 10;
-  const likeScore  = Object.values(likeCountCache).reduce((a, b) => a + b, 0) * 5;
-  const shareScore = Object.values(shareCountCache).reduce((a, b) => a + b, 0) * 3;
-  return postScore + likeScore + shareScore;
+const seedLogs = {};
+
+function init() {
+  document.querySelector("[data-total-count]").textContent = CASES.length;
+  renderCounts();
+  initTabs();
+  initDetailActions();
+  initScrollReveal();
+  renderCards();
+  initFromUrl();
 }
 
-function getCharacterData(score) {
-  let current = LEVELS[0], next = LEVELS[1];
-  for (let i = LEVELS.length - 1; i >= 0; i--) {
-    if (score >= LEVELS[i].minScore) {
-      current = LEVELS[i];
-      next = LEVELS[i + 1] || null;
-      break;
-    }
-  }
-  const progress = next
-    ? Math.min(100, Math.round((score - current.minScore) / (next.minScore - current.minScore) * 100))
-    : 100;
-  return { current, next, score, progress };
-}
-
-function renderCharacterWidget() {
-  const el = document.getElementById("character-widget");
-  if (!el) return;
-  const score = calcCharacterScore();
-  const { current, progress } = getCharacterData(score);
-  el.innerHTML = `
-    <span class="char-emoji"><img src="${current.img}" alt="${current.name}"></span>
-    <div class="char-info">
-      <span class="char-lv">Lv.${current.level}</span>
-      <span class="char-name">${current.name}</span>
-      <div class="char-bar-wrap"><div class="char-bar" style="width:${progress}%"></div></div>
-    </div>
-  `;
-  el.onclick = openCharacterCard;
-  checkLevelUp(current.level);
-}
-
-function openCharacterCard() {
-  renderCharacterWidget(); // ウィジェットとカードを常に同じデータで描画
-  const score = calcCharacterScore();
-  const { current, next, progress } = getCharacterData(score);
-  const totalLikes  = Object.values(likeCountCache).reduce((a, b) => a + b, 0);
-  const totalShares = Object.values(shareCountCache).reduce((a, b) => a + b, 0);
-
-  document.getElementById("cc-emoji").innerHTML = `<img src="${current.img}" alt="${current.name}">`;
-  document.getElementById("cc-name").textContent   = current.name;
-  document.getElementById("cc-level").textContent  = `Lv.${current.level}`;
-  document.getElementById("cc-score").textContent  = score;
-  document.getElementById("cc-bar").style.width    = progress + "%";
-  document.getElementById("cc-next").textContent   = next
-    ? `次の進化まで ${next.minScore - score}pt`
-    : "🎊 最終進化達成！";
-  document.getElementById("cc-posts").textContent  = posts.length;
-  document.getElementById("cc-likes").textContent  = totalLikes;
-  document.getElementById("cc-shares").textContent = totalShares;
-
-  document.getElementById("char-card-overlay").classList.add("open");
-}
-
-function checkLevelUp(currentLevel) {
-  const stored = localStorage.getItem("ai-savings-char-level");
-  if (stored !== null) {
-    const lastLevel = parseInt(stored, 10);
-    if (currentLevel > lastLevel) {
-      localStorage.setItem("ai-savings-char-level", currentLevel);
-      setTimeout(() => showLevelUpPopup(lastLevel, currentLevel), 400);
-      return;
-    }
-  }
-  localStorage.setItem("ai-savings-char-level", currentLevel);
-}
-
-function showLevelUpPopup(oldLevel, newLevel) {
-  const oldChar = LEVELS[oldLevel - 1];
-  const newChar = LEVELS[newLevel - 1];
-  document.getElementById("lu-old-emoji").innerHTML = `<img src="${oldChar.img}" alt="${oldChar.name}">`;
-  document.getElementById("lu-new-emoji").innerHTML = `<img src="${newChar.img}" alt="${newChar.name}">`;
-  document.getElementById("lu-new-name").textContent  = newChar.name;
-  document.getElementById("lu-new-level").textContent = `Lv.${newChar.level}`;
-  document.getElementById("levelup-overlay").classList.add("open");
-}
-
-// ===== 状態管理 =====
-let posts = [];
-let currentCell = null; // { mode, tool?, genre, level? } クリック中のセル
-let currentView = "share"; // "share" | "level" | "tool"
-
-// ===== データ読み込み =====
-async function loadData() {
-  if (CONFIG.CSV_URL) {
-    try {
-      const url = CONFIG.CSV_URL + "&t=" + Date.now(); // キャッシュバスター
-      const res = await fetch(url);
-      const csv = await res.text();
-      console.log("=== CSV取得成功 ===");
-      console.log("先頭200文字:", csv.slice(0, 200));
-      posts = parseCSV(csv);
-      console.log("パース結果:", posts);
-    } catch (e) {
-      console.warn("CSV読み込み失敗。ダミーデータを使用します。", e);
-      posts = DUMMY_POSTS;
-    }
-  } else {
-    posts = DUMMY_POSTS;
-  }
-}
-
-// RFC 4180準拠のCSVパーサー（ダブルクォート・改行対応）
-function splitCSVRows(csv) {
-  const rows = [];
-  let cur = "";
-  let inQuote = false;
-  for (let i = 0; i < csv.length; i++) {
-    const ch = csv[i];
-    if (inQuote) {
-      if (ch === '"' && csv[i + 1] === '"') { cur += '"'; i++; }
-      else if (ch === '"') { inQuote = false; }
-      else { cur += ch; }
-    } else {
-      if (ch === '"') { inQuote = true; }
-      else if (ch === '\n' || (ch === '\r' && csv[i + 1] === '\n')) {
-        rows.push(cur);
-        cur = "";
-        if (ch === '\r') i++;
-      } else { cur += ch; }
-    }
-  }
-  if (cur) rows.push(cur);
-  return rows;
-}
-
-function splitCSVFields(line) {
-  const fields = [];
-  let cur = "";
-  let inQuote = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (inQuote) {
-      if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
-      else if (ch === '"') { inQuote = false; }
-      else { cur += ch; }
-    } else {
-      if (ch === '"') { inQuote = true; }
-      else if (ch === ',') { fields.push(cur.trim()); cur = ""; }
-      else { cur += ch; }
-    }
-  }
-  fields.push(cur.trim());
-  return fields;
-}
-
-function parseCSV(csv) {
-  const lines = splitCSVRows(csv.trim());
-  const rawHeaders = splitCSVFields(lines[0]);
-
-  // CSVヘッダーとconfig.CSV_COLUMNSを部分一致で対応付け（最長一致を優先）
-  // 例: 「節約難易度」列は「難易度」より「節約難易度」に優先マッチさせる
-  const colIndex = {}; // internalKey → 列インデックス
-  rawHeaders.forEach((h, i) => {
-    let bestKey = null;
-    let bestLen = 0;
-    for (const [key, prefix] of Object.entries(CONFIG.CSV_COLUMNS)) {
-      if (h.includes(prefix) && prefix.length > bestLen) {
-        bestKey = key;
-        bestLen = prefix.length;
-      }
-    }
-    if (bestKey) colIndex[bestKey] = i;
-  });
-
-  const getVal = (values, key) =>
-    colIndex[key] !== undefined
-      ? (values[colIndex[key]] || "").trim()
-      : "";
-
-  const headerCount = rawHeaders.length;
-
-  return lines.slice(1).map((line, i) => {
-    let values = splitCSVFields(line);
-
-    // 列数がヘッダーより多い場合 → 金額のカンマ等で列がズレている
-    // 削減額の列を探して、数字部分を結合して修正する
-    if (values.length > headerCount && colIndex.saving !== undefined) {
-      const si = colIndex.saving;
-      const extra = values.length - headerCount;
-      // 削減額の後ろのextra個のフィールドを結合
-      const merged = values[si] + ',' + values.slice(si + 1, si + 1 + extra).join(',');
-      values = [...values.slice(0, si), merged, ...values.slice(si + 1 + extra)];
-    }
-
-    const rawTool  = getVal(values, "tool");
-    const rawGenre = getVal(values, "genre");
-
-    // 「その他: Copilot」形式を分解
-    const otherMatch = rawTool.match(/^その他[:：]\s*(.+)$/);
-    const toolOther  = otherMatch ? otherMatch[1].trim() : "";
-    const toolSearch = otherMatch ? "その他" : rawTool;
-
-    // ツール名（ラベルorID）→ id に正規化
-    const toolObj = CONFIG.TOOLS.find(t =>
-      t.label.toLowerCase() === toolSearch.toLowerCase() ||
-      t.id    .toLowerCase() === toolSearch.toLowerCase()
-    );
-
-    // 未登録のツール名（例: 「コーデックス」）は「その他」にまとめ、元の名前を tool_other に保持
-    const normalizedTool  = toolObj ? toolObj.id : 'other';
-    const normalizedOther = toolOther || (toolObj ? '' : rawTool);
-
-    // ジャンル名（ラベルorID）→ id に正規化
-    const genreObj = CONFIG.GENRES.find(g =>
-      g.label === rawGenre || g.id === rawGenre
-    );
-
-    // 難易度: 空の場合は "beginner" にデフォルト
-    const rawLevel = getVal(values, "level");
-    const levelObj = CONFIG.LEVELS.find(l =>
-      l.label === rawLevel || l.id === rawLevel
-    );
-    const levelId = levelObj ? levelObj.id : (rawLevel ? rawLevel : "beginner");
-
-    // 節約難易度（新Q列）: 明示入力があれば 初級/中級/上級 → beginner/middle/advanced に正規化
-    const rawDifficulty = getVal(values, "difficulty");
-    const difficultyObj = CONFIG.LEVELS.find(l =>
-      l.label === rawDifficulty || l.id === rawDifficulty
-    );
-
-    const post = {
-      tool:       normalizedTool,
-      tool_other: normalizedOther,
-      genre:      genreObj ? genreObj.id : rawGenre,
-      level:      levelId,
-      difficulty: difficultyObj ? difficultyObj.id : '',
-      title:     getVal(values, "title"),
-      detail:    getVal(values, "detail"),
-      saving:    getVal(values, "saving"),
-      author:    getVal(values, "author"),
-      media:     getVal(values, "media"),
-      x_account: getVal(values, "x_account"),
-      howto:     getVal(values, "howto"),
-      url:       getVal(values, "url"),
-      prompt:    getVal(values, "prompt"),
-      _rowIndex: i + 2,
-    };
-
-    // --- フィールド自動修正 ---
-    const isXUrl = (s) => /(?:x\.com|twitter\.com)\/[A-Za-z0-9_]/i.test(s);
-    const isGeneralUrl = (s) => /^https?:\/\//i.test(s);
-    const containsUrl = (s) => /https?:\/\/[^\s"'<>]+/i.test(s);
-    const extractUrl = (s) => { const m = s.match(/https?:\/\/[^\s"'<>]+/i); return m ? m[0] : ''; };
-    const isXHandle = (s) => /^@?[A-Za-z0-9_]{1,15}$/.test(s);
-
-    // 全フィールドからURLとXアカウントを収集
-    const scanFields = ['x_account', 'url', 'media', 'prompt', 'detail', 'howto'];
-    let collectedUrls = [];
-    let collectedX = [];
-
-    for (const key of scanFields) {
-      const val = post[key];
-      if (!val) continue;
-
-      // フィールド全体がXのURLの場合
-      if (isXUrl(val)) {
-        collectedX.push(val);
-        if (key !== 'x_account') post[key] = '';
-        continue;
-      }
-
-      // Xアカウント欄にX以外のURL → URLとして回収
-      if (key === 'x_account' && isGeneralUrl(val)) {
-        collectedUrls.push(val);
-        post[key] = '';
-        continue;
-      }
-
-      // prompt/detail/howtoの中にURLが埋まっている場合 → URLを抽出（元テキストは残す）
-      if ((key === 'prompt' || key === 'detail' || key === 'howto') && containsUrl(val)) {
-        const found = extractUrl(val);
-        if (found && !isXUrl(found)) collectedUrls.push(found);
-      }
-
-      // media欄のURL → URLとして回収
-      if (key === 'media' && isGeneralUrl(val)) {
-        collectedUrls.push(val);
-      }
-    }
-
-    // urlフィールドがURLでない場合 → クリア
-    if (post.url && !isGeneralUrl(post.url)) {
-      post.url = '';
-    }
-
-    // x_accountフィールドがURLでもハンドルでもない → クリア
-    if (post.x_account && !isXUrl(post.x_account) && !isXHandle(post.x_account) && !isGeneralUrl(post.x_account)) {
-      post.x_account = '';
-    }
-
-    // 収集したXアカウントを設定
-    if (collectedX.length > 0 && !post.x_account) {
-      post.x_account = collectedX[0];
-    }
-
-    // 収集したURLを設定（共有URL欄が空なら）
-    if (!post.url && collectedUrls.length > 0) {
-      post.url = collectedUrls[0];
-    }
-
-    // プロンプト列の正規化:
-    // スプシに複数の プロンプト/テンプレ 系列（例: 旧列と新列）がある場合、
-    // 最長の値を持つ列を採用する。初期マッピングが空列を選んでしまう事故を防ぐ。
-    {
-      let best = (post.prompt || '').trim();
-      for (let ci = 0; ci < rawHeaders.length; ci++) {
-        const h = String(rawHeaders[ci] || '');
-        if (!/プロンプト|テンプレ/.test(h)) continue;
-        const v = (values[ci] || '').trim();
-        if (v.length > best.length) best = v;
-      }
-      post.prompt = best;
-    }
-
-    // プロンプト共有タイプ（共有タイプ=プロンプト/節約難易度=中級/タイトルに「テンプレ」等）
-    // なのに prompt 欄が空 → 他の長文欄から引き上げ
-    const isPromptType =
-      post.difficulty === 'middle' ||
-      post.level === 'middle' ||
-      /プロンプト|テンプレ/.test(post.level || '') ||
-      /プロンプト|テンプレ/.test(post.title || '');
-    if (isPromptType && !post.prompt) {
-      if (post.howto && post.howto.length >= 20) {
-        post.prompt = post.howto;
-      } else if (post.detail && post.detail.length >= 20) {
-        post.prompt = post.detail;
-      }
-    }
-
-    // 節約難易度 が未入力なら自動推定
-    //   URL共有がある/共有タイプが「リンクで共有」→ 上級
-    //   プロンプトがある/共有タイプが「プロンプト共有」/タイトルに「テンプレ」→ 中級
-    //   それ以外（体験談）→ 初級
-    if (!post.difficulty) {
-      const isDriveOnly = (s) => /^https?:\/\/drive\.google\.com/i.test(s);
-      const hasRealUrl = post.url && !isDriveOnly(post.url);
-      const lvl = post.level || '';
-      const title = post.title || '';
-      if (hasRealUrl || /リンク|GEM|GPT/.test(lvl)) {
-        post.difficulty = 'advanced';
-      } else if (post.prompt || /プロンプト|テンプレ/.test(lvl) || /プロンプト|テンプレ/.test(title)) {
-        post.difficulty = 'middle';
-      } else {
-        post.difficulty = 'beginner';
-      }
-    }
-
-    // Xアカウントを正規化
-    post.x_account = normalizeXAccount(post.x_account);
-
-    return post;
-  }).filter(p => p.tool && p.genre);
-}
-
-// ===== 投稿フィルタ =====
-function getPostsFor(toolId, genreId) {
-  return posts.filter(p => p.tool === toolId && p.genre === genreId);
-}
-
-function getPostsForLevel(genreId, levelId) {
-  // カテゴリー別(旧)ビューは節約難易度 (post.difficulty) で配置する
-  return posts.filter(p => p.genre === genreId && p.difficulty === levelId);
-}
-
-// ===== カテゴリー×難易度 マトリックス描画 =====
-function renderLevelMatrix() {
-  const header = document.getElementById("matrix-level-header");
-  const body   = document.getElementById("matrix-level-body");
-
-  // ヘッダー行に難易度を追加
-  CONFIG.LEVELS.forEach(lv => {
-    const th = document.createElement("th");
-    th.className = "genre-th";
-    th.innerHTML = `<div class="genre-th-inner"><span class="genre-icon">${lv.icon}</span><span>${lv.label}</span><span class="level-desc">${lv.desc}</span></div>`;
-    header.appendChild(th);
-  });
-
-  // 各ジャンル行
-  CONFIG.GENRES.forEach(genre => {
-    const tr = document.createElement("tr");
-
-    // ジャンル名セル（行ヘッダー）
-    const genreTh = document.createElement("th");
-    genreTh.className = "tool-th";
-    genreTh.innerHTML = `<div class="tool-th-inner"><span class="genre-icon">${genre.icon}</span> ${genre.label}</div>`;
-    tr.appendChild(genreTh);
-
-    // 各難易度セル
-    CONFIG.LEVELS.forEach(level => {
-      const cellPosts = getPostsForLevel(genre.id, level.id);
-      const td = document.createElement("td");
-      td.className = "matrix-cell " + (cellPosts.length > 0 ? "filled" : "empty");
-
-      if (cellPosts.length > 0) {
-        td.innerHTML = `
-          <div class="cell-inner">
-            <span class="cell-check">✅</span>
-            <span class="cell-count">${cellPosts.length}件</span>
-            <span class="cell-preview">${cellPosts[0].title}</span>
-          </div>`;
-      } else {
-        td.innerHTML = `
-          <div class="cell-inner">
-            <span class="cell-plus">＋</span>
-            <span class="cell-new-label">投稿する</span>
-          </div>`;
-      }
-
-      td.addEventListener("click", () => openModalByLevel(genre, level, cellPosts));
-      tr.appendChild(td);
+function renderCounts() {
+  Object.keys(LEVELS).forEach((level) => {
+    const count = CASES.filter((item) => item.level === level).length;
+    document.querySelectorAll(`[data-count="${level}"], [data-count-main="${level}"]`).forEach((target) => {
+      target.textContent = count;
     });
-
-    body.appendChild(tr);
   });
 }
 
-// ===== ドッグイヤー切り替え =====
-function switchMatrixPanel(showEl, hideEl) {
-  hideEl.style.transition = "opacity 0.2s ease, transform 0.2s ease";
-  hideEl.style.opacity = "0";
-  hideEl.style.transform = "translateY(-6px)";
-  setTimeout(() => {
-    hideEl.style.display = "none";
-    showEl.style.opacity = "0";
-    showEl.style.transform = "translateY(6px)";
-    showEl.style.display = "block";
-    requestAnimationFrame(() => {
-      showEl.style.transition = "opacity 0.25s ease, transform 0.25s ease";
-      showEl.style.opacity = "1";
-      showEl.style.transform = "translateY(0)";
+function initTabs() {
+  document.querySelectorAll("[data-level-tab]").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      activeLevel = tab.dataset.levelTab;
+      selectedCase = null;
+      document.querySelector("[data-case-detail]").hidden = true;
+      syncActiveTabs();
+      renderCards();
+      renderDashboardList();
     });
-  }, 200);
-}
-
-function switchToView(viewName) {
-  const panels = { share: "view-share", level: "view-level", tool: "view-tool" };
-  const currentPanel = document.getElementById(panels[currentView]);
-  const nextPanel    = document.getElementById(panels[viewName]);
-  if (currentView === viewName || !nextPanel) return;
-
-  switchMatrixPanel(nextPanel, currentPanel);
-
-  document.querySelectorAll('.matrix-tab').forEach(tab => {
-    tab.classList.toggle('active', tab.dataset.view === viewName);
   });
-  currentView = viewName;
 }
 
-// 「使い方で探す」ビュー描画
-function renderShareView() {
-  // 排他分類: 1つの投稿は 1つのカードにのみ表示する
-  //   すぐ使える   : 非Driveの URL あり
-  //   コピペで使える: URLなし かつ プロンプト(完成した共有用 or 作成時)あり
-  //   参考にできる  : それ以外（DriveのみのURLも含む）
-  const isDriveOnly = (s) => /^https?:\/\/drive\.google\.com/i.test(s);
-  function showsIn(p, type) {
-    const hasRealUrl = p.url && !isDriveOnly(p.url);
-    if (type === 'instant')  return hasRealUrl;
-    if (type === 'template') return !hasRealUrl && !!p.prompt;
-    return !hasRealUrl && !p.prompt;
-  }
-
-  const SHARE_MAP = {
-    instant:  { container: 'posts-instant',  counter: 'count-instant' },
-    template: { container: 'posts-template', counter: 'count-template' },
-    howto:    { container: 'posts-howto',    counter: 'count-howto' },
-  };
-
-  for (const [type, cfg] of Object.entries(SHARE_MAP)) {
-    const matched = posts.filter(p => showsIn(p, type));
-    const container = document.getElementById(cfg.container);
-    const counter   = document.getElementById(cfg.counter);
-    if (!container || !counter) continue;
-
-    counter.textContent = `${matched.length}件`;
-    container.innerHTML = '';
-
-    if (matched.length === 0) {
-      const empty = document.createElement('p');
-      empty.className = 'stc-empty';
-      empty.textContent = 'まだ投稿がありません';
-      container.parentElement.appendChild(empty);
-      continue;
-    }
-
-    matched.forEach(post => {
-      const chip = document.createElement('button');
-      chip.className = 'stc-post-chip';
-      const toolObj = CONFIG.TOOLS.find(t => t.id === post.tool);
-      chip.innerHTML = `<span class="chip-tool-icon">${toolObj ? toolObj.icon : ''}</span>${post.title || '(タイトルなし)'}`;
-      chip.addEventListener('click', () => {
-        const genreObj = CONFIG.GENRES.find(g => g.id === post.genre);
-        openModal(
-          toolObj  || { icon: '', label: post.tool },
-          genreObj || { icon: '', label: post.genre },
-          [post]
-        );
+function syncActiveTabs() {
+  document.querySelectorAll("[data-level-tab]").forEach((item) => {
+        item.classList.toggle("is-active", item.dataset.levelTab === activeLevel);
       });
-      container.appendChild(chip);
-    });
-  }
+}
 
-  // カード開閉
-  document.querySelectorAll('.stc-header').forEach(header => {
-    header.addEventListener('click', () => {
-      const card = header.closest('.share-type-card');
-      card.classList.toggle('expanded');
+function renderCards() {
+  const grid = document.querySelector("[data-case-grid]");
+  const items = CASES.filter((item) => item.level === activeLevel);
+
+  grid.innerHTML = items.map((item) => {
+    const primaryUrl = getPrimaryUrl(item);
+    const hasPrompt = Boolean(getUsablePrompt(item));
+    const primaryLabel = item.gemUrl ? "GEMで試す" : primaryUrl ? "URLで体験" : "手順で再現";
+    return `
+      <button class="case-card ${selectedCase?.id === item.id ? "is-selected" : ""}" type="button" data-case-id="${escapeHtml(item.id)}">
+        <span class="case-card-meta">${escapeHtml(item.levelLabel || LEVELS[item.level])} / ${escapeHtml(item.category || "未分類")} / ${escapeHtml(item.tool || "AI")}</span>
+        <strong>${escapeHtml(item.title)}</strong>
+        <span class="case-card-summary">${escapeHtml(getSummary(item, 92))}</span>
+        <span class="saving-amount">${escapeHtml(item.saving || "削減目安を確認")}</span>
+        <span class="card-tags">
+          <em>${primaryLabel}</em>
+          ${hasPrompt ? "<em>プロンプトあり</em>" : ""}
+        </span>
+        <span class="card-action">試してみる</span>
+      </button>
+    `;
+  }).join("");
+
+  grid.querySelectorAll("[data-case-id]").forEach((card) => {
+    card.addEventListener("click", () => selectCase(card.dataset.caseId, true));
+  });
+  renderDashboardList();
+}
+
+function renderDashboardList() {
+  const list = document.querySelector("[data-dashboard-list]");
+  if (!list) return;
+  const items = CASES.filter((item) => item.level === activeLevel);
+  list.innerHTML = items.map((item) => `
+    <button class="dashboard-case ${selectedCase?.id === item.id ? "is-selected" : ""}" type="button" data-dashboard-case-id="${escapeHtml(item.id)}">
+      <span>${escapeHtml(item.category || "未分類")} / ${escapeHtml(item.tool || "AI")}</span>
+      <strong>${escapeHtml(item.title)}</strong>
+      <em>${escapeHtml(item.saving || "削減目安を確認")}</em>
+    </button>
+  `).join("");
+
+  list.querySelectorAll("[data-dashboard-case-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      closeDashboard();
+      selectCase(button.dataset.dashboardCaseId, true);
     });
   });
 }
 
-// ===== マトリックス描画 =====
-function renderMatrix() {
-  const header = document.getElementById("matrix-header");
-  const body   = document.getElementById("matrix-body");
+function selectCase(caseId, shouldScroll) {
+  const item = CASES.find((entry) => entry.id === caseId);
+  if (!item) return;
+  selectedCase = item;
+  activeLevel = item.level;
 
-  // ヘッダー行にジャンルを追加
-  CONFIG.GENRES.forEach(g => {
-    const th = document.createElement("th");
-    th.className = "genre-th";
-    th.innerHTML = `<div class="genre-th-inner"><span class="genre-icon">${g.icon}</span><span>${g.label}</span></div>`;
-    header.appendChild(th);
+  document.querySelectorAll("[data-level-tab]").forEach((tab) => {
+    tab.classList.toggle("is-active", tab.dataset.levelTab === activeLevel);
   });
+  renderCards();
 
-  // 各ツール行
-  CONFIG.TOOLS.forEach(tool => {
-    const tr = document.createElement("tr");
+  const detail = document.querySelector("[data-case-detail]");
+  detail.hidden = false;
+  document.querySelector("[data-detail-level]").textContent = `${item.levelLabel || LEVELS[item.level]} / ${item.category || "未分類"} / ${item.tool || "AI"}`;
+  document.querySelector("[data-detail-title]").textContent = item.title;
+  document.querySelector("[data-detail-summary]").textContent = getSummary(item, 180);
+  const savingBox = document.querySelector("[data-detail-saving]").closest(".saving-box");
+  const savingText = item.saving || "事例内で確認";
+  savingBox.classList.toggle("is-long", savingText.length > 22);
+  document.querySelector("[data-detail-saving]").textContent = savingText;
+  document.querySelector("[data-detail-try]").textContent = getTryText(item);
+  document.querySelector("[data-detail-story]").innerHTML = isLineStampCase(item)
+    ? buildLineStampArticleHtml(item)
+    : buildStoryHtml(item);
+  document.querySelector("[data-detail-steps]").innerHTML = isLineStampCase(item)
+    ? buildLineStampStepsHtml()
+    : buildRecipeSteps(item).map((step, index) => `
+      <div class="mini-step">
+        <span>${index + 1}</span>
+        <p>${escapeHtml(step)}</p>
+      </div>
+    `).join("");
 
-    // ツール名セル
-    const toolTh = document.createElement("th");
-    toolTh.className = "tool-th";
-    toolTh.innerHTML = `<div class="tool-th-inner"><span class="tool-dot" style="background:${tool.color}"></span>${tool.icon} ${tool.label}</div>`;
-    tr.appendChild(toolTh);
-
-    // 各ジャンルセル
-    CONFIG.GENRES.forEach(genre => {
-      const cellPosts = getPostsFor(tool.id, genre.id);
-      const td = document.createElement("td");
-      td.className = "matrix-cell " + (cellPosts.length > 0 ? "filled" : "empty");
-      td.dataset.tool  = tool.id;
-      td.dataset.genre = genre.id;
-
-      if (cellPosts.length > 0) {
-        td.innerHTML = `
-          <div class="cell-inner">
-            <span class="cell-check">✅</span>
-            <span class="cell-count">${cellPosts.length}件</span>
-            <span class="cell-preview">${cellPosts[0].title}</span>
-          </div>`;
-      } else {
-        td.innerHTML = `
-          <div class="cell-inner">
-            <span class="cell-plus">＋</span>
-            <span class="cell-new-label">投稿する</span>
-          </div>`;
-      }
-
-      td.addEventListener("click", () => openModal(tool, genre, cellPosts));
-      tr.appendChild(td);
-    });
-
-    body.appendChild(tr);
-  });
-
-  // 合計件数
-  document.getElementById("total-count").textContent = posts.length;
-}
-
-// ===== モーダル =====
-function openModal(tool, genre, cellPosts) {
-  currentCell = { tool, genre };
-
-  document.getElementById("modal-tool-badge").innerHTML  = `${tool.icon} ${tool.label}`;
-  document.getElementById("modal-genre-badge").innerHTML = `${genre.icon} ${genre.label}`;
-  document.getElementById("modal-title").textContent =
-    `${tool.label} × ${genre.label} の実例`;
-
-  const cardsEl = document.getElementById("modal-cards");
-  const emptyEl = document.getElementById("modal-empty");
-  cardsEl.innerHTML = "";
-
-  if (cellPosts.length > 0) {
-    emptyEl.style.display = "none";
-    cellPosts.forEach(post => {
-      const card = document.createElement("div");
-      card.className = "post-card";
-      card.innerHTML = `
-        <span class="post-card-arrow">›</span>
-        ${post.tool_other ? `<span class="post-card-tool-other">⚪ ${escHtml(post.tool_other)}</span>` : ""}
-        <p class="post-card-title">${escHtml(post.title)}</p>
-        <p class="post-card-detail">${escHtml(post.detail)}</p>
-        ${post.saving ? `<span class="post-card-saving">💰 ${escHtml(post.saving)}</span>` : ""}
-        ${post.author ? `<p class="post-card-detail" style="margin-top:6px;font-size:0.75rem;">— ${escHtml(post.author)}</p>` : ""}
-        ${post.x_account ? `<p class="post-card-detail" style="margin-top:2px;font-size:0.75rem;"><a href="https://x.com/${escHtml(post.x_account)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">𝕏 @${escHtml(post.x_account)}</a></p>` : ""}
-      `;
-      card.addEventListener("click", () => openDetail(tool, genre, post));
-      cardsEl.appendChild(card);
-    });
+  const link = document.querySelector("[data-detail-link]");
+  const primaryUrl = getPrimaryUrl(item);
+  if (primaryUrl) {
+    link.href = primaryUrl;
+    link.textContent = item.gemUrl ? "GEMで試す" : item.sourceUrl ? "今すぐ試す" : "実例画面を見て体験する";
+    link.hidden = false;
   } else {
-    emptyEl.style.display = "block";
+    link.hidden = true;
   }
 
-  showView("list");
-  document.getElementById("modal-overlay").classList.add("open");
-}
-
-// ===== カテゴリー×難易度 モーダル =====
-function openModalByLevel(genre, level, cellPosts) {
-  currentCell = { mode: "level", genre, level };
-
-  document.getElementById("modal-tool-badge").innerHTML  = `${level.icon} ${level.label}`;
-  document.getElementById("modal-genre-badge").innerHTML = `${genre.icon} ${genre.label}`;
-  document.getElementById("modal-title").textContent =
-    `${genre.label} × ${level.label}（${level.desc}）の実例`;
-
-  const cardsEl = document.getElementById("modal-cards");
-  const emptyEl = document.getElementById("modal-empty");
-  cardsEl.innerHTML = "";
-
-  if (cellPosts.length > 0) {
-    emptyEl.style.display = "none";
-    cellPosts.forEach(post => {
-      const toolObj = CONFIG.TOOLS.find(t => t.id === post.tool)
-        || { icon: "⚪", label: "その他", id: "other", color: "#6b7280" };
-      const card = document.createElement("div");
-      card.className = "post-card";
-      card.innerHTML = `
-        <span class="post-card-arrow">›</span>
-        <span class="post-card-tool-chip" style="background:${toolObj.color}22;color:${toolObj.color};border:1px solid ${toolObj.color}44">${toolObj.icon} ${post.tool_other || toolObj.label}</span>
-        ${post.tool_other ? `<span class="post-card-tool-other">⚪ ${escHtml(post.tool_other)}</span>` : ""}
-        <p class="post-card-title">${escHtml(post.title)}</p>
-        <p class="post-card-detail">${escHtml(post.detail)}</p>
-        ${post.saving ? `<span class="post-card-saving">💰 ${escHtml(post.saving)}</span>` : ""}
-        ${post.author ? `<p class="post-card-detail" style="margin-top:6px;font-size:0.75rem;">— ${escHtml(post.author)}</p>` : ""}
-        ${post.x_account ? `<p class="post-card-detail" style="margin-top:2px;font-size:0.75rem;"><a href="https://x.com/${escHtml(post.x_account)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">𝕏 @${escHtml(post.x_account)}</a></p>` : ""}
-      `;
-      card.addEventListener("click", () => openDetail(toolObj, genre, post));
-      cardsEl.appendChild(card);
-    });
+  const usablePrompt = getUsablePrompt(item);
+  const promptBox = document.querySelector("[data-prompt-box]");
+  if (usablePrompt) {
+    promptBox.hidden = false;
+    document.querySelector("[data-detail-prompt]").textContent = usablePrompt;
   } else {
-    emptyEl.style.display = "block";
+    promptBox.hidden = true;
+    document.querySelector("[data-detail-prompt]").textContent = "";
   }
 
-  showView("list");
-  document.getElementById("modal-overlay").classList.add("open");
+  document.querySelector("[data-form-case-id]").value = item.id;
+  renderLogs();
+  history.replaceState(null, "", `?case=${encodeURIComponent(item.id)}#manual`);
+
+  if (shouldScroll) {
+    detail.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 }
 
-// ===== いいね / シェア =====
-// countCache: { [postKey]: number } ページ読み込み時にGASから取得してキャッシュ
-let likeCountCache = {};
-let shareCountCache = {};
+function initDetailActions() {
+  const toggle = document.querySelector("[data-dashboard-toggle]");
+  const dashboard = document.querySelector("[data-dashboard]");
+  const scrim = document.querySelector("[data-dashboard-scrim]");
+  toggle.addEventListener("click", () => {
+    const isOpen = !dashboard.hidden;
+    if (isOpen) closeDashboard();
+    else openDashboard();
+  });
+  document.querySelector("[data-dashboard-close]").addEventListener("click", closeDashboard);
+  scrim.addEventListener("click", closeDashboard);
 
-function getPostKey(post) {
-  // タイトルだけだと同名投稿がキー衝突するため detail の先頭20字も混ぜる
-  const detailSnippet = (post.detail || "").slice(0, 20).replace(/\s+/g, "");
-  return `${post.tool}__${post.genre}__${post.title}__${detailSnippet}`.slice(0, 150);
+  document.querySelector("[data-copy-detail]").addEventListener("click", async (event) => {
+    const text = document.querySelector("[data-detail-prompt]").textContent;
+    if (!text) return;
+    await navigator.clipboard.writeText(text);
+    const button = event.currentTarget;
+    button.textContent = "コピーしました";
+    setTimeout(() => { button.textContent = "プロンプトをコピー"; }, 1400);
+  });
+
+  document.querySelector("[data-practice-form]").addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!selectedCase) return;
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    saveLog(selectedCase.id, {
+      name: data.get("name") || "匿名さん",
+      note: data.get("note") || "",
+      tweak: data.get("tweak") || "",
+      createdAt: new Date().toISOString()
+    });
+    form.reset();
+    document.querySelector("[data-form-case-id]").value = selectedCase.id;
+    renderLogs();
+    const status = form.querySelector("[data-form-status]");
+    status.textContent = "👏 投稿しました。この事例の「やってみた人」に反映されています。";
+    setTimeout(() => { status.textContent = ""; }, 3200);
+  });
 }
 
-// localStorage でこのブラウザがいいね済みか管理
-function isLiked(key) {
-  try {
-    return JSON.parse(localStorage.getItem("ai-savings-liked-posts") || "{}")[key] === true;
-  } catch { return false; }
-}
-function setLikedLocal(key, val) {
-  try {
-    const store = JSON.parse(localStorage.getItem("ai-savings-liked-posts") || "{}");
-    store[key] = val;
-    localStorage.setItem("ai-savings-liked-posts", JSON.stringify(store));
-  } catch {}
+function openDashboard() {
+  document.querySelector("[data-dashboard]").hidden = false;
+  document.querySelector("[data-dashboard-scrim]").hidden = false;
+  document.querySelector("[data-dashboard-toggle]").setAttribute("aria-expanded", "true");
+  document.body.classList.add("dashboard-open");
 }
 
-// GAS から全カウントを取得（ページロード時に1回呼ぶ）
-// share__ プレフィックスのキーはシェア数、それ以外はいいね数
-async function loadLikeCounts() {
-  if (!CONFIG.GAS_LIKES_URL) {
-    renderCharacterWidget();
+function closeDashboard() {
+  document.querySelector("[data-dashboard]").hidden = true;
+  document.querySelector("[data-dashboard-scrim]").hidden = true;
+  document.querySelector("[data-dashboard-toggle]").setAttribute("aria-expanded", "false");
+  document.body.classList.remove("dashboard-open");
+}
+
+function initScrollReveal() {
+  const targets = document.querySelectorAll(".reveal-section, .flow-grid article");
+  window.setTimeout(() => {
+    targets.forEach((target) => target.classList.add("is-visible"));
+  }, 1200);
+  if (!("IntersectionObserver" in window)) {
+    targets.forEach((target) => target.classList.add("is-visible"));
     return;
   }
-  try {
-    const res = await fetch(CONFIG.GAS_LIKES_URL + "?action=counts");
-    const all = await res.json();
-    likeCountCache = {};
-    shareCountCache = {};
-    for (const [k, v] of Object.entries(all)) {
-      if (k.startsWith("share__")) shareCountCache[k] = v;
-      else likeCountCache[k] = v;
-    }
-  } catch (e) {
-    console.warn("いいね数の取得失敗:", e);
-  }
-  renderCharacterWidget();
-}
-
-function getShareKey(post) {
-  return "share__" + getPostKey(post);
-}
-
-async function incrementShareCount(shareKey) {
-  if (!CONFIG.GAS_LIKES_URL) return;
-  shareCountCache[shareKey] = (shareCountCache[shareKey] || 0) + 1;
-  const countEl = document.getElementById("share-count-num");
-  if (countEl) countEl.textContent = shareCountCache[shareKey];
-  renderCharacterWidget();
-  await sendLikeToGAS(shareKey, "like");
-}
-
-// GAS にいいね/取り消しを送信し、返ってきたカウントでキャッシュ更新
-async function sendLikeToGAS(key, action) {
-  if (!CONFIG.GAS_LIKES_URL) return null;
-  try {
-    const url = `${CONFIG.GAS_LIKES_URL}?action=${action}&key=${encodeURIComponent(key)}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (typeof data.count === "number") likeCountCache[key] = data.count;
-    return data.count;
-  } catch (e) {
-    console.warn("いいね送信失敗:", e);
-    return null;
-  }
-}
-
-function renderLikeButton(key) {
-  const liked = isLiked(key);
-  const count = likeCountCache[key] || 0;
-  const countHtml = CONFIG.GAS_LIKES_URL
-    ? `<span class="like-count">${count}</span>`
-    : "";
-  return `<button class="btn-like${liked ? " liked" : ""}">
-    <span class="like-heart">${liked ? "❤️" : "🤍"}</span> 参考になった！${countHtml}
-  </button>`;
-}
-
-function openDetail(tool, genre, post) {
-  // バッジ
-  const toolLabel = (tool.id === "other" && post.tool_other)
-    ? `⚪ ${post.tool_other}`
-    : `${tool.icon} ${tool.label}`;
-  const badgesEl = document.getElementById("detail-badges");
-  badgesEl.innerHTML = `
-    <span class="modal-tool-badge">${tool.icon} ${escHtml(tool.id === "other" && post.tool_other ? post.tool_other : tool.label)}</span>
-    <span class="modal-genre-badge">${genre.icon} ${escHtml(genre.label)}</span>
-  `;
-
-  // タイトル・本文
-  document.getElementById("detail-title").textContent = post.title || "";
-  document.getElementById("detail-body").textContent  = post.detail || "";
-
-  // 節約額
-  const savingEl = document.getElementById("detail-saving-row");
-  savingEl.innerHTML = post.saving
-    ? `<span class="detail-saving-badge">💰 ${escHtml(post.saving)}</span>`
-    : "";
-
-  // 投稿者
-  document.getElementById("detail-author").textContent =
-    post.author ? `— ${post.author}` : "";
-
-  // X アカウント
-  const xEl = document.getElementById("detail-x-account");
-  if (xEl) {
-    if (post.x_account) {
-      xEl.innerHTML = `<a href="https://x.com/${escHtml(post.x_account)}" target="_blank" rel="noopener">𝕏 @${escHtml(post.x_account)}</a>`;
-      xEl.style.display = "";
-    } else {
-      xEl.style.display = "none";
-    }
-  }
-
-  // メディア（画像 / 動画 / Googleドライブ）
-  const mediaEl = document.getElementById("detail-media-wrap");
-  mediaEl.innerHTML = renderMedia(post.media || "");
-
-  // いいねボタン
-  const postKey = getPostKey(post);
-  const reactionEl = document.getElementById("detail-reaction-row");
-  reactionEl.innerHTML = renderLikeButton(postKey);
-  reactionEl.querySelector(".btn-like").addEventListener("click", async function () {
-    const nowLiked = !isLiked(postKey);
-    // 楽観的UI更新（即時反映）
-    setLikedLocal(postKey, nowLiked);
-    const action = nowLiked ? "like" : "unlike";
-    if (nowLiked) {
-      likeCountCache[postKey] = (likeCountCache[postKey] || 0) + 1;
-    } else {
-      likeCountCache[postKey] = Math.max(0, (likeCountCache[postKey] || 1) - 1);
-    }
-    this.className = `btn-like${nowLiked ? " liked" : ""}`;
-    const countHtml = CONFIG.GAS_LIKES_URL
-      ? `<span class="like-count">${likeCountCache[postKey]}</span>` : "";
-    this.innerHTML = `<span class="like-heart">${nowLiked ? "❤️" : "🤍"}</span> 参考になった！${countHtml}`;
-    renderCharacterWidget();
-    // GASに非同期送信（失敗してもUIはそのまま）
-    await sendLikeToGAS(postKey, action);
-  });
-
-  // シェアボタン
-  const shareEl = document.getElementById("detail-share-row");
-  const shareKey = getShareKey(post);
-  const shareCount = shareCountCache[shareKey] || 0;
-  const shareText = `【AI節約術】${post.title}\n${post.saving ? post.saving + '削減 ' : ''}#SHIFTAI #AI節約コース`;
-  const shareUrl  = location.href;
-  const tweetUrl  = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-  shareEl.innerHTML = `
-    <button class="btn-share-copy" id="btn-share-copy">🔗 URLをコピー</button>
-    <a class="btn-share-x" href="${escHtml(tweetUrl)}" target="_blank" rel="noopener">𝕏 でシェア</a>
-    ${CONFIG.GAS_LIKES_URL ? `<span class="share-count-badge">📤 <span id="share-count-num">${shareCount}</span>回シェア</span>` : ""}
-  `;
-  document.getElementById("btn-share-copy").addEventListener("click", async function () {
-    navigator.clipboard.writeText(shareUrl).then(() => {
-      this.textContent = "✅ コピーしました！";
-      setTimeout(() => { this.textContent = "🔗 URLをコピー"; }, 2000);
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
     });
-    await incrementShareCount(shareKey);
-  });
-  shareEl.querySelector(".btn-share-x").addEventListener("click", async function () {
-    await incrementShareCount(shareKey);
-  });
+  }, { threshold: 0.22 });
+  targets.forEach((target) => observer.observe(target));
+}
 
-  // 共有URL・プロンプト・作り方セクション
-  const howtoWrap = document.getElementById('detail-howto-wrap');
-  if (howtoWrap) {
-    let html = '<div class="detail-howto">';
+function getSavedLogs() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
 
-    // 共有URLがある場合 → リンクボタンを表示
-    if (post.url) {
-      html += `
-        <div class="detail-share-url">
-          <p class="detail-howto-label">🔗 完成した共有用プロンプト（URL）</p>
-          <a class="detail-share-url-btn" href="${escHtml(post.url)}" target="_blank" rel="noopener">
-            ${escHtml(post.url)}
-          </a>
-        </div>`;
-    }
+function saveLog(caseId, log) {
+  const logs = getSavedLogs();
+  logs[caseId] = logs[caseId] || [];
+  logs[caseId].unshift(log);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+}
 
-    // プロンプト/テンプレがある場合 → コピー可能なブロック表示
-    if (post.prompt) {
-      html += `
-        <div class="detail-prompt-block">
-          <p class="detail-howto-label">📋 作成時のプロンプト</p>
-          <pre class="detail-prompt-text" id="detail-prompt-text">${escHtml(post.prompt)}</pre>
-          <button class="detail-prompt-copy" id="detail-prompt-copy">コピーする</button>
-        </div>`;
-    }
+function getLogs(caseId) {
+  const saved = getSavedLogs();
+  return [...(saved[caseId] || []), ...(seedLogs[caseId] || [])];
+}
 
-    // やり方がある場合 → 表示（読み取り専用）+ 編集ボタン
-    // やり方がない場合 → 入力フォーム
-    const existing = post.howto || '';
-    if (existing) {
-      html += `
-        <div class="detail-howto-display">
-          <p class="detail-howto-label">📝 作り方・やり方</p>
-          <div class="detail-howto-content">${escHtml(existing).replace(/\n/g, '<br>')}</div>
-          <button class="detail-howto-edit-btn" id="detail-howto-edit-btn">編集する</button>
+function renderLogs() {
+  const list = document.querySelector("[data-log-list]");
+  if (!selectedCase) return;
+  const logs = getLogs(selectedCase.id);
+  list.innerHTML = logs.length ? logs.map((log) => `
+    <article class="log-item">
+      <strong>${escapeHtml(log.name || "匿名さん")}</strong>
+      <p>${escapeHtml(log.note || "")}</p>
+      ${log.tweak ? `<p><b>変えたところ:</b> ${escapeHtml(log.tweak)}</p>` : ""}
+    </article>
+  `).join("") : `<p class="empty-log">まだ投稿はありません。最初の「やってみた」を残せます。</p>`;
+}
+
+function getSummary(item, length = 100) {
+  const text = String(item.detail || item.prompt || item.howto || "").replace(/\s+/g, " ").trim();
+  return text.length > length ? `${text.slice(0, length)}...` : text || "内容を確認しながら、自分用に作り直せる事例です。";
+}
+
+function getTryText(item) {
+  const primaryUrl = getPrimaryUrl(item);
+  if (primaryUrl && getUsablePrompt(item)) {
+    return "まず上のボタンから完成物や実例画面を開きます。その後、下のプロンプトをコピーして、自分の条件に置き換えて試します。";
+  }
+  if (primaryUrl) {
+    return "まず上のボタンから完成物や実例画面を開きます。どんな入力をすると何が返ってくるのかを見てから、下の手順で自分用に再現します。";
+  }
+  if (getUsablePrompt(item)) {
+    return "共有URLはありません。下のプロンプトをコピーして、サービス名・金額・家族構成などを自分用に置き換えて試します。";
+  }
+  return "共有URLとプロンプトは未入力です。事例の内容をもとに、目的・条件・出力形式に分けて自分用の依頼文を作ります。";
+}
+
+function buildStoryHtml(item) {
+  const detailParts = splitText(item.detail || "");
+  const firstAsk = inferFirstAsk(item);
+  const promptStatus = getUsablePrompt(item)
+    ? "そのままコピーできるプロンプトがあります。最初は丸写しで試し、次に自分の条件だけ変えます。"
+    : "完成プロンプトは未整備です。代わりに、目的・条件・出力形式へ分解して再現します。";
+  const urlStatus = getPrimaryUrl(item)
+    ? "完成物または実例画面を先に見られます。初心者はここで完成イメージをつかめます。"
+    : "実物URLは未入力です。事例文から、どんな完成物を作りたいかを先に言語化します。";
+
+  return `
+    <div class="story-grid">
+      <article>
+        <span>体験</span>
+        <strong>${escapeHtml(urlStatus)}</strong>
+      </article>
+      <article>
+        <span>最初の一言</span>
+        <strong>${escapeHtml(firstAsk)}</strong>
+      </article>
+      <article>
+        <span>真似する材料</span>
+        <strong>${escapeHtml(promptStatus)}</strong>
+      </article>
+    </div>
+    <div class="story-body">
+      ${detailParts.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}
+    </div>
+  `;
+}
+
+function isLineStampCase(item) {
+  return item.id === "case-01";
+}
+
+function buildLineStampArticleHtml(item) {
+  const stampIdeas = [
+    ["おはよ", "布団から頭だけ出した、眠そうな猫", "朝の第一声"],
+    ["りょ", "真顔でサムズアップする猫", "了解・確認"],
+    ["いまから帰る", "荷物を背負って早歩きする猫", "帰宅連絡"],
+    ["おつかれさま", "お茶をすすりながら力が抜けた猫", "仕事や学校終わり"],
+    ["ごはん何？", "空のお皿と箸を持つ猫", "夕方の定番連絡"],
+    ["ありがとう", "深々とおじぎする猫", "感謝を伝える"],
+    ["ごめん…", "壁のすき間からそっと覗く猫", "遅れた時やミスした時"],
+    ["おやすみ", "アイマスクで爆睡する猫", "1日の終わり"]
+  ];
+
+  return `
+    <div class="line-article">
+      <section class="line-lead">
+        <p class="line-kicker">この事例で体験すること</p>
+        <h3>GEMに5つ答えるだけで、家族用LINEスタンプの企画書ができます。</h3>
+        <p>「LINEスタンプを自作したら、スタンプのサブスクをやめられるかも」という小さな思いつきを、GEMがスタンプ案、画像生成プロンプト、Canvaでの作り方、LINE申請の流れまで分解してくれます。</p>
+      </section>
+
+      <section class="line-card">
+        <div>
+          <p class="line-kicker">最初に答えること</p>
+          <h4>いきなりプロンプトを書く必要はありません。</h4>
+          <p>このGEMは、最初に5つだけ聞いてきます。自分の状況を答えると、家族で使いやすいスタンプ案に変換されます。</p>
         </div>
-        <div class="detail-howto-editor" id="detail-howto-editor" style="display:none">
-          <textarea class="detail-howto-textarea" id="detail-howto-text" rows="5">${escHtml(existing)}</textarea>
-          <div class="detail-howto-actions">
-            <button class="detail-howto-save" id="detail-howto-save">保存する</button>
-            <span class="detail-howto-status" id="detail-howto-status"></span>
+        <div class="line-question-grid">
+          <span>今スタンプにいくら使っているか</span>
+          <span>よく使う言葉や雰囲気</span>
+          <span>作りたいキャラクター</span>
+          <span>使えるツールの経験</span>
+          <span>公開するか、家族用にするか</span>
+        </div>
+      </section>
+
+      <section class="line-card">
+        <p class="line-kicker">出てくるスタンプ案の例</p>
+        <h4>家族LINEで本当に使う言葉に寄せるのがポイントです。</h4>
+        <div class="stamp-table">
+          ${stampIdeas.map(([label, image, scene]) => `
+            <article>
+              <strong>${escapeHtml(label)}</strong>
+              <span>${escapeHtml(image)}</span>
+              <small>${escapeHtml(scene)}</small>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+
+      <section class="line-card line-points">
+        <article>
+          <strong>画像生成AI</strong>
+          <p>白背景、ゆるい手書き風、文字なしで猫のイラストを作ります。文字までAIに入れさせると崩れやすいので、ここでは絵だけ作ります。</p>
+        </article>
+        <article>
+          <strong>Canva</strong>
+          <p>370 x 320 pxで作成し、画像を配置してから「おはよ」「りょ」などの文字を後から入れます。最後は透過PNGで書き出します。</p>
+        </article>
+        <article>
+          <strong>LINE Stamp Maker</strong>
+          <p>8枚アップロードして、ショップ非公開・無料ダウンロード設定にします。家族だけで使うなら公開販売を目指さなくて大丈夫です。</p>
+        </article>
+      </section>
+
+      <section class="line-shot-grid line-shot-grid-single">
+        <figure class="line-shot">
+          <img src="assets/line-stamp-guide/line-stamp-maker-closeup.png" alt="LINEスタンプメーカーのプレビューと販売情報のスマホ画面">
+          <figcaption>最後はLINE Stamp Makerで、プレビューと販売情報を確認して申請します。</figcaption>
+        </figure>
+      </section>
+    </div>
+  `;
+}
+
+function buildLineStampStepsHtml() {
+  const steps = [
+    ["GEMを開いて5つ答える", "今のスタンプ代、よく使う言葉、作りたいキャラ、使えるツール、公開範囲を入力します。"],
+    ["8個のスタンプ案を選ぶ", "GEMが出した案から、家族LINEで本当に使う言葉だけ残します。使わない言葉はここで差し替えます。"],
+    ["画像生成AIでキャラを作る", "文字は入れず、白背景の猫イラストだけ作ります。文字を入れない方が仕上がりを直しやすいです。"],
+    ["Canvaで文字を入れる", "370 x 320 pxのキャンバスに画像を置き、手書き風フォントで文字を入れて透過PNGにします。"],
+    ["LINE Stamp Makerに登録する", "8枚をアップロードし、家族用ならショップ非公開・無料ダウンロード設定で申請します。"]
+  ];
+
+  return `
+    <div class="line-step-list">
+      ${steps.map(([title, body], index) => `
+        <article class="line-step">
+          <span>${index + 1}</span>
+          <div>
+            <h4>${escapeHtml(title)}</h4>
+            <p>${escapeHtml(body)}</p>
           </div>
-        </div>`;
-    } else {
-      html += `
-        <div class="detail-howto-editor" id="detail-howto-editor">
-          <p class="detail-howto-label">📝 作り方・やり方</p>
-          <textarea class="detail-howto-textarea" id="detail-howto-text" rows="5" placeholder="【きっかけ】なぜやろうと思った？&#10;【解決したかったこと】どうなりたかった？&#10;【できた未来】やってみてどう変わった？"></textarea>
-          ${CONFIG.GEM_PROMPT_MAKER_URL ? `<a class="detail-howto-gem-link" href="${CONFIG.GEM_PROMPT_MAKER_URL}" target="_blank" rel="noopener">✨ この体験をGEMにしてみる →</a>` : ''}
-          <div class="detail-howto-actions">
-            <button class="detail-howto-save" id="detail-howto-save">保存する</button>
-            <span class="detail-howto-status" id="detail-howto-status"></span>
-          </div>
-        </div>`;
-    }
+        </article>
+      `).join("")}
+    </div>
+  `;
+}
 
-    html += '</div>';
-    howtoWrap.innerHTML = html;
-
-    // プロンプトコピーボタン
-    const copyBtn = document.getElementById('detail-prompt-copy');
-    if (copyBtn) {
-      copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(post.prompt).then(() => {
-          copyBtn.textContent = '✓ コピーしました';
-          setTimeout(() => { copyBtn.textContent = 'コピーする'; }, 2000);
-        });
-      });
-    }
-
-    // 編集ボタン（やり方がある場合）
-    const editBtn = document.getElementById('detail-howto-edit-btn');
-    if (editBtn) {
-      editBtn.addEventListener('click', () => {
-        editBtn.closest('.detail-howto-display').style.display = 'none';
-        document.getElementById('detail-howto-editor').style.display = '';
-      });
-    }
-
-    // 保存ボタン
-    const saveBtn = document.getElementById('detail-howto-save');
-    if (saveBtn) {
-      saveBtn.addEventListener('click', async () => {
-        const text = document.getElementById('detail-howto-text').value;
-        const status = document.getElementById('detail-howto-status');
-        if (!CONFIG.GAS_HOWTO_URL) { status.textContent = 'GAS URLが未設定です'; return; }
-        status.textContent = '保存中...';
-        try {
-          const res = await fetch(CONFIG.GAS_HOWTO_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify({ row: post._rowIndex, howto: text }),
-          });
-          const data = await res.json();
-          if (data.ok) {
-            status.textContent = '✓ 保存しました';
-            post.howto = text;
-            setTimeout(() => { status.textContent = ''; }, 2000);
-          } else {
-            status.textContent = 'エラー: ' + (data.error || '不明');
-          }
-        } catch (e) {
-          status.textContent = 'エラー: ' + e.message;
-        }
-      });
-    }
+function buildRecipeSteps(item) {
+  const steps = [];
+  if (getPrimaryUrl(item)) {
+    steps.push("完成物を先に開いて、どんな画面・返答・入力欄があるかを確認します。ここでゴールを見てから作り始めます。");
   }
-
-  showView("detail");
-  document.getElementById("modal").scrollTop = 0;
-}
-
-function renderMedia(url) {
-  if (!url) return "";
-
-  // GoogleドライブのファイルIDを抽出（複数形式に対応）
-  const driveId = extractDriveId(url);
-  if (driveId) {
-    // preview iframeで統一（画像・動画どちらも表示できる）
-    return `<iframe src="https://drive.google.com/file/d/${driveId}/preview" allowfullscreen></iframe>`;
-  }
-
-  // 画像ファイル拡張子（直接URL）
-  if (/\.(jpe?g|png|gif|webp)(\?|$)/i.test(url)) {
-    return `<img src="${escHtml(url)}" alt="投稿画像" loading="lazy">`;
-  }
-
-  // 動画ファイル拡張子（直接URL）
-  if (/\.(mp4|mov|webm)(\?|$)/i.test(url)) {
-    return `<video src="${escHtml(url)}" controls playsinline></video>`;
-  }
-
-  return "";
-}
-
-function extractDriveId(url) {
-  // 形式1: /file/d/ID/view または /file/d/ID/preview
-  const m1 = url.match(/drive\.google\.com\/file\/d\/([^/?]+)/);
-  if (m1) return m1[1];
-
-  // 形式2: open?id=ID
-  const m2 = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
-  if (m2) return m2[1];
-
-  // 形式3: uc?id=ID または uc?export=view&id=ID
-  const m3 = url.match(/drive\.google\.com\/uc\?.*id=([^&]+)/);
-  if (m3) return m3[1];
-
-  return null;
-}
-
-function showView(name) {
-  document.getElementById("modal-view-list").style.display   = name === "list"   ? "block" : "none";
-  document.getElementById("modal-view-detail").style.display = name === "detail" ? "block" : "none";
-}
-
-function closeModal() {
-  document.getElementById("modal-overlay").classList.remove("open");
-  currentCell = null;
-}
-
-function buildFormUrl(tool, genre) {
-  if (!CONFIG.FORM_BASE_URL) {
-    alert("まだフォームURLが設定されていません（config.js を更新してください）");
-    return null;
-  }
-  const params = new URLSearchParams({
-    [CONFIG.FORM_FIELDS.tool]:  tool.label,
-    [CONFIG.FORM_FIELDS.genre]: genre.label,
-    usp: "pp_url",
-  });
-  return `${CONFIG.FORM_BASE_URL}?${params.toString()}`;
-}
-
-function handlePostButton() {
-  if (!currentCell) return;
-  if (currentCell.mode === "level") {
-    if (!CONFIG.FORM_BASE_URL) {
-      alert("まだフォームURLが設定されていません（config.js を更新してください）");
-      return;
-    }
-    const params = new URLSearchParams({ usp: "pp_url" });
-    params.set(CONFIG.FORM_FIELDS.genre, currentCell.genre.label);
-    if (CONFIG.FORM_FIELDS.level) {
-      params.set(CONFIG.FORM_FIELDS.level, currentCell.level.label);
-    }
-    window.open(`${CONFIG.FORM_BASE_URL}?${params.toString()}`, "_blank");
+  steps.push(`最初は「${inferFirstAsk(item)}」くらいの短い一言でAIに相談します。きれいなプロンプトから始めなくて大丈夫です。`);
+  steps.push(`次に条件を足します。例: ${inferConditions(item).join(" / ")}。条件を足すほど、自分の生活に合った返答になります。`);
+  steps.push("最後に出力形式を指定します。「比較表」「チェックリスト」「一問一答」「今日やること3つ」のように、見て動ける形にします。");
+  if (getUsablePrompt(item)) {
+    steps.push("下のプロンプトをコピーし、サービス名・金額・学年・家族構成など、自分に関係する部分だけ置き換えます。");
   } else {
-    const url = buildFormUrl(currentCell.tool, currentCell.genre);
-    if (url) {
-      window.open(url, "_blank");
-    }
+    steps.push("プロンプト本文がない事例は、上の流れを使って「目的」「条件」「出力形式」の3点から自分で組み立てます。");
   }
+  steps.push("試してズレたら「もっと短く」「子ども向けに」「月額で比較して」など、1つずつ言い直します。ズレを直すところまでが練習です。");
+  return steps;
 }
 
-// X アカウント入力を正規化（URL・@付き・ユーザー名のどれでも受け付ける）
-function normalizeXAccount(raw) {
+function inferFirstAsk(item) {
+  const text = `${item.title || ""} ${item.category || ""}`;
+  if (/サブスク/.test(text)) return "今払っているサブスクを整理して、やめられそうなものを教えて";
+  if (/食費|日用品|献立|家計/.test(text)) return "今あるものだけで、無駄なく節約できる方法を考えて";
+  if (/保険|通信|Wi-Fi|スマホ/.test(text)) return "今の固定費が高すぎないか、見直すポイントを教えて";
+  if (/塾|家庭教師|学習|英語|宿題/.test(text)) return "家でできる学習サポートをAIで作りたい";
+  if (/税金|確定申告/.test(text)) return "申告前に確認すべきことを、初心者にも分かるように整理して";
+  return `${item.title}を自分でも作れるように手順を教えて`;
+}
+
+function inferConditions(item) {
+  const text = `${item.title || ""} ${item.category || ""}`;
+  const conditions = [];
+  if (item.saving) conditions.push(`削減目安は${item.saving}`);
+  if (/サブスク/.test(text)) conditions.push("月額と利用頻度を入れる", "継続・解約候補・保留に分ける");
+  else if (/食費|日用品|献立|家計/.test(text)) conditions.push("家にあるものを入れる", "買い足しを減らす", "続けられる案にする");
+  else if (/保険|通信|Wi-Fi|スマホ/.test(text)) conditions.push("今の契約内容を入れる", "安さだけで判断しない", "確認リストを出す");
+  else if (/塾|家庭教師|学習|英語|宿題/.test(text)) conditions.push("学年やレベルを入れる", "親が教えなくても確認できる形にする");
+  else conditions.push("今の状況を入れる", "困っていることを書く", "次にやることを出してもらう");
+  return conditions.slice(0, 4);
+}
+
+function getPrimaryUrl(item) {
+  return item.gemUrl || item.sourceUrl || item.media || "";
+}
+
+function getUsablePrompt(item) {
+  const raw = String(item.prompt || "").trim();
   if (!raw) return "";
-  // URL形式: https://x.com/foo または https://twitter.com/foo
-  const m = raw.match(/(?:x\.com|twitter\.com)\/([A-Za-z0-9_]+)/);
-  if (m) return m[1];
-  // @付き
-  if (raw.startsWith("@")) return raw.slice(1);
+  const useless = [
+    /^GemのURLを共有しました$/i,
+    /^内容はページまたはZipファイル内に記載/i,
+    /^共有URL/i
+  ];
+  if (useless.some((pattern) => pattern.test(raw))) return "";
+  if (raw.length < 18) return "";
   return raw;
 }
 
-// ===== ユーティリティ =====
-function escHtml(str) {
-  return String(str)
+function splitText(text) {
+  return String(text || "")
+    .split(/\n{2,}|\n/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .slice(0, 5);
+}
+
+function initFromUrl() {
+  const params = new URLSearchParams(location.search);
+  const caseId = params.get("case");
+  const item = CASES.find((entry) => entry.id === caseId);
+  if (item) selectCase(item.id, false);
+}
+
+function escapeHtml(value) {
+  return String(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 }
 
-// ===== イベントバインド =====
-document.getElementById("char-card-overlay").addEventListener("click", e => {
-  if (e.target === e.currentTarget) e.currentTarget.classList.remove("open");
-});
-document.getElementById("char-card-close").addEventListener("click", () => {
-  document.getElementById("char-card-overlay").classList.remove("open");
-});
-document.getElementById("levelup-close").addEventListener("click", () => {
-  document.getElementById("levelup-overlay").classList.remove("open");
-});
-
-document.querySelectorAll('.matrix-tab').forEach(tab => {
-  tab.addEventListener('click', () => switchToView(tab.dataset.view));
-});
-document.getElementById("modal-close").addEventListener("click", closeModal);
-document.getElementById("modal-overlay").addEventListener("click", e => {
-  if (e.target === e.currentTarget) closeModal();
-});
-document.getElementById("btn-post-modal").addEventListener("click", handlePostButton);
-document.getElementById("detail-back").addEventListener("click", () => {
-  document.getElementById("modal").scrollTop = 0;
-  showView("list");
-});
-document.getElementById("btn-post-top").addEventListener("click", () => {
-  // ツール・ジャンル未選択状態でフォームを開く（本番時はフォームURLをそのまま開く）
-  if (!CONFIG.FORM_BASE_URL) {
-    alert("まだフォームURLが設定されていません（config.js を更新してください）");
-    return;
-  }
-  window.open(CONFIG.FORM_BASE_URL, "_blank");
-});
-
-// フォーム送信後の検知: ?submitted=1 または referrer で判定
-const _submissionChannel = new BroadcastChannel("ai-savings-submission");
-const _urlParams = new URLSearchParams(window.location.search);
-const _fromForm = _urlParams.has("submitted") || document.referrer.includes("docs.google.com");
-if (_urlParams.has("submitted")) {
-  history.replaceState({}, "", window.location.pathname);
-}
-
-async function _handleSubmissionReturn() {
-  _submissionChannel.postMessage("submitted");
-  await loadData();
-  renderCharacterWidget();
-  openCharacterCard();
-}
-
-_submissionChannel.addEventListener("message", async (e) => {
-  if (e.data === "submitted") {
-    await loadData();
-    renderCharacterWidget();
-    openCharacterCard();
-  }
-});
-
-// ===== HOW TO USE アコーディオン =====
-const _accToggle = document.getElementById("howto-acc-toggle");
-const _accBody   = document.getElementById("howto-acc-body");
-if (_accToggle && _accBody) {
-  _accToggle.addEventListener("click", () => {
-    const isOpen = _accBody.classList.toggle("is-open");
-    _accToggle.setAttribute("aria-expanded", String(isOpen));
-  });
-}
-
-// ===== QUICK POST TOOL =====
-function initDiagnosisTool() {
-  // アコーディオン開閉
-  const accToggle = document.getElementById('diag-acc-toggle');
-  const accBody = document.getElementById('diag-acc-body');
-  if (accToggle && accBody) {
-    accToggle.addEventListener('click', () => {
-      const isOpen = accBody.classList.toggle('is-open');
-      accToggle.setAttribute('aria-expanded', String(isOpen));
-    });
-  }
-
-  const state = { tool: null, genre: null, level: null };
-
-  // ボタン選択ヘルパー
-  function setupButtonRow(containerId, items, key, makeLabel, onSelect) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    items.forEach(item => {
-      const btn = document.createElement('button');
-      btn.className = 'qpost-btn';
-      btn.innerHTML = makeLabel(item);
-      btn.addEventListener('click', () => {
-        container.querySelectorAll('.qpost-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state[key] = item;
-        updateSubmitState();
-        if (onSelect) onSelect(item);
-      });
-      container.appendChild(btn);
-    });
-  }
-
-  // ① ツール選択
-  setupButtonRow('qpost-tools', CONFIG.TOOLS, 'tool', t =>
-    `<span class="qpost-btn-icon">${t.icon}</span>${t.label}`
-  );
-
-  // ② ジャンル選択（選択後に提案パネル更新）
-  setupButtonRow('qpost-genres', CONFIG.GENRES, 'genre', g =>
-    `<span class="qpost-btn-icon">${g.icon}</span>${g.label}`
-  , () => showSuggestPanel());
-
-  // ③ 共有タイプ（HTMLに直書き済み）
-  // 表示用ラベル（UI上の要約などに使用）
-  const SHARE_LABELS = {
-    advanced: '完成した共有用プロンプト',
-    middle:   '作成時のプロンプト',
-    beginner: '体験談',
-  };
-  // フォームのラジオ選択肢と完全一致させる値（プリフィル用）
-  const SHARE_FORM_VALUES = {
-    advanced: 'リンクで共有（GEM・GPTs等）',
-    middle:   'プロンプト・テンプレ共有',
-    beginner: '体験談として共有',
-  };
-
-  // ジャンル別の提案テンプレ
-  const SUGGEST_TEMPLATES = {
-    education: {
-      gem: '「○○教科の問題を解説してくれるGEM」として公開',
-      gpt: '「子どもの勉強サポートGPT」として共有',
-      prompt: '「○○を教えて」のプロンプトテンプレとして共有',
-    },
-    outsource: {
-      gem: '「サブスク見直し診断GEM」として公開',
-      gpt: '「いらないサブスクを見つけるGPT」として共有',
-      prompt: '「サブスク一覧を分析して」のプロンプトとして共有',
-    },
-    living: {
-      gem: '「保険・通信費の比較GEM」として公開',
-      gpt: '「最安プランを提案するGPT」として共有',
-      prompt: '「料金プランを比較して」のプロンプトとして共有',
-    },
-    health: {
-      gem: '「冷蔵庫の余り物レシピGEM」として公開',
-      gpt: '「食費節約メニュー提案GPT」として共有',
-      prompt: '「この食材でレシピ考えて」のプロンプトとして共有',
-    },
-    creative: {
-      gem: '「スキルアップ学習プランGEM」として公開',
-      gpt: '「独学サポートGPT」として共有',
-      prompt: '「学習計画を作って」のプロンプトとして共有',
-    },
-    money: {
-      gem: '「確定申告サポートGEM」として公開',
-      gpt: '「経費仕分けGPT」として共有',
-      prompt: '「確定申告の項目を教えて」のプロンプトとして共有',
-    },
-  };
-
-  function showSuggestPanel() {
-    const panel = document.getElementById('qpost-suggest');
-    const body = document.getElementById('qpost-suggest-body');
-
-    if (!state.level || state.level.id !== 'beginner' || !state.genre) {
-      panel.style.display = 'none';
-      return;
-    }
-
-    const suggestions = SUGGEST_TEMPLATES[state.genre.id];
-    if (!suggestions) {
-      panel.style.display = 'none';
-      return;
-    }
-
-    body.innerHTML = `
-      <div class="qpost-suggest-item">
-        <span class="qpost-suggest-icon">🔗</span>
-        <div>
-          <strong>Gemini GEMにするなら →</strong>
-          <p>${suggestions.gem}</p>
-        </div>
-      </div>
-      <div class="qpost-suggest-item">
-        <span class="qpost-suggest-icon">🤖</span>
-        <div>
-          <strong>ChatGPT GPTsにするなら →</strong>
-          <p>${suggestions.gpt}</p>
-        </div>
-      </div>
-      <div class="qpost-suggest-item">
-        <span class="qpost-suggest-icon">📋</span>
-        <div>
-          <strong>作成時のプロンプトとして共有するなら →</strong>
-          <p>${suggestions.prompt}</p>
-        </div>
-      </div>
-      <a class="qpost-suggest-gem-link" href="${CONFIG.GEM_PROMPT_MAKER_URL || '#'}" target="_blank" rel="noopener">
-        ✨ きっかけ・悩み・理想の未来を書いてGEMに投げてみる →
-      </a>
-      <p class="qpost-suggest-note">体験談としての投稿ももちろんOK！そのまま進んでください</p>`;
-    panel.style.display = '';
-  }
-
-  document.querySelectorAll('#qpost-levels .qpost-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#qpost-levels .qpost-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const levelId = btn.dataset.level;
-      state.level = { id: levelId, label: SHARE_LABELS[levelId] || levelId };
-      updateSubmitState();
-      showSuggestPanel();
-    });
-  });
-
-  // 送信ボタンの有効/無効 + サマリー表示
-  function updateSubmitState() {
-    const submitBtn = document.getElementById('qpost-submit');
-    const summary = document.getElementById('qpost-summary');
-    const ready = state.tool && state.genre && state.level;
-    submitBtn.disabled = !ready;
-
-    if (ready) {
-      summary.innerHTML = `${state.tool.icon} ${state.tool.label} × ${state.genre.icon} ${state.genre.label} × ${state.level.label}`;
-    } else {
-      const missing = [];
-      if (!state.tool)  missing.push('ツール');
-      if (!state.genre) missing.push('ジャンル');
-      if (!state.level) missing.push('共有タイプ');
-      summary.textContent = `あと${missing.join('・')}を選んでください`;
-    }
-  }
-  updateSubmitState();
-
-  // 送信 → Googleフォームをプリフィルで開く
-  document.getElementById('qpost-submit').addEventListener('click', () => {
-    if (!CONFIG.FORM_BASE_URL) { alert('フォームURLが設定されていません'); return; }
-    const params = new URLSearchParams();
-    if (CONFIG.FORM_FIELDS.tool)  params.set(CONFIG.FORM_FIELDS.tool,  state.tool.label);
-    if (CONFIG.FORM_FIELDS.genre) params.set(CONFIG.FORM_FIELDS.genre, state.genre.label);
-    if (CONFIG.FORM_FIELDS.level) {
-      // フォーム側の選択肢ラベルに合わせてプリフィル
-      params.set(CONFIG.FORM_FIELDS.level, SHARE_FORM_VALUES[state.level.id] || state.level.label);
-    }
-    window.open(`${CONFIG.FORM_BASE_URL}?${params.toString()}`, '_blank');
-  });
-}
-
-// ===== 初期化 =====
-(async () => {
-  await loadData();
-  renderShareView();     // 0枚目: 使い方で探す（デフォルト）
-  renderLevelMatrix();   // 1枚目: カテゴリー×難易度
-  renderMatrix();        // 2枚目: ツール×ジャンル
-  renderCharacterWidget();
-  loadLikeCounts();
-  initDiagnosisTool();
-  if (_fromForm) await _handleSubmissionReturn();
-})();
+init();
