@@ -62,7 +62,7 @@ function renderCards() {
         <span class="case-card-meta">${escapeHtml(item.levelLabel || LEVELS[item.level])} / ${escapeHtml(item.category || "未分類")} / ${escapeHtml(item.tool || "AI")}</span>
         <strong>${escapeHtml(item.title)}</strong>
         <span class="case-card-summary">${escapeHtml(getSummary(item, 92))}</span>
-        <span class="saving-amount">${escapeHtml(item.saving || "削減目安を確認")}</span>
+        <span class="saving-amount">${formatSavingText(item.saving || "削減目安を確認")}</span>
         <span class="card-tags">
           <em>${primaryLabel}</em>
           ${hasPrompt ? "<em>プロンプトあり</em>" : ""}
@@ -86,7 +86,7 @@ function renderDashboardList() {
     <button class="dashboard-case ${selectedCase?.id === item.id ? "is-selected" : ""}" type="button" data-dashboard-case-id="${escapeHtml(item.id)}">
       <span>${escapeHtml(item.category || "未分類")} / ${escapeHtml(item.tool || "AI")}</span>
       <strong>${escapeHtml(item.title)}</strong>
-      <em>${escapeHtml(item.saving || "削減目安を確認")}</em>
+      <em>${formatSavingText(item.saving || "削減目安を確認")}</em>
     </button>
   `).join("");
 
@@ -117,7 +117,7 @@ function selectCase(caseId, shouldScroll) {
   const savingBox = document.querySelector("[data-detail-saving]").closest(".saving-box");
   const savingText = item.saving || "事例内で確認";
   savingBox.classList.toggle("is-long", savingText.length > 22);
-  document.querySelector("[data-detail-saving]").textContent = savingText;
+  document.querySelector("[data-detail-saving]").innerHTML = formatSavingText(savingText);
   document.querySelector("[data-detail-try]").textContent = getTryText(item);
   document.querySelector("[data-detail-story]").innerHTML = isLineStampCase(item)
     ? buildLineStampArticleHtml(item)
@@ -586,6 +586,15 @@ function initFromUrl() {
 
 function formatTextWithBreaks(value) {
   return escapeHtml(value).replace(/\n/g, "<br>");
+}
+
+function formatSavingText(value) {
+  const text = String(value || "");
+  const markerIndex = text.search(/[※（(]/);
+  if (markerIndex <= 0) return escapeHtml(text);
+  const amount = text.slice(0, markerIndex).trim();
+  const note = text.slice(markerIndex).trim();
+  return `${escapeHtml(amount)}<small class="saving-note">${escapeHtml(note)}</small>`;
 }
 
 function escapeHtml(value) {

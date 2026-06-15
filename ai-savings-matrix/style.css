@@ -578,6 +578,15 @@ h1 span {
   font-weight: 900;
 }
 
+.saving-note {
+  display: block;
+  margin-top: 4px;
+  color: #d94263;
+  font-size: 0.52em;
+  line-height: 1.45;
+  font-weight: 800;
+}
+
 .card-tags {
   display: flex;
   flex-wrap: wrap;
@@ -663,6 +672,11 @@ h1 span {
 .saving-box.is-long strong {
   font-size: 20px;
   line-height: 1.38;
+}
+
+.saving-box .saving-note {
+  font-size: 0.7em;
+  line-height: 1.5;
 }
 
 .manual-block {
