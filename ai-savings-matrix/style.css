@@ -791,6 +791,7 @@ h1 span {
   color: #445166;
   font-size: 14px;
   line-height: 1.7;
+  white-space: pre-line;
 }
 
 .story-section-title {
@@ -821,11 +822,13 @@ h1 span {
 
 .story-body {
   display: grid;
-  gap: 8px;
+  gap: 12px;
+  max-width: 760px;
 }
 
 .story-body p {
   margin-bottom: 0;
+  max-width: 42em;
 }
 
 .line-article {

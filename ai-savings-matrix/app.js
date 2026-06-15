@@ -301,23 +301,15 @@ function buildStoryHtml(item) {
               <span class="case-diagram-num">${index + 1}</span>
               <div>
                 <strong>${escapeHtml(card.label || "")}</strong>
-                <p>${escapeHtml(card.text || "")}</p>
+                <p>${formatTextWithBreaks(card.text || "")}</p>
               </div>
             </article>
           `).join("")}
         </div>
       </section>
-      <div class="story-grid story-grid-compact">
-        ${cards.map((card) => `
-          <article>
-            <span>${escapeHtml(card.label || "")}</span>
-            <strong>${escapeHtml(card.text || "")}</strong>
-          </article>
-        `).join("")}
-      </div>
       <div class="story-section-title">再現のポイント</div>
       <div class="story-body">
-        ${body.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}
+        ${body.map((part) => `<p>${formatTextWithBreaks(part)}</p>`).join("")}
       </div>
     `;
   }
@@ -527,6 +519,10 @@ function initFromUrl() {
   const caseId = params.get("case");
   const item = CASES.find((entry) => entry.id === caseId);
   if (item) selectCase(item.id, false);
+}
+
+function formatTextWithBreaks(value) {
+  return escapeHtml(value).replace(/\n/g, "<br>");
 }
 
 function escapeHtml(value) {
