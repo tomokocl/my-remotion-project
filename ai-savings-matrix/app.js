@@ -289,6 +289,69 @@ function getTryText(item) {
 }
 
 function buildStoryHtml(item) {
+  if (Array.isArray(item.articleInputs) || Array.isArray(item.articleExamples) || Array.isArray(item.articleTips)) {
+    const inputs = Array.isArray(item.articleInputs) ? item.articleInputs : [];
+    const examples = Array.isArray(item.articleExamples) ? item.articleExamples : [];
+    const tips = Array.isArray(item.articleTips) ? item.articleTips : [];
+    const body = Array.isArray(item.articleBody) ? item.articleBody : [];
+    return `
+      <div class="line-article">
+        <section class="line-lead">
+          <p class="line-kicker">この事例で体験すること</p>
+          <h3>${escapeHtml(item.articleHeroTitle || item.title || "")}</h3>
+          <p>${escapeHtml(item.articleHeroText || getSummary(item))}</p>
+        </section>
+
+        ${inputs.length ? `
+          <section class="line-card">
+            <div>
+              <p class="line-kicker">最初に答えること</p>
+              <h4>ここを入れると、自分用の結果に変わります。</h4>
+            </div>
+            <div class="line-question-grid">
+              ${inputs.map((input) => `<span>${escapeHtml(input)}</span>`).join("")}
+            </div>
+          </section>
+        ` : ""}
+
+        ${examples.length ? `
+          <section class="line-card">
+            <div>
+              <p class="line-kicker">出てくる例</p>
+              <h4>体験後に見える成果物のイメージ</h4>
+            </div>
+            <div class="stamp-table">
+              ${examples.map((example) => `
+                <article>
+                  <strong>${escapeHtml(example.title || "")}</strong>
+                  <span>${escapeHtml(example.body || "")}</span>
+                  ${example.note ? `<small>${escapeHtml(example.note)}</small>` : ""}
+                </article>
+              `).join("")}
+            </div>
+          </section>
+        ` : ""}
+
+        ${tips.length ? `
+          <section class="line-card line-points">
+            ${tips.map((tip) => `
+              <article>
+                <strong>${escapeHtml(tip.title || "")}</strong>
+                <p>${escapeHtml(tip.body || "")}</p>
+              </article>
+            `).join("")}
+          </section>
+        ` : ""}
+
+        ${body.length ? `
+          <div class="story-body">
+            ${body.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}
+          </div>
+        ` : ""}
+      </div>
+    `;
+  }
+
   if (Array.isArray(item.articleCards) || Array.isArray(item.articleBody)) {
     const cards = Array.isArray(item.articleCards) ? item.articleCards : [];
     const body = Array.isArray(item.articleBody) ? item.articleBody : splitText(item.detail || "");
