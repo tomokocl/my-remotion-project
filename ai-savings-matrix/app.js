@@ -309,7 +309,7 @@ function buildStoryHtml(item) {
       </section>
       <div class="story-section-title">再現のポイント</div>
       <div class="story-body">
-        ${body.map((part) => `<p>${formatTextWithBreaks(part)}</p>`).join("")}
+        ${body.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}
       </div>
     `;
   }

@@ -822,13 +822,11 @@ h1 span {
 
 .story-body {
   display: grid;
-  gap: 12px;
-  max-width: 760px;
+  gap: 14px;
 }
 
 .story-body p {
   margin-bottom: 0;
-  max-width: 42em;
 }
 
 .line-article {
