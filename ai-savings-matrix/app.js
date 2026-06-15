@@ -269,11 +269,12 @@ function renderLogs() {
 }
 
 function getSummary(item, length = 100) {
-  const text = String(item.detail || item.prompt || item.howto || "").replace(/\s+/g, " ").trim();
+  const text = String(item.articleLead || item.detail || item.prompt || item.howto || "").replace(/\s+/g, " ").trim();
   return text.length > length ? `${text.slice(0, length)}...` : text || "内容を確認しながら、自分用に作り直せる事例です。";
 }
 
 function getTryText(item) {
+  if (item.tryText) return item.tryText;
   const primaryUrl = getPrimaryUrl(item);
   if (primaryUrl && getUsablePrompt(item)) {
     return "まず上のボタンから完成物や実例画面を開きます。その後、下のプロンプトをコピーして、自分の条件に置き換えて試します。";
@@ -288,6 +289,24 @@ function getTryText(item) {
 }
 
 function buildStoryHtml(item) {
+  if (Array.isArray(item.articleCards) || Array.isArray(item.articleBody)) {
+    const cards = Array.isArray(item.articleCards) ? item.articleCards : [];
+    const body = Array.isArray(item.articleBody) ? item.articleBody : splitText(item.detail || "");
+    return `
+      <div class="story-grid">
+        ${cards.map((card) => `
+          <article>
+            <span>${escapeHtml(card.label || "")}</span>
+            <strong>${escapeHtml(card.text || "")}</strong>
+          </article>
+        `).join("")}
+      </div>
+      <div class="story-body">
+        ${body.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}
+      </div>
+    `;
+  }
+
   const detailParts = splitText(item.detail || "");
   const firstAsk = inferFirstAsk(item);
   const promptStatus = getUsablePrompt(item)
@@ -421,6 +440,10 @@ function buildLineStampStepsHtml() {
 }
 
 function buildRecipeSteps(item) {
+  if (Array.isArray(item.articleSteps) && item.articleSteps.length) {
+    return item.articleSteps;
+  }
+
   const steps = [];
   if (getPrimaryUrl(item)) {
     steps.push("完成物を先に開いて、どんな画面・返答・入力欄があるかを確認します。ここでゴールを見てから作り始めます。");
@@ -464,7 +487,7 @@ function getPrimaryUrl(item) {
 }
 
 function getUsablePrompt(item) {
-  const raw = String(item.prompt || "").trim();
+  const raw = String(item.articlePrompt || item.prompt || "").trim();
   if (!raw) return "";
   const useless = [
     /^GemのURLを共有しました$/i,
