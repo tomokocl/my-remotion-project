@@ -293,7 +293,21 @@ function buildStoryHtml(item) {
     const cards = Array.isArray(item.articleCards) ? item.articleCards : [];
     const body = Array.isArray(item.articleBody) ? item.articleBody : splitText(item.detail || "");
     return `
-      <div class="story-grid">
+      <section class="case-diagram" aria-label="体験から再現までの図解">
+        <p class="case-diagram-kicker">図解：体験から再現まで</p>
+        <div class="case-diagram-flow">
+          ${cards.map((card, index) => `
+            <article>
+              <span class="case-diagram-num">${index + 1}</span>
+              <div>
+                <strong>${escapeHtml(card.label || "")}</strong>
+                <p>${escapeHtml(card.text || "")}</p>
+              </div>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+      <div class="story-grid story-grid-compact">
         ${cards.map((card) => `
           <article>
             <span>${escapeHtml(card.label || "")}</span>
@@ -301,6 +315,7 @@ function buildStoryHtml(item) {
           </article>
         `).join("")}
       </div>
+      <div class="story-section-title">再現のポイント</div>
       <div class="story-body">
         ${body.map((part) => `<p>${escapeHtml(part)}</p>`).join("")}
       </div>
