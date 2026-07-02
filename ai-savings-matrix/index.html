@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI節約術 体験ページ</title>
+  <meta name="description" content="AI節約術の活用事例を見て、実際に試して、自分でも作ってみるための体験ページです。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <button class="dashboard-toggle" type="button" data-dashboard-toggle aria-controls="case-dashboard" aria-expanded="false">
+    <span></span>
+    事例メニュー
+  </button>
+  <div class="dashboard-scrim" data-dashboard-scrim hidden></div>
+  <aside class="case-dashboard" id="case-dashboard" data-dashboard hidden>
+    <div class="dashboard-head">
+      <div>
+        <p class="brand-sub">AI Savings Practice</p>
+        <h2>事例ダッシュボード</h2>
+      </div>
+      <button class="dashboard-close" type="button" data-dashboard-close aria-label="閉じる">×</button>
+    </div>
+    <p class="dashboard-lead">左のメニューで事例を選ぶと、ページ下に体験用のトリセツが開きます。</p>
+    <div class="dashboard-tabs" role="tablist" aria-label="メニュー内レベル別事例">
+      <button class="dashboard-tab is-active" type="button" data-level-tab="beginner">初級 <span data-count="beginner"></span></button>
+      <button class="dashboard-tab" type="button" data-level-tab="middle">中級 <span data-count="middle"></span></button>
+      <button class="dashboard-tab" type="button" data-level-tab="advanced">上級 <span data-count="advanced"></span></button>
+    </div>
+    <div class="dashboard-list" data-dashboard-list></div>
+  </aside>
+
+  <main>
+    <section class="lp-hero">
+      <div class="hero-copy">
+        <p class="eyebrow">AI Savings Practice</p>
+        <h1><span>AIで毎日の出費を</span><span>軽くする。</span></h1>
+        <p class="lead">投稿された節約アイデアを、完成物の体験から作り方までたどれるページです。気になる事例を開いて、まず試す。よさそうなら、自分の条件に置き換えて作ってみる。</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#cases">事例カードを見る</a>
+          <a class="btn btn-secondary" href="#how">このページの使い方</a>
+        </div>
+      </div>
+      <div class="hero-photo" aria-hidden="true">
+        <div class="saving-ticket">
+          <span>今ある事例</span>
+          <strong data-total-count>39</strong>
+          <em>まず試せる節約アイデア</em>
+        </div>
+      </div>
+    </section>
+
+    <section class="how-section reveal-section" id="how">
+      <div class="section-head">
+        <p class="eyebrow light">Flow</p>
+        <h2>見るだけじゃなく、試してから作る</h2>
+      </div>
+      <div class="flow-grid">
+        <article>
+          <span>1</span>
+          <h3>まず体験</h3>
+          <p>カードを押すと、共有URLや実例画面を一番上に出します。</p>
+        </article>
+        <article>
+          <span>2</span>
+          <h3>作り方を見る</h3>
+          <p>どんな願いから、どんな条件を足して作ったかを分解します。</p>
+        </article>
+        <article>
+          <span>3</span>
+          <h3>やってみたを残す</h3>
+          <p>自分用に変えて試した内容を、その事例に紐づけて投稿できます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="cases-section" id="cases">
+      <div class="section-head">
+        <p class="eyebrow light">Cases</p>
+        <h2>活用事例を選ぶ</h2>
+        <p>レベルを選んで、気になるカードを押してください。下に体験ページが開きます。</p>
+      </div>
+
+      <div class="level-tabs" role="tablist" aria-label="レベル別事例">
+        <button class="level-tab is-active" type="button" data-level-tab="beginner">初級 <span data-count-main="beginner"></span></button>
+        <button class="level-tab" type="button" data-level-tab="middle">中級 <span data-count-main="middle"></span></button>
+        <button class="level-tab" type="button" data-level-tab="advanced">上級 <span data-count-main="advanced"></span></button>
+      </div>
+
+      <div class="case-grid" data-case-grid></div>
+    </section>
+
+    <article class="manual-section" id="manual" data-case-detail hidden>
+      <div class="manual-hero">
+        <div>
+          <p class="eyebrow light" data-detail-level></p>
+          <h2 data-detail-title></h2>
+          <p class="manual-summary" data-detail-summary></p>
+        </div>
+        <div class="saving-box">
+          <span>削減目安</span>
+          <strong data-detail-saving></strong>
+        </div>
+      </div>
+
+      <section class="manual-block first-try">
+        <div>
+          <h3>まず試す</h3>
+          <p data-detail-try></p>
+        </div>
+        <a class="source-link" href="#" target="_blank" rel="noopener" data-detail-link hidden>URLを開いて体験する</a>
+      </section>
+
+      <section class="manual-block">
+        <h3>この事例で何ができる？</h3>
+        <div data-detail-story></div>
+      </section>
+
+      <section class="manual-block">
+        <h3>真似して作る手順</h3>
+        <div class="build-steps" data-detail-steps></div>
+      </section>
+
+      <section class="manual-block prompt-block" data-prompt-box hidden>
+        <div class="prompt-head">
+          <h3>使えるプロンプト</h3>
+          <button class="copy-btn" type="button" data-copy-detail>プロンプトをコピー</button>
+        </div>
+        <pre data-detail-prompt></pre>
+      </section>
+
+      <section class="manual-block">
+        <h3>自分でも工夫して作ってみた</h3>
+        <form class="practice-form" data-practice-form>
+          <input type="hidden" name="caseId" data-form-case-id>
+          <label>
+            名前
+            <input name="name" placeholder="例：匿名さん">
+          </label>
+          <label>
+            実際に試してどうでしたか？
+            <textarea name="note" required placeholder="例：冷蔵庫の残り物を入れたら、夕食案が3つ出ました。"></textarea>
+          </label>
+          <label>
+            自分用に変えたところ
+            <textarea name="tweak" placeholder="例：子ども向け、15分以内、買い足しなしの条件を足しました。"></textarea>
+          </label>
+          <button class="btn btn-submit" type="submit">やってみたを提出する</button>
+          <p class="form-status" data-form-status></p>
+        </form>
+      </section>
+
+      <section class="manual-block">
+        <h3>この事例をやってみた人</h3>
+        <div class="log-list" data-log-list></div>
+      </section>
+    </article>
+  </main>
+
+  <script src="cases-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
