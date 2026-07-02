@@ -413,29 +413,44 @@ function isLineStampCase(item) {
 
 function buildLineStampArticleHtml(item) {
   const stampIdeas = [
-    ["おはよ", "布団から頭だけ出した、眠そうな猫", "朝の第一声"],
-    ["りょ", "真顔でサムズアップする猫", "了解・確認"],
-    ["いまから帰る", "荷物を背負って早歩きする猫", "帰宅連絡"],
-    ["おつかれさま", "お茶をすすりながら力が抜けた猫", "仕事や学校終わり"],
-    ["ごはん何？", "空のお皿と箸を持つ猫", "夕方の定番連絡"],
-    ["ありがとう", "深々とおじぎする猫", "感謝を伝える"],
-    ["ごめん…", "壁のすき間からそっと覗く猫", "遅れた時やミスした時"],
-    ["おやすみ", "アイマスクで爆睡する猫", "1日の終わり"]
+    ["おはよ", "眠そうな目で布団から頭だけ出している猫", "朝の第一声"],
+    ["りょ", "真顔でサムズアップしている猫", "了解・確認の返信"],
+    ["いまから帰る", "荷物を背負って競歩のように歩く猫", "帰宅の連絡"],
+    ["おつかれさま", "お茶をすすりながら魂が抜けかけている猫", "仕事や学校終わり"],
+    ["ごはん何？", "空のお皿と箸を持って真顔で座る猫", "夕方の定番質問"],
+    ["ありがとう", "深々とおじぎする猫", "感謝を伝えるとき"],
+    ["ごめん…", "壁のすき間から申し訳なさそうに覗く猫", "遅れるとき・ミスしたとき"],
+    ["おやすみ", "アイマスクで白目気味に爆睡している猫", "1日の終わり"]
+  ];
+
+  const answerExamples = [
+    ["契約状況", "いまは契約なし。今後のスタンプ課金を防ぐ目的で使う。"],
+    ["使う場面", "家族に送る日常のあいさつ。毎日使う言葉に絞る。"],
+    ["雰囲気", "手書き風のシュールな猫。文字あり。"],
+    ["ツール経験", "AIは触ったことがない前提で進める。"],
+    ["公開範囲", "身内だけで非公開利用。一般販売は目指さない。"]
+  ];
+
+  const toolFlow = [
+    ["Gem", "5つの質問から、節約額・スタンプ案・画像生成プロンプト・Canva手順・申請前チェックまで分解します。"],
+    ["画像生成AI", "白背景、手書き風、文字なしで猫の絵だけ作ります。文字は後からCanvaで入れる方が直しやすいです。"],
+    ["Canva", "370 x 320 pxで配置し、手書き風フォントと白い縁取りでLINE上でも読める文字に整えます。"],
+    ["LINE Stamp Maker", "8枚をアップロードし、ショップ非公開・無料ダウンロード設定で申請します。検証では申請まで完了しています。"]
   ];
 
   return `
     <div class="line-article">
       <section class="line-lead">
         <p class="line-kicker">この事例で体験すること</p>
-        <h3>GEMに5つ答えるだけで、家族用LINEスタンプの企画書ができます。</h3>
-        <p>「LINEスタンプを自作したら、スタンプのサブスクをやめられるかも」という小さな思いつきを、GEMがスタンプ案、画像生成プロンプト、Canvaでの作り方、LINE申請の流れまで分解してくれます。</p>
+        <h3>家族LINEで本当に使う8個だけを、GemとCanvaでスタンプ化します。</h3>
+        <p>検証では、AI未経験の前提で「手書き風のシュールな猫」を作る流れを確認しました。Gemは最初に5つだけ質問し、その回答からスタンプ案、画像生成プロンプト、Canva編集、LINE Stamp Makerでの申請まで順番に出してくれます。</p>
       </section>
 
       <section class="line-card">
         <div>
           <p class="line-kicker">最初に答えること</p>
-          <h4>いきなりプロンプトを書く必要はありません。</h4>
-          <p>このGEMは、最初に5つだけ聞いてきます。自分の状況を答えると、家族で使いやすいスタンプ案に変換されます。</p>
+          <h4>プロンプトを書く前に、使い方を5つだけ整理します。</h4>
+          <p>スタンプ代、よく使う言葉、作りたい雰囲気、使えるツール、公開範囲を答えるだけで、Gemが「何を作ればいいか」まで落とし込みます。</p>
         </div>
         <div class="line-question-grid">
           <span>今スタンプにいくら使っているか</span>
@@ -447,8 +462,21 @@ function buildLineStampArticleHtml(item) {
       </section>
 
       <section class="line-card">
+        <p class="line-kicker">検証で入れた条件</p>
+        <h4>「AI未経験・家族用・非公開」でも、作業手順まで具体化できました。</h4>
+        <div class="stamp-table">
+          ${answerExamples.map(([label, body]) => `
+            <article>
+              <strong>${escapeHtml(label)}</strong>
+              <span>${escapeHtml(body)}</span>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+
+      <section class="line-card">
         <p class="line-kicker">出てくるスタンプ案の例</p>
-        <h4>家族LINEで本当に使う言葉に寄せるのがポイントです。</h4>
+        <h4>かわいいだけでなく、毎日の返信で使う言葉に絞ります。</h4>
         <div class="stamp-table">
           ${stampIdeas.map(([label, image, scene]) => `
             <article>
@@ -461,24 +489,18 @@ function buildLineStampArticleHtml(item) {
       </section>
 
       <section class="line-card line-points">
-        <article>
-          <strong>画像生成AI</strong>
-          <p>白背景、ゆるい手書き風、文字なしで猫のイラストを作ります。文字までAIに入れさせると崩れやすいので、ここでは絵だけ作ります。</p>
-        </article>
-        <article>
-          <strong>Canva</strong>
-          <p>370 x 320 pxで作成し、画像を配置してから「おはよ」「りょ」などの文字を後から入れます。最後は透過PNGで書き出します。</p>
-        </article>
-        <article>
-          <strong>LINE Stamp Maker</strong>
-          <p>8枚アップロードして、ショップ非公開・無料ダウンロード設定にします。家族だけで使うなら公開販売を目指さなくて大丈夫です。</p>
-        </article>
+        ${toolFlow.map(([label, body]) => `
+          <article>
+            <strong>${escapeHtml(label)}</strong>
+            <p>${escapeHtml(body)}</p>
+          </article>
+        `).join("")}
       </section>
 
       <section class="line-shot-grid line-shot-grid-single">
         <figure class="line-shot">
           <img src="assets/line-stamp-guide/line-stamp-maker-closeup.png" alt="LINEスタンプメーカーのプレビューと販売情報のスマホ画面">
-          <figcaption>最後はLINE Stamp Makerで、プレビューと販売情報を確認して申請します。</figcaption>
+          <figcaption>検証では、Gemの手順に沿ってChatGPT、Canva、LINE Stamp Makerまで進み、申請まで完了しました。画像がある場合は、このように「最後にどの画面へ進むのか」が見えると一気に分かりやすくなります。</figcaption>
         </figure>
       </section>
     </div>
@@ -487,11 +509,11 @@ function buildLineStampArticleHtml(item) {
 
 function buildLineStampStepsHtml() {
   const steps = [
-    ["GEMを開いて5つ答える", "今のスタンプ代、よく使う言葉、作りたいキャラ、使えるツール、公開範囲を入力します。"],
-    ["8個のスタンプ案を選ぶ", "GEMが出した案から、家族LINEで本当に使う言葉だけ残します。使わない言葉はここで差し替えます。"],
-    ["画像生成AIでキャラを作る", "文字は入れず、白背景の猫イラストだけ作ります。文字を入れない方が仕上がりを直しやすいです。"],
-    ["Canvaで文字を入れる", "370 x 320 pxのキャンバスに画像を置き、手書き風フォントで文字を入れて透過PNGにします。"],
-    ["LINE Stamp Makerに登録する", "8枚をアップロードし、家族用ならショップ非公開・無料ダウンロード設定で申請します。"]
+    ["Gemで条件を答える", "スタンプ代、よく使う場面、作りたい雰囲気、ツール経験、公開範囲を入力します。検証では「家族用の日常あいさつ」「手書き風のシュールな猫」「AI未経験」「非公開」で進めました。"],
+    ["8個の案に絞る", "Gemが出した案から、毎日使う言葉だけ残します。今回は「おはよ」「りょ」「いまから帰る」「おつかれさま」「ごはん何？」「ありがとう」「ごめん…」「おやすみ」の8個です。"],
+    ["画像生成AIで絵だけ作る", "白背景、ゆるい手書き風、文字なしで猫の絵を作ります。文字までAIに入れると崩れやすいので、絵と文字を分けるのがコツです。"],
+    ["Canvaで文字を入れる", "370 x 320 pxのキャンバスに画像を置き、手書き風フォントで文字を入れます。ダークモードでも読めるように、白い縁取りをつけます。"],
+    ["LINE Stamp Makerで申請する", "8枚をアップロードし、家族用ならショップ非公開・無料ダウンロード設定で申請します。検証では申請まで完了し、審査待ちの状態まで進みました。"]
   ];
 
   return `
